@@ -1,6 +1,6 @@
 input_format_version: 0
-title: IEA Wind Task 37 Combined Case Study 16 Turbine Farm
-description: input file for the 16 turbine wind plant model for IEA Task 37 Combined Case Study
+title: IEA Wind Task 37 Combined Case Study 36 Turbine Farm
+description: input file for the 36 turbine wind plant model for IEA Task 37 Combined Case Study
              Template located at <https://github.com/IEAWindTask37/ontology/blob/develop/plant_energy_energy_convolution.yaml>
 
 definitions:
@@ -17,10 +17,14 @@ definitions:
   position:
     type: array
     items:
-      xc: [0., 650., 200.861, -525.861, -525.861, 200.861, 1300., 1051.7221, 401.7221, -401.7221, -1051.7221,
-           -1300., -1051.7221, -401.7221, 401.7221, 1051.7221]
-      yc: [0., 0., 618.1867, 382.0604, -382.0604, -618.1867, 0., 764.1208, 1236.3735, 1236.3735, 764.1208, 0.,
-           -764.1208, -1236.3735, -1236.3735, -764.1208]
+      xc: [0., 666.6667, 206.0113, -539.3447, -539.3447, 206.0113, 1333.3333, 1154.7005, 666.6667, 0.,
+           -666.6667, -1154.7005, -1333.3333, -1154.7005, -666.6667, 0., 666.6667, 1154.7005, 2000., 1879.3852,
+           1532.0889, 1000., 347.2964, -347.2964, -1000., -1532.0889, -1879.3852, -2000., -1879.3852, -1532.0889,
+           -1000., -347.2964, 347.2964, 1000., 1532.0889, 1879.3852]
+      yc: [0., 0., 634.0377, 391.8568, -391.8568, -634.0377, 0., 666.6667, 1154.7005, 1333.3333,
+           1154.7005, 666.6667, 0., -666.6667, -1154.7005, -1333.3333, -1154.7005, -666.6667, 0., 684.0403,
+           1285.5752, 1732.0508, 1969.6155, 1969.6155, 1732.0508, 1285.5752, 684.0403, 0., -684.0403, -1285.5752,
+           -1732.0508, -1969.6155, -1969.6155, -1732.0508, -1285.5752, -684.0403]
     additionalItems: false
     description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
     units: m          
@@ -47,9 +51,9 @@ definitions:
       annual_energy_production:
         type: number
         description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
-        binned: [ 9444.60012,  8497.90004, 11383.32869, 14173.40367,
-                 20979.36776, 25590.86774, 39252.85757, 43197.65856,
-                 23800.39229, 13539.36766, 15022.89800, 32644.44314,
-                 71157.32322, 18092.10102, 12326.48041,  7838.58128]
-        default: 366941.57116
+        binned: [ 20031.56539,  18948.56110,  22909.44283,  27563.57816,
+                  39052.27825,  49767.57168,  78998.07872,  96321.85228,
+                  50479.54479,  29779.76444,  30833.38985,  63049.88078,
+                 132664.17490,  34943.30742,  25299.19167,  17240.91625]
+        default: 737883.09851
         units: MWh

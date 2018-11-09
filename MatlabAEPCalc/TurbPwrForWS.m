@@ -1,6 +1,6 @@
 function [turb_pwr] = TurbPwrForWS(wind_speed_eff, turb_ci, turb_co, rated_ws, rated_pwr)
     % Power curve of our used turbine, made a function to enable vectorization
-    
+    turb_pwr = 0;   % If it's outside of rated window, produce no power
     % If we're between the cut-in and rated wind speeds
     if ((turb_ci <= wind_speed_eff) && (wind_speed_eff < rated_ws))
         % Calculate the curve's power

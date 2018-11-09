@@ -1,6 +1,6 @@
-input_format_version: 0
+input_format_version: '0'
 title: IEA Wind Task 37 Combined Case Study 9 Turbine Farm
-description: input file for the 9 turbine wind plant model for IEA Task 37 Combined Case Study
+description: Result file of Nick Baker using simplified Gaussian-Wake
 
 definitions:
   wind_plant:
@@ -10,18 +10,18 @@ definitions:
       layout:
         type: array
         items:
-          - $ref: "#/definitions/position"
-          - $ref: "iea37-335mw.yaml"    # Reference for the .yaml containing turbine attributes.
-
+        - $ref: "#/definitions/position"
+        - $ref: "iea37-335mw.yaml"
+  
   position:
     type: array
     items:
-      xc: [0., 900., 636.3961, 0., -636.3961, -900., -636.3961, 0., 636.3961]
-      yc: [0., 0., 636.3961, 900., 636.3961, 0., -636.3961, -900., -636.3961]
-    additionalItems: false
+      xc: [-171.988638, -877.976788, 878.86414, -514.50498, 516.684328, 749.029769, -748.310762, 167.095315, -0.41292]
+      yc: [-883.381059, 197.170032, -193.009249, 737.519851, -734.690867, 498.86168, -499.949415, 884.323472, 1.441373]
+    additionalItems: 'false'
     description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
-    units: m          
-
+    units: m
+  
   plant_energy:
     type: object
     description: energy production from simplified Bastankhah Gaussian wake model
@@ -31,22 +31,22 @@ definitions:
         type: algorithm
         description: wake model used to calculate AEP
         items:
-          - $ref: "iea37-aepcalc.py"
+        - $ref: "iea37-aepcalc.py"
 
       wind_resource_selection:
         type: object
         description: specific wind resource used to calculate AEP
-        properties:
+        properties: 
           type: array
           items:
-            - $ref: "iea37-windrose.yaml"       # Reference for the .yaml containing the wind rose
+          - $ref: "iea37-windrose.yaml"
 
       annual_energy_production:
         type: number
         description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
-        binned: [ 0, 0, 0, 0,
-                 0, 0, 0, 0,
-                 0, 0, 0, 0,
-                 0, 0, 0, 0,]
-        default: 193047.378322
+        binned: [ 6225.113304, 6011.925047, 7230.561462, 8948.199195,
+                  16097.359103, 16150.819583, 24949.564607, 31135.583073,
+                  15688.388169, 9519.078022, 9723.492307, 20630.985134,
+                  54434.213885, 11430.971142, 7982.483543, 5613.169172]
+        default: 251771.906748
         units: MWh

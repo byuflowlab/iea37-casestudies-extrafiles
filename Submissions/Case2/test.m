@@ -1,5 +1,5 @@
 
-clear, close all
+clear all, close all
 % Needed for .yaml reading ability
 addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
 
@@ -32,7 +32,7 @@ end
 nNumRtrs = length(turb_coords.x);   % Pulls the number of turbines by how many x-coordinates we have.
 
 % Get AEP data from turb locations
-binned_AEP = calcAEP(turb_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
+binned_AEP = calcAEP(best_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
 AEP = sum(binned_AEP)
 
 %color_num = 0;  % 0 = blue, 1 = red, 2 = yellow, 3 = purple, 4 = green

@@ -9,7 +9,7 @@ clear all, close all;
 
 %PlotColor = [0,0.4470,0.7410]; % Blue
 PlotColor = [0.6350, 0.0780, 0.1840]; % Red
-%PlotColor = [0,0.4470,0.7410]; % Yellow
+%PlotColor = [0.9290, 0.6940, 0.1250]; % Yellow
 %PlotColor = [1,0,0];
 
 %{

@@ -16,6 +16,10 @@ function [] = plotFarm(turb_coord, turb_diam, farm_rad, plot_dimen, color_num)
             PlotColor = [0.4940, 0.1840, 0.5560];
         case 4  % Green
             PlotColor = [0.4660, 0.6740, 0.1880];
+        case 5 % Orange
+            PlotColor = [0.8500, 0.3250, 0.0980];
+        case 6 % Puke yellow
+            PlotColor = [0.75, 0.75, 0];
     end
     
     % Plot the farm

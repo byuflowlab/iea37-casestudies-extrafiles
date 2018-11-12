@@ -1,0 +1,52 @@
+This is BibTeX, Version 0.99d (TeX Live 2017)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: iea37-wflocs-confppr.aux
+The style file: aiaa.bst
+Database file #1: aiaa-conf.bib
+Warning--I didn't find a database entry for "Padron2018"
+Warning--I didn't find a database entry for ""
+Warning--I didn't find a database entry for "ThomasBast2018"
+Warning--empty journal in Thomas2018
+Warning--empty year in Thomas2018
+You've used 5 entries,
+            2292 wiz_defined-function locations,
+            614 strings with 5588 characters,
+and the built_in function-call counts, 972 in all, are:
+= -- 60
+> -- 58
+< -- 0
++ -- 21
+- -- 16
+* -- 103
+:= -- 160
+add.period$ -- 10
+call.type$ -- 5
+change.case$ -- 1
+chr.to.int$ -- 0
+cite$ -- 7
+duplicate$ -- 46
+empty$ -- 95
+format.name$ -- 16
+if$ -- 197
+int.to.chr$ -- 0
+int.to.str$ -- 5
+missing$ -- 4
+newline$ -- 19
+num.names$ -- 5
+pop$ -- 15
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 17
+stack$ -- 0
+substring$ -- 38
+swap$ -- 14
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 2
+while$ -- 8
+width$ -- 6
+write$ -- 43
+(There were 5 warnings)

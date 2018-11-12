@@ -13,7 +13,7 @@ nNumCycles = 1000;
 %-- Set our global counter variable --%
 global nNumFnCalls;
 
-farmSize = 0;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
+farmSize = 1;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
 switch(farmSize)
     case 0
         fname_turb_loc = 'iea37-ex9.yaml';
@@ -98,7 +98,7 @@ bestIndex = BestAEP(1)
 bestAEP = BestAEP(2)
 %OptFarm(BestAEP(1),:)
 
-color_num = 1;  % 0 = blue, 1 = red, 2 = yellow
+color_num = 0;  % 0 = blue, 1 = red, 2 = yellow
 plotFarm(best_coords, turb_diam, farm_rad, plot_dimen, color_num)
 %}
 

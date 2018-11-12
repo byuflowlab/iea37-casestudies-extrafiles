@@ -1,0 +1,28 @@
+The intent of this Case Study is to assess not only the optimization methods measured by Case Study 1, but also the effects that different physics model approximations have on turbine location recommendations.
+
+Case Study 2 differs from the previous one in that 1) no wake model is provided, and 2) only a single wind farm size is to be optimized.
+Participants are free to chose their preferred EWM and optimization method combination.
+Comparison of participant results is based on:
+\begin{enumerate}
+	\item \textbf{Quality:} Which participant results give the highest LES-calculated AEP.
+	\item \textbf{Accuracy:} Which participant wake-model-calculated AEP most closely match an LES-calculated AEP for the same turbine locations.
+\end{enumerate}
+
+Unlike Case Study 1, participant reported AEP is not comparable, since different EWMs (which account for different physics phenomena) are used to calculate them.
+Due to this, all participant-reported optimized turbine locations will be run through the same LES for comparison.
+With the inherent bias each EWM has for its own optimized locations removed, reported turbine locations will be measured using the same simulation tool to compare AEP.
+
+The LES we will use was produced by NREL, and is called the Simulator fOr Wind Farm Applications (SOWFA).
+Unfortunately, due to the computional time requirements, all participant submissions were not able to be run through SOWFA before the writing of this document.
+
+However results are anylized through another adjuticating criteria, separate from the LES-claculations.
+It comes from the cross-comparison portion of this Case Study.
+
+\subsection{Cross-Comparison Analysis}
+After the initial call for results, each participant's proposed optimal turbine locations in the standardized \texttt{.yaml} format were published to the other Combined Case Study participants.
+This is done with the intent that each participant will use their own wake model to calculate the AEP of the other proposed farm layouts.
+Though the baseline of LES gives an even playing field, from this portion of the Case Study, we hope to learn if any participant's results are seen as superior, even by other EWMs.
+
+\subsection{Farm Attributes}
+The wind farm size for this case study is limited to 9 turbines, in order to limit the LES computation time requirements when assessing results.
+The previously described method under \textbf{Farm Diameter} was used to determine the boundary distance, and the wind rose and wind speed are the same as Case Study 1.

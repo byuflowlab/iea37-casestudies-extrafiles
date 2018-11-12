@@ -1,0 +1,31 @@
+% WHAT PEOPLE HAVE DONE
+
+% WHAT WE ARE DOING
+
+% HOW WE DID IT
+    
+%--- Below is the unaltered introduction from your extended abstract ---%
+
+\lettrine[nindent=0pt]{O}{ptimizing} turbine placement within a wind farm is a complex problem characterized by many local minima.
+The large number of inter-dependent variables involved in Wind Farm Layout Optimization (WFLO) create a design space that can quickly become intractable.
+%The two main methods to attack WFLO are (1) utilization of engineering wake model and (2) computational optimization to iteratively discover an optimal set of inputs.
+
+Two approaches have been taken to simplify the WFLO problem, as described by Padron et.al.\cite{Padron2018} The first approach aims at improving the quality of individual models for wind farm attributes, i.e., aerodynamics, atmospheric physics, turbine structures, etc.
+As they go on to state, "The second approach is to improve the optimization problem formulation, and the algorithms [used] to solve the optimization." \cite{Padron2018}
+
+To better model the aerodynamics of the waked airflow region of a wind turbine, complex computational methods such as such as Direct Numerical Simulations (DNS) or Large Eddy Simulations (LES) have been developed.
+But the computational time these require for full simulation can be prohibitive in multi-iterative optimizations.
+Simplified Engineering Wake Models (EWMs) make certain limiting physics assumptions, resulting in greatly reduced computational costs. \cite{HerbertAcero2014}.
+Yet these simpler, less accurate approximations can sometimes lead to inefficient recommendations for turbine placement, due to what can be inaccurate assumptions in specific wind farm scenarios. %shorten to a single sentence
+
+Given a single EWM, optimization methods to select ideal turbine locations are limited by characteristics of the functions governing the model.
+%
+For example, EWMs that define a discontinuous wind speed behind wind turbines cannot be effectively used with gradient-based optimization methods, and models for which gradients have not been calculated are limited to gradient-free algorithms or gradient-based with finite difference derivatives.
+%
+% primarily by the ability to obtain gradients. 
+%
+Additionally, within these limitations different optimization strategies have varying capacity to escape local minima in the pursuit of a global optimum. %primarily by the ability to obtain gradients. I don't think this is necessarily true, I'll reword
+
+To better understand the differences in EMW selection and optimization algorithm application, we have created two discrete case studies.
+These studies are designed to involve participants from many different research labs working on the WFLO problem.
+The first isolates optimization techniques for a single simplified EWM, the second observes the differences when combining variations in EWM selection and optimization method.

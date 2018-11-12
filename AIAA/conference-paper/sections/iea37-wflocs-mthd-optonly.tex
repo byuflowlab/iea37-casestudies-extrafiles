@@ -1,0 +1,69 @@
+The purpose of this Case Study is to determine the best optimization practices for WFLO, using a single representative EWM.
+    
+    \subsubsection{Wake Model} \label{sec:wakemodel}
+        A simplified version of Bastankhah's Gaussian wake model \cite{Bastankhah2016, Thomas2018} is used, since it is compatible with both gradient-based and gradient-free methods, and is computationally inexpensive in comparison to LES and DNS methods.
+        This wake model is described by the following equations:
+
+        \begin{equation}
+            \frac{\Delta U}{U_{\infty}}
+            =
+            \Bigg(
+            1 - \sqrt{
+                1 - \frac{C_T}
+                {8\sigma_{y}^{2}/D^2}
+            }
+            \Bigg)
+            \text{exp}\bigg(
+            -0.5\Big(
+                \frac{y-\delta}{\sigma_{y}}
+                \Big)^2
+            \bigg)
+        \end{equation}
+
+        \noindent Where $\frac{\Delta U}{U_{\infty}}$ is the wake velocity deficit, $C_T = \frac{8}{9}$ and is the thrust coefficient, $y-\delta$ is the distance of the point of interest from the wake center in the cross-stream horizontal direction, $D$ is the turbine diameter, and $\sigma_y$ is the standard deviation of the wake deficit in the cross-stream horizontal direction as defined in \cref{eq:sigy}:
+
+        \begin{equation}
+            \sigma_y = k_y(x) + \frac{D}{\sqrt{8}} \\
+            \label{eq:sigy}
+        \end{equation}
+
+        In \cref{eq:sigy}, $x$ is the downstream distance from the turbine generating the wake to the turbine of interest, and $D$ is the turbine diameter. $k_y$ is determined as a function of turbulence intensity ($I$).
+        In this case study turbulence intensity is treated as a very small constant of $0.075$, and we therefore use a coresponding $k_{y}$ of $0.0324555$ \cite{Niayifar2016, ThomasBast2018}.
+
+        Increasing turbulence intensity has numerous effects and draws attention away from the main purpose of this Case Study, which is to observe the differences of optimization strategies.
+        Though these strategies may differ for a wake model with a higher turbulence intensity, this first IEA Task 37 set of Case Studies uses a very low intensity in an attempt to minimize the considered variables.
+
+	\subsubsection{Farm Sizes}
+        Variability in wind farm size effect optimization algorithm performance.
+        To account for this, 3 wind farm sizes are specified in Case Study 1: 16, 36, and 64 turbines.
+        Inclusion of 3 farm sizes is to avoid a bias towards algorithms optimized for wind farms of a specific size, and in order to observe how increased complexity correlates to convergence time and algorithm performance.
+        
+        The turbine numbers were selected as perfect squares which roughly double in size.
+        Perfect squares are selected to permit even grid turbine arrangements, if desired.
+
+        Example \texttt{.yaml} schema is provided to all participants, to help understand the format with which they will need to report their optimal turbine locations.
+        These files are:
+
+        \begin{itemize}
+            \item \texttt{iea37-ex16.yaml} - 16 turbine scenario example layout
+            \item \texttt{iea37-ex36.yaml} - 36 turbine scenario example layout
+            \item \texttt{iea37-ex64.yaml} - 64 turbine scenario example layout
+        \end{itemize}
+
+        \noindent These example layouts are depicted graphically above in \cref{fig:exlayouts}.
+        
+    \subsubsection{Supplied Code} \label{sec:code}
+
+        To enable participation in this Case Study, we created and supplied a pre-coded Python package.
+        This package includes:
+            \begin{itemize}
+                \item Turbine charactersitics, wind frequency, and wind speed in NREL's \texttt{.yaml} schema described in \cref{sec:filetypes}
+                \item Example turbine layouts for each farm size (in \texttt{.yaml} format), displayed graphically in \cref{fig:exlayouts}
+                \item Python parsers of the \texttt{.yaml} schema, included in the Appendix
+                \item Python target function to calculate AEP (given \texttt{.yaml} turbine locations and farm attributes)
+            \end{itemize}
+
+        We selected the programming language Python since it is open source and widely used by researchers in the industry.
+
+        Alteration by the participants to our specific code implementation, or replication of our model in another language is permitted if needed for compatibility with participant optimization methods.
+        The alteration is permitted, however, with the understanding that final wind farm layouts will be evaluated with the original python code package that we provided.

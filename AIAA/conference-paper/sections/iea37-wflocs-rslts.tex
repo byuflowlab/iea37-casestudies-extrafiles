@@ -1,43 +1,100 @@
-With the calculations for AEP standardized, each participant ran the optimization algorithm and implementation of their choosing.
-Since there exists a great deal of variability in hardware, participants also reported processor speed, function calls, number of cores utilized, and amount of RAM installed the system utilized to find their optimized results.
-
+% This is what we did
 
 \subsection{Case Study 1: Optimization Only}
 
+Each participant ran the optimization algorithm and implementation of their choosing using our suppied AEP target function, or an equivalent duplicaiton in another language.
+Since there exists a great deal of variability in hardware, participants also reported processor speed, function calls, number of cores utilized, and amount of RAM installed their system when finding their optimized results.
+The AEP results and rankings are given below in \cref{tab:results}
+
+There were 10 submission for the Optimization Only Case Study.
+One participant submitted twice, using a different optimization method for each submission.
+These two submissions will be hereafter treated as if they were from different participants, and are assigned different participant numbers.
+For anonimity, each submission is given a number.
+We will referred to each submission below by this number (i.e. participant 1, ..., participant 10, etc.).
+
 \subsubsection{16 Turbine Case}
 
-	\begin{center}
-		\begin{tabular}{r l r}
-			\hline
-			Participant \# & AEP & Rank \\
-			\hline
-			example layout & 366941.5712 & 11 \\
-			1 & 411182.2200 & 4 \\
-			2 & 409689.4417 & 5 \\
-			3 & 402318.7567 & 7 \\
-			4 & 418924.4064 & 1 \\
-			5 & 414141.2938 & 3 \\
-			6 & 388758.3573 & 9 \\
-			7 & 392587.8580 & 8 \\
-			8 & 412251.1945 & 2 \\
-			9 & 388342.7004 & 10 \\
-			10 & 408360.7813 & 6 \\
-			\hline
-		\end{tabular}
-	\end{center}
+	Though wall time and number of function calls varied widely, the best 4 (of 10) participant submissions used gradient-based algorithms.
 
-
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{r l l c}
+				\hline
+				Rank           & AEP         & Participant \# & Gradients \\
+				\hline
+				1              & 418924.4064 & 4              & Yes       \\
+				2              & 412251.1945 & 8              & Yes       \\
+				3              & 414141.2938 & 5              & Yes       \\
+				4              & 411182.2200 & 1              & Yes       \\
+				5              & 409689.4417 & 2              & No        \\
+				6              & 408360.7813 & 10             & Yes       \\
+				7              & 402318.7567 & 3              & No        \\
+				8              & 392587.8580 & 7              & No        \\
+				9              & 388758.3573 & 6              & No        \\
+				10             & 388342.7004 & 9              & No        \\
+				example layout & 366941.5712 & 11             & N/A       \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Participant results of the 16 turbine scenario}
+		\label{tab:results}
+	\end{table}
 
 \subsubsection{36 Turbine Case}
 
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{r l l c}
+				\hline
+				Rank           	& AEP         	& Participant \# & Gradients \\
+				\hline
+				1				& 863676.2993	& 4				& Yes       \\
+				2				& 851631.931	& 10			& Yes       \\
+				3				& 849369.7863	& 2             & No        \\
+				4				& 846357.8142	& 8             & Yes       \\
+				5				& 844281.1609	& 1             & Yes       \\
+				6				& 828745.5992	& 3             & No        \\
+				7				& 813544.2105	& 9             & No        \\
+				8				& 777475.7827	& 7             & No        \\
+				9				& 776000.1425	& 6             & No        \\
+				example layout	& 737883.0985	& 11            & N/A        \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Prticipant results of the 36 turbine scenario}
+		\label{tab:results}
+	\end{table}
+
 \subsubsection{64 Turbine Case}
 
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{r l l c}
+				\hline
+				Rank           	& AEP         	& Participant \# & Gradients \\
+				\hline
+				1& 	1513311.194	& 4 & Yes       \\
+				2& 	1506388.415	& 2& No        \\
+				3&	1480850.976	& 10& Yes       \\
+				4&	1476689.663& 1& Yes       \\
+				5& 	1455075.608	& 3& No        \\
+				6&	1425678.143	& 8& Yes       \\
+				7&	1422268.714	& 9& No        \\
+				8& 	1364943.008	& 6& No        \\
+				9&	1332883.433	& 7& No        \\
+				example layout	& 1294974.298&	11 \\
+				\hline
+			\end{tabular}
+		\end{center}
+		\caption{Prticipant results of the 64 turbine scenario}
+		\label{tab:results}
+	\end{table}
 
 \subsection{Case Study 2: Combined}
 
-Not enough time/resources for LES right now.
+\todo[inline, color=red!40]{Not enough time/resources for LES right now.}
 
-Cross-Comparison of results was conducted.
+\todo[inline, color=red!40]{Cross-Comparison of results was conducted.}
 
 %---- Eduardo's stuff --%
 %As this research progresses, a validation of the propeller-on-propeller interactions predicted by VPM will be performed in three phases:

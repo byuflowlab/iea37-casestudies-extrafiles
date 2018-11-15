@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.9.7)  12 NOV 2018 04:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.9.7)  13 NOV 2018 12:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -760,45 +760,245 @@ Package: subcaption 2016/05/22 v1.1-161 Sub-captions (AR)
 Package: wrapfig 2003/01/31  v 3.6
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/type1cm/type1cm.sty
 Package: type1cm 2002/09/05 v0.04 BlueSky/Y&Y Type1 CM font definitions (DPC, patched RF)
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/todonotes/todonotes.sty
+Package: todonotes 2015/07/09 .dtx Todonotes source and documentation.
+Package: todonotes 2012/07/25
+ (/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex (/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks35
+\XKV@tempa@toks=\toks36
+)
+\XKV@depth=\count310
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+)) (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/frontendlayer/tikz.sty (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.tex
+\pgfutil@everybye=\toks37
+\pgfutil@tempdima=\dimen290
+\pgfutil@tempdimb=\dimen291
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfutil-common-lists.tex)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box64
+ (/usr/local/texlive/2017/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+Package: pgfrcs 2015/08/07 v3.0.1a (rcs-revision 1.31)
+))
+Package: pgf 2015/08/07 v3.0.1a (rcs-revision 1.15)
+ (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2014/07/09 v3.0.1a (rcs-revision 1.48)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks38
+\pgfkeys@temptoks=\toks39
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex
+\pgfkeys@tmptoks=\toks40
+))
+\pgf@x=\dimen292
+\pgf@y=\dimen293
+\pgf@xa=\dimen294
+\pgf@ya=\dimen295
+\pgf@xb=\dimen296
+\pgf@yb=\dimen297
+\pgf@xc=\dimen298
+\pgf@yc=\dimen299
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count311
+\c@pgf@countb=\count312
+\c@pgf@countc=\count313
+\c@pgf@countd=\count314
+\t@pgf@toka=\toks41
+\t@pgf@tokb=\toks42
+\t@pgf@tokc=\toks43
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2008/05/14  (rcs-revision 1.7)
+)
+Driver file for pgf: pgfsys-pdftex.def
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.def
+File: pgfsys-pdftex.def 2014/10/11  (rcs-revision 1.35)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-pdf.def
+File: pgfsys-common-pdf.def 2013/10/10  (rcs-revision 1.13)
+))) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.code.tex
+File: pgfsyssoftpath.code.tex 2013/09/09  (rcs-revision 1.9)
+\pgfsyssoftpath@smallbuffer@items=\count315
+\pgfsyssoftpath@bigbuffer@items=\count316
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.code.tex
+File: pgfsysprotocol.code.tex 2006/10/16  (rcs-revision 1.4)
+)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2010/04/11 v3.0.1a (rcs-revision 1.7)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen300
+\pgfmath@count=\count317
+\pgfmath@box=\box65
+\pgfmath@toks=\toks44
+\pgfmath@stack@operand=\toks45
+\pgfmath@stack@operation=\toks46
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.tex (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigonometric.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.random.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.comparison.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.code.tex) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.integerarithmetics.code.tex))) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count318
+)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
+File: pgfcorepoints.code.tex 2013/10/07  (rcs-revision 1.27)
+\pgf@picminx=\dimen301
+\pgf@picmaxx=\dimen302
+\pgf@picminy=\dimen303
+\pgf@picmaxy=\dimen304
+\pgf@pathminx=\dimen305
+\pgf@pathmaxx=\dimen306
+\pgf@pathminy=\dimen307
+\pgf@pathmaxy=\dimen308
+\pgf@xx=\dimen309
+\pgf@xy=\dimen310
+\pgf@yx=\dimen311
+\pgf@yy=\dimen312
+\pgf@zx=\dimen313
+\pgf@zy=\dimen314
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex
+File: pgfcorepathconstruct.code.tex 2013/10/07  (rcs-revision 1.29)
+\pgf@path@lastx=\dimen315
+\pgf@path@lasty=\dimen316
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex
+File: pgfcorepathusage.code.tex 2014/11/02  (rcs-revision 1.24)
+\pgf@shorten@end@additional=\dimen317
+\pgf@shorten@start@additional=\dimen318
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex
+File: pgfcorescopes.code.tex 2015/05/08  (rcs-revision 1.46)
+\pgfpic=\box66
+\pgf@hbox=\box67
+\pgf@layerbox@main=\box68
+\pgf@picture@serial@count=\count319
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex
+File: pgfcoregraphicstate.code.tex 2014/11/02  (rcs-revision 1.12)
+\pgflinewidth=\dimen319
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex
+File: pgfcoretransformations.code.tex 2015/08/07  (rcs-revision 1.20)
+\pgf@pt@x=\dimen320
+\pgf@pt@y=\dimen321
+\pgf@pt@temp=\dimen322
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
+File: pgfcorequick.code.tex 2008/10/09  (rcs-revision 1.3)
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.code.tex
+File: pgfcoreobjects.code.tex 2006/10/11  (rcs-revision 1.2)
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathprocessing.code.tex
+File: pgfcorepathprocessing.code.tex 2013/09/09  (rcs-revision 1.9)
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex
+File: pgfcorearrows.code.tex 2015/05/14  (rcs-revision 1.43)
+\pgfarrowsep=\dimen323
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
+File: pgfcoreshade.code.tex 2013/07/15  (rcs-revision 1.15)
+\pgf@max=\dimen324
+\pgf@sys@shading@range@num=\count320
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
+File: pgfcoreimage.code.tex 2013/07/15  (rcs-revision 1.18)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.code.tex
+File: pgfcoreexternal.code.tex 2014/07/09  (rcs-revision 1.21)
+\pgfexternal@startupbox=\box69
+)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.code.tex
+File: pgfcorelayers.code.tex 2013/07/18  (rcs-revision 1.7)
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransparency.code.tex
+File: pgfcoretransparency.code.tex 2013/09/30  (rcs-revision 1.5)
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.code.tex
+File: pgfcorepatterns.code.tex 2013/11/07  (rcs-revision 1.5)
+))) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.code.tex
+File: pgfmoduleshapes.code.tex 2014/03/21  (rcs-revision 1.35)
+\pgfnodeparttextbox=\box70
+) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.tex
+File: pgfmoduleplot.code.tex 2015/08/03  (rcs-revision 1.13)
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
+Package: pgfcomp-version-0-65 2007/07/03 v3.0.1a (rcs-revision 1.7)
+\pgf@nodesepstart=\dimen325
+\pgf@nodesepend=\dimen326
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
+Package: pgfcomp-version-1-18 2007/07/23 v3.0.1a (rcs-revision 1.1)
+)) (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/utilities/pgffor.sty (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)) (/usr/local/texlive/2017/texmf-dist/tex/latex/pgf/math/pgfmath.sty (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2013/12/13 v3.0.1a (rcs-revision 1.25)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex)
+\pgffor@iter=\dimen327
+\pgffor@skip=\dimen328
+\pgffor@stack=\toks47
+\pgffor@toks=\toks48
+)) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.code.tex
+Package: tikz 2015/08/07 v3.0.1a (rcs-revision 1.151)
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
+File: pgflibraryplothandlers.code.tex 2013/08/31 v3.0.1a (rcs-revision 1.20)
+\pgf@plot@mark@count=\count321
+\pgfplotmarksize=\dimen329
+)
+\tikz@lastx=\dimen330
+\tikz@lasty=\dimen331
+\tikz@lastxsaved=\dimen332
+\tikz@lastysaved=\dimen333
+\tikzleveldistance=\dimen334
+\tikzsiblingdistance=\dimen335
+\tikz@figbox=\box71
+\tikz@figbox@bg=\box72
+\tikz@tempbox=\box73
+\tikz@tempbox@bg=\box74
+\tikztreelevel=\count322
+\tikznumberofchildren=\count323
+\tikznumberofcurrentchild=\count324
+\tikz@fig@count=\count325
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.code.tex
+File: pgfmodulematrix.code.tex 2013/09/17  (rcs-revision 1.8)
+\pgfmatrixcurrentrow=\count326
+\pgfmatrixcurrentcolumn=\count327
+\pgf@matrix@numberofcolumns=\count328
+)
+\tikz@expandcount=\count329
+ (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2008/06/17 v3.0.1a (rcs-revision 1.2)
+))) (/usr/local/texlive/2017/texmf-dist/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarypositioning.code.tex
+File: tikzlibrarypositioning.code.tex 2008/10/06 v3.0.1a (rcs-revision 1.7)
+)
+\c@@todonotes@numberoftodonotes=\count330
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.sty
-\lst@mode=\count310
-\lst@gtempboxa=\box64
-\lst@token=\toks35
-\lst@length=\count311
-\lst@currlwidth=\dimen290
-\lst@column=\count312
-\lst@pos=\count313
-\lst@lostspace=\dimen291
-\lst@width=\dimen292
-\lst@newlines=\count314
-\lst@lineno=\count315
-\lst@maxwidth=\dimen293
+\lst@mode=\count331
+\lst@gtempboxa=\box75
+\lst@token=\toks49
+\lst@length=\count332
+\lst@currlwidth=\dimen336
+\lst@column=\count333
+\lst@pos=\count334
+\lst@lostspace=\dimen337
+\lst@width=\dimen338
+\lst@newlines=\count335
+\lst@lineno=\count336
+\lst@maxwidth=\dimen339
  (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2015/06/04 1.6 (Carsten Heinz)
-\c@lstnumber=\count316
-\lst@skipnumbers=\count317
-\lst@framebox=\box65
+\c@lstnumber=\count337
+\lst@skipnumbers=\count338
+\lst@framebox=\box76
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/listings.cfg
 File: listings.cfg 2015/06/04 1.6 listings configuration
 ))
 Package: listings 2015/06/04 1.6 (Carsten Heinz)
  (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
-) (./iea37-wflocs-confppr.aux)
+) (./iea37-wflocs-confppr.aux
+
+LaTeX Warning: Label `tab:results' multiply defined.
+
+
+LaTeX Warning: Label `tab:results@cref' multiply defined.
+
+
+LaTeX Warning: Label `tab:results' multiply defined.
+
+
+LaTeX Warning: Label `tab:results@cref' multiply defined.
+
+)
 \openout1 = `iea37-wflocs-confppr.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
-LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 73.
+LaTeX Font Info:    ... okay on input line 73.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -836,17 +1036,17 @@ LaTeX Font Info:    ... okay on input line 72.
 
 (/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count318
-\scratchdimen=\dimen294
-\scratchbox=\box66
-\nofMPsegments=\count319
-\nofMParguments=\count320
-\everyMPshowfont=\toks36
-\MPscratchCnt=\count321
-\MPscratchDim=\dimen295
-\MPnumerator=\count322
-\makeMPintoPDFobject=\count323
-\everyMPtoPDFconversion=\toks37
+\scratchcounter=\count339
+\scratchdimen=\dimen340
+\scratchbox=\box77
+\nofMPsegments=\count340
+\nofMParguments=\count341
+\everyMPshowfont=\toks50
+\MPscratchCnt=\count342
+\MPscratchDim=\dimen341
+\MPnumerator=\count343
+\makeMPintoPDFobject=\count344
+\everyMPtoPDFconversion=\toks51
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
  (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/grfext.sty
@@ -883,27 +1083,27 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
-(lastpage)             ! on input line 72.
+(lastpage)             ! on input line 73.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: listings package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Info: Redefining \celsius on input line 72.
-Package gensymb Info: Faking symbols for \degree and \celsius on input line 72.
+LaTeX Info: Redefining \celsius on input line 73.
+Package gensymb Info: Faking symbols for \degree and \celsius on input line 73.
 
 
 Package gensymb Warning: Not defining \perthousand.
 
-LaTeX Info: Redefining \ohm on input line 72.
-Package gensymb Info: Using \Omega for \ohm on input line 72.
+LaTeX Info: Redefining \ohm on input line 73.
+Package gensymb Info: Using \Omega for \ohm on input line 73.
 
 Package gensymb Warning: Not defining \micro.
 
 (/usr/local/texlive/2017/texmf-dist/tex/latex/ucs/ucsencs.def
 File: ucsencs.def 2011/01/21 Fixes to fontencodings LGR, T3
 )
-\AtBeginShipoutBox=\box67
+\AtBeginShipoutBox=\box78
  (/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/pdflscape.sty
 Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
  (/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/lscape.sty
@@ -914,20 +1114,20 @@ Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
 Dictionary: translator-basic-dictionary, Language: English 
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/siunitx/siunitx-abbreviations.cfg
 File: siunitx-abbreviations.cfg 2017/08/02 v2.7j siunitx: Abbreviated units
-)
-\c@lstlisting=\count324
-\c__siunitx_mathsf_int=\count325
-\c__siunitx_mathtt_int=\count326
+) ABD: EveryShipout initializing macros
+\c@lstlisting=\count345
+\c__siunitx_mathsf_int=\count346
+\c__siunitx_mathtt_int=\count347
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <8> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 74.
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <6> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 73.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 74.
  (./sections/iea37-wflocs-abst.tex) (./sections/iea37-wflocs-intro.tex
 
-LaTeX Warning: Citation `Padron2018' on page 1 undefined on input line 13.
+LaTeX Warning: Citation `Padron2018' on page 1 undefined on input line 5.
 
 
-LaTeX Warning: Citation `Padron2018' on page 1 undefined on input line 14.
+LaTeX Warning: Citation `Padron2018' on page 1 undefined on input line 6.
 
 ) (./sections/iea37-wflocs-mthd.tex [1
 
@@ -936,7 +1136,7 @@ Overfull \hbox (7.72699pt too wide) detected at line 34
 \OML/cmm/m/it/10 P\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 V\OT1/cmr/m/n/10 ) = [][][]
  []
 
-<./figures/iea37-335mw-pcurve.pdf, id=20, pagebox=cropbox, 578.16pt x 433.62pt>
+<./figures/iea37-335mw-pcurve.pdf, id=23, pagebox=cropbox, 578.16pt x 433.62pt>
 File: ./figures/iea37-335mw-pcurve.pdf Graphic file (type pdf)
 <use ./figures/iea37-335mw-pcurve.pdf>
 Package pdftex.def Info: ./figures/iea37-335mw-pcurve.pdf  used on input line 37. on input line 37.
@@ -951,129 +1151,133 @@ LaTeX Font Info:    Try loading font information for T1+cmtt on input line 71.
  (/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1cmtt.fd
 File: t1cmtt.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
-<./figures/iea37-exfarms.pdf, id=60, pagebox=cropbox, 892.33376pt x 370.38374pt>
+<./figures/iea37-exfarms.pdf, id=63, pagebox=cropbox, 892.33376pt x 370.38374pt>
 File: ./figures/iea37-exfarms.pdf Graphic file (type pdf)
 <use ./figures/iea37-exfarms.pdf>
-Package pdftex.def Info: ./figures/iea37-exfarms.pdf  used on input line 83. on input line 83.
-Package pdftex.def Info: Requested size: 469.76215pt x 194.98561pt on input line 83.
+Package pdftex.def Info: ./figures/iea37-exfarms.pdf  used on input line 82. on input line 82.
+Package pdftex.def Info: Requested size: 469.76215pt x 194.98561pt on input line 82.
  [3 <./figures/iea37-exfarms.pdf>]
-<./figures/testroses.pdf, id=72, pagebox=cropbox, 963.6pt x 293.095pt>
+<./figures/testroses.pdf, id=75, pagebox=cropbox, 963.6pt x 293.095pt>
 File: ./figures/testroses.pdf Graphic file (type pdf)
 <use ./figures/testroses.pdf>
-Package pdftex.def Info: ./figures/testroses.pdf  used on input line 141. on input line 141.
-Package pdftex.def Info: Requested size: 469.75679pt x 142.88434pt on input line 141.
-<./figures/rosehists.pdf, id=73, pagebox=cropbox, 934.49126pt x 246.9225pt>
+Package pdftex.def Info: ./figures/testroses.pdf  used on input line 146. on input line 146.
+Package pdftex.def Info: Requested size: 469.75679pt x 142.88434pt on input line 146.
+<./figures/rosehists.pdf, id=76, pagebox=cropbox, 934.49126pt x 246.9225pt>
 File: ./figures/rosehists.pdf Graphic file (type pdf)
 <use ./figures/rosehists.pdf>
-Package pdftex.def Info: ./figures/rosehists.pdf  used on input line 147. on input line 147.
-Package pdftex.def Info: Requested size: 469.7541pt x 124.12405pt on input line 147.
-<./figures/windrose.pdf, id=74, pagebox=cropbox, 462.52798pt x 346.89601pt>
+Package pdftex.def Info: ./figures/rosehists.pdf  used on input line 152. on input line 152.
+Package pdftex.def Info: Requested size: 469.7541pt x 124.12405pt on input line 152.
+<./figures/windrose.pdf, id=77, pagebox=cropbox, 462.52798pt x 346.89601pt>
 File: ./figures/windrose.pdf Graphic file (type pdf)
 <use ./figures/windrose.pdf>
-Package pdftex.def Info: ./figures/windrose.pdf  used on input line 156. on input line 156.
-Package pdftex.def Info: Requested size: 234.8769pt x 176.15768pt on input line 156.
+Package pdftex.def Info: ./figures/windrose.pdf  used on input line 161. on input line 161.
+Package pdftex.def Info: Requested size: 234.8769pt x 176.15768pt on input line 161.
+ [4 <./figures/testroses.pdf> <./figures/rosehists.pdf>]
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 165.
- [4 <./figures/testroses.pdf> <./figures/rosehists.pdf> <./figures/windrose.pdf>]) (./sections/iea37-wflocs-mthd-optonly.tex
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 170.
+) (./sections/iea37-wflocs-mthd-optonly.tex
 
 LaTeX Warning: Citation `ThomasBast2018' on page 5 undefined on input line 31.
 
-) [5] (./sections/iea37-wflocs-mthd-cmbnd.tex)) (./sections/iea37-wflocs-rslts.tex [6]) [7]
-<iea37-wflocs-announcement.pdf, id=123, pagebox=cropbox, 614.295pt x 794.97pt>
+[5 <./figures/windrose.pdf>]) (./sections/iea37-wflocs-mthd-cmbnd.tex)) (./sections/iea37-wflocs-rslts.tex [6] [7]) [8]
+<iea37-wflocs-announcement.pdf, id=129, pagebox=cropbox, 614.295pt x 794.97pt>
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf  used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 469.75604pt x 607.9196pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf  used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 469.75604pt x 607.9196pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf  used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 469.75604pt x 607.9196pt on input line 134.
-<iea37-wflocs-announcement.pdf, id=126, page=1, pagebox=cropbox, 614.295pt x 794.97pt>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf  used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 469.75604pt x 607.9196pt on input line 135.
+<iea37-wflocs-announcement.pdf, id=132, page=1, pagebox=cropbox, 614.295pt x 794.97pt>
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 1>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.29349pt x 794.96806pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.29349pt x 794.96806pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 1>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
- [8]
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
+ [9]
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 1>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 1>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 1>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
- [9 <./iea37-wflocs-announcement.pdf>]
-<iea37-wflocs-announcement.pdf, id=184, page=2, pagebox=cropbox, 614.295pt x 794.97pt>
-File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 2>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
-File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 2>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
-File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 2>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page1 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
  [10 <./iea37-wflocs-announcement.pdf>]
-<iea37-wflocs-announcement.pdf, id=269, page=3, pagebox=cropbox, 614.295pt x 794.97pt>
+<iea37-wflocs-announcement.pdf, id=190, page=2, pagebox=cropbox, 614.295pt x 794.97pt>
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 3>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+<use iea37-wflocs-announcement.pdf, page 2>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 3>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+<use iea37-wflocs-announcement.pdf, page 2>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
-<use iea37-wflocs-announcement.pdf, page 3>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+<use iea37-wflocs-announcement.pdf, page 2>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page2 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
  [11 <./iea37-wflocs-announcement.pdf>]
-<iea37-wflocs-announcement.pdf, id=273, page=4, pagebox=cropbox, 614.295pt x 794.97pt>
+<iea37-wflocs-announcement.pdf, id=275, page=3, pagebox=cropbox, 614.295pt x 794.97pt>
+File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
+<use iea37-wflocs-announcement.pdf, page 3>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
+File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
+<use iea37-wflocs-announcement.pdf, page 3>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
+File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
+<use iea37-wflocs-announcement.pdf, page 3>
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page3 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
+ [12 <./iea37-wflocs-announcement.pdf>]
+<iea37-wflocs-announcement.pdf, id=279, page=4, pagebox=cropbox, 614.295pt x 794.97pt>
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 4>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 4>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
 File: iea37-wflocs-announcement.pdf Graphic file (type pdf)
 <use iea37-wflocs-announcement.pdf, page 4>
-Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 134. on input line 134.
-Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 134.
- [12 <./iea37-wflocs-announcement.pdf>] (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
+Package pdftex.def Info: iea37-wflocs-announcement.pdf , page4 used on input line 135. on input line 135.
+Package pdftex.def Info: Requested size: 614.58406pt x 795.3441pt on input line 135.
+ [13 <./iea37-wflocs-announcement.pdf>] (/usr/local/texlive/2017/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2015/06/04 1.6 listings language file
-) (./iea37-aepcalc.py [13] [14]) [15] (./iea37-wflocs-confppr.bbl) 
+) (./iea37-aepcalc.py [14] [15]) [16] (./iea37-wflocs-confppr.bbl) 
 AED: lastpage setting LastPage
-[16] (./iea37-wflocs-confppr.aux)
+[17] (./iea37-wflocs-confppr.aux)
 
 LaTeX Warning: There were undefined references.
 
+
+LaTeX Warning: There were multiply-defined labels.
+
  ) 
 Here is how much of TeX's memory you used:
- 21234 strings out of 492990
- 402450 string characters out of 6132637
- 783135 words of memory out of 5000000
- 24500 multiletter control sequences out of 15000+600000
+ 31101 strings out of 492990
+ 618796 string characters out of 6132637
+ 973661 words of memory out of 5000000
+ 34148 multiletter control sequences out of 15000+600000
  551089 words of font info for 68 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 41i,18n,53p,10491b,2033s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,18n,91p,10491b,2087s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmti7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfbx0700.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfbx0900.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfcc1000.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm0500.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm0700.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfrm2488.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfti0700.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfti0800.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt0800.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on iea37-wflocs-confppr.pdf (16 pages, 1141888 bytes).
+Output written on iea37-wflocs-confppr.pdf (17 pages, 1144116 bytes).
 PDF statistics:
- 392 PDF objects out of 1000 (max. 8388607)
- 256 compressed objects within 3 object streams
+ 398 PDF objects out of 1000 (max. 8388607)
+ 261 compressed objects within 3 object streams
  0 named destinations out of 1000 (max. 500000)
- 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 73 words of extra memory for PDF output out of 10000 (max. 10000000)
 

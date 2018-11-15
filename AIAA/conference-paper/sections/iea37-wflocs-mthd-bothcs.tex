@@ -1,7 +1,7 @@
 \subsubsection{Turbine} \label{sec:turb}
 	We decided to use NREL's generalized 3.35MW reference turbine in all wind farms.
 	It's attributes are open source, and it is designed as a baseline for onshore wind turbine specifications \cite{NREL335MW}.
-	The specifics of the turbine needed for our simplified Gaussian wake model are located below:
+	The specifics of the turbine necessary for our simplified Gaussian wake model (used in Case Study 1) are located below:
 
 	\begin{table}
 		\begin{center}
@@ -19,7 +19,7 @@
 		\end{center}
 	\end{table}
 		
-	\noindent The power curve is defined as:   
+	\noindent Its power curve is defined as:   
 
 	\begin{minipage}{0.53\textwidth}
 		\begin{equation*}
@@ -38,43 +38,42 @@
 	\end{minipage}
 
 \subsubsection{Farm Geography}
-	To focus on optimization method and EWM variability and avoid introducing too many unecessary variables, the wind farms for all scnearios are on flat and level terrain.
+	To focus on optimization method and EWM variability, as well as to avoid introducing too many unecessary variables, the wind farms for all scnearios are on flat and level terrain.
 
 \vspace{3mm}
 \noindent\textbf{Boundary Shape}
 
-	\noindent As experienced by other researchers such as DUDE \cite{} and OTHER DUDE \cite{}, square and non-radially symmetric farm boundaries tend to give optimal turbine locations with turbines clustered at the farm corners or protrusions.
-	For this reason, each wind farm scenario has a fixed circular boundary centered at $(0, 0)$.
-	All turbine $(x, y)$ locations are constrained to remain on or within this boundary.
+	\noindent As experienced by other researchers such as DUDE \cite{} and OTHER DUDE \cite{}, square and non-radially symmetric farm boundaries tend to give optimal turbine locations where turbines cluster at the farm corners or protrusions.
+	For this reason, each wind farm scenario has a radially symmmetric circular boundary centered at $(0, 0)$.
+	To simplify computations, this boundary restricts turbine hub $(x, y)$ locations, not the outside of a turbine's blade radius.
 	In terms of spacing, no turbine can be less than two rotor diameters from any other turbine.
 
 \vspace{3mm}
 \noindent\textbf{Farm Diameter}
 
-	\noindent Farm diameter sizing for each scenario needs to be restrictive enough to avoid simply placing all turbines on the boundary, yet also allow meaningful turbine movement by the optimizers.
+	\noindent Farm diameter sizing for each scenario needs to be restrictive enough to avoid simply placing all turbines on the boundary, yet also permit meaningful turbine movement by the optimizers.
 	The following algorithm was implemented to determine both farm boundary diameters and the example layouts (described in the next section) for all farms in the Studies:
 
     \begin{enumerate}
         \item Place one turbine in the center of the farm
-        \item Organize remaining turbines in concentric circles, maintaining a minimum of 5 diameter spacing
+        \item Organize remaining turbines in concentric circles, maintaining a minimum of 5 diameter spacing both laterally and between rings
         \item If the outermost ring has less than 5 turbines:
         \begin{enumerate}
             \item Expand penultimate ring as little as possible to fit these outermost turbines, while maintaining the lateral spacing requirement
         \end{enumerate}
-        \item Expand radius of outermost ring to to nearest $100$ m.
+        \item Expand radius of outermost ring to the nearest $100$ m.
         \item Evenly expand the inner turbine rings for uniformity
     \end{enumerate}
 
 \vspace{3mm}
 \noindent\textbf{Example Layouts}
 
-	\noindent For Case Study 1, example turbine layouts in \texttt{.yaml} format are provided, displayed graphically in \cref{fig:exlayouts}.
-	These examples are supplied to participants for 4 reasons:
+	\noindent These layouts are displayed below graphically in \cref{fig:exlayouts}. Though primarily for Case Study 1, they are provided to participants of both studies in \texttt{.yaml} format for 4 reasons:
 
 	\begin{enumerate}
-		\item To provide an example of the \texttt{.yaml} schema desired by NREL to descirbe turbine placement
+		\item To provide an example of the \texttt{.yaml} schema formatting, desired by NREL to descirbe turbine placement
 		\item To help participants visualize the different farm sizes and geography
-		\item To verify AEP calculation if participants implemented the wake model in a different language
+		\item To verify AEP calculation if participants implement the CAse Study 1 wake model in a different language
 		\item To provide participants with an optimization starting point if necessary
 	\end{enumerate}
 
@@ -103,13 +102,18 @@
 \vspace{3mm}
 \noindent\textbf{Wind Direction Frequency}
 
-	\noindent In creating these Case Studies, we desired a wind direction frequency (displayed graphically in a wind rose) that both creates many local minima, and permits few unique methods of reaching an optima.
+	\noindent In creating these Case Studies, we desired a wind direction frequency distribution (displayed graphically in a wind rose) that meets two criteria:
+	
+	\begin{enumerate}
+		\item Creates many local minima
+		\item Permits few unique methods of reaching an optima
+	\end{enumerate}
 	
 	If there is a lack of local minima in a design space, even inefficient optimizers can find the best result.
 	In a design space characterized by local minima, only the most robust optimization methods are able to escape these traps.
 	For this reason, we desired a windrose that could produce many local minima.
 	
-	If, on the other hand, despite the presence of local minima, many non-similar layouts produce high and similar AEP values, it would likewise not tell us much regarding optimization method abilities.
+	If, on the other hand, despite the presence of local minima, many non-similar layouts produce high and similar AEP values, it would likewise not tell us much regarding the abilities of participant optimization methods.
 	When many answers give superior results, algorithms are not incentivized to find novel or unique solutions. 
 	
 	Therefore to acheive both of these criteria, we experimented with 4 different patterns of wind direction frequency:
@@ -123,17 +127,18 @@
 
 	Simulations were run using the simplified Gaussian wake model and the optimization package SNOPT.
 	We ran each wind rose through 1000 random-start optimizations.
-	All wind roses gave generally similar results following a bell-curve pattern.
+	All wind roses gave generally similar optimization results with AEP distributions following a bell-curve pattern.
 	There were slight differences, however, in that:
 
 	\begin{enumerate}
-		\item Bi-modal uniaxis gave turbine arrangements that tended towards a straight line, perpendicular to the uniaxis of the wind. Since it met our first disqualifying criteria of a lack of local minima, it was not further anilyzed.
+		\item Bi-modal uniaxis gave turbine arrangements that tended towards a straight line, perpendicular to the uniaxis of the wind. Since it met our first disqualifying criteria of a lack of local minima, it was not further analyzed.
 		\item Quad-directional gave turbine arrangements that tended towards a grid pattern. Since this too didn't have many local minima to trap the optimizer, it was disqualified.
 		\item Tri-directional gave many gird-like arrangements that all had similar AEP values. Since it met our second disqualifying criteria of non-similar layouts producing similar AEP, it was not selected.
 		\item Bi-modal off-axis gave few results with high AEP values. We interpreted this to be indicitive of the presence of many local minima. Since this best met our selection criteria, it is the wind rose utilized for our Case Studies.
 	\end{enumerate}
 	
-	The wind roses are binned for 16 directions. The quad-directional, tri-directional, and bi-modal off-axis roses are dipectied in \cref{fig:testroses}, and histograms of the 1000 random start optimizations are in \cref{fig:rosehists}.
+	The wind roses are binned for 16 directions.
+	The quad-directional, tri-directional, and bi-modal off-axis roses are dipectied in \cref{fig:testroses}, and histograms of the 1000 random start optimizations are in \cref{fig:rosehists}.
 
 	\begin{figure}[H]
 		\centering
@@ -159,7 +164,7 @@
 	\end{figure}
 
 \subsubsection{Data File Type} \label{sec:filetypes}
-	One request made by leaders of NREL's IEA Task 37 was to implement their open source \texttt{.yaml} schema for all necessary data.
+	One request made by leaders of IEA Task 37 was to implement their open source \texttt{.yaml} schema for all necessary data.
 	This included:
 	\begin{itemize}
 		\item{Farm turbine attributes}
@@ -176,5 +181,5 @@
 		\item \texttt{iea37-335mw.yaml} - data for reference turbine used in both Case Studies, in \texttt{.yaml} format
 	\end{enumerate}
 
-	Further examples for reporting turbine locations in \texttt{.yaml} schema, as well as a Python parser for all these schema is available to Case Study participants.
+	Further examples for reporting turbine locations in \texttt{.yaml} schema, as well as a Python parser for all these schema is made available to Case Study participants.
 	Since their use is more applicable to the Optimization Only Case Study, they are described in \cref{sec:optonly}.

@@ -1,10 +1,21 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 \newcommand{\enquote}[1]{``#1''}
+
+\bibitem{Padron2018}
+Padr\'{o}n, A.~S., Thomas, J., Stanley, A. P.~J., Alonso, J.~J., and Ning, A.,
+  \enquote{Polynomial Chaos to Efficiently Compute the Annual Energy Production
+  in Wind Farm Layout Optimization,} {\em Wind Energy Science\/}, Jan. 2018,
+  (in review).
 
 \bibitem{HerbertAcero2014}
 Herbert-Acero, J.~F., Probst, O., R{\'e}thor{\'e}, P.-E., Larsen, G.~C., and
   Castillo-Villar, K.~K., \enquote{A Review of Methodological Approaches for
   the Design and Optimization of Wind Farms,} {\em Energies\/}, 2014, pp.~23.
+
+\bibitem{IEATask372017}
+McWilliam, M.~K., Zahle, F., and Dykes, K., \enquote{IEA Task 37 on System
+  Engineering in Wind Energy The Aerodynamic Only Optimization Case Study,} May
+  2017.
 
 \bibitem{NREL335MW}
 Bortolotti, P., Dykes, K., Merz, K., Sethuraman, L., and Zahle, F.,
@@ -25,5 +36,23 @@ Thomas, J. and Gebraad, P., \enquote{Improving the FLORIS Wind Plant Model for
 Niayifar, A. and Port{\'e}-Agel, F., \enquote{Analytical Modeling of Wind
   Farms: A New Approach for Power Prediction,} {\em Energies\/}, September
   2016.
+
+\bibitem{SNOPT}
+Gill, P., Murray, W., and Saudners, M., \enquote{SNOPT: an SQP algorithm for
+  large-scale constrained optimization,} {\em SIAM Review\/}, Vol.~47, 2005,
+  pp.~99--131.
+
+\bibitem{ChooseEnergyCost}
+November 2018.
+
+\bibitem{Larsen2007}
+Larsen, G.~C., Madsen, A., Helge;~Bing{\"o}l, F., Mann, J., Ott, S.,
+  S{\o}rensen, J., Okulov, V., Troldborg, N., Nielsen, M., Thomsen, K., Larsen,
+  T.~J., and Mikkelsen, R., \enquote{Dynamic wake meandering modeling,} Tech.
+  rep., Technical University of Denmark, 2007.
+
+\bibitem{Jensen1983}
+Jensen, N., \enquote{A Note on Wind Generator Interactions,} Tech. rep., RISO
+  National Laboratory, 1983.
 
 \end{thebibliography}

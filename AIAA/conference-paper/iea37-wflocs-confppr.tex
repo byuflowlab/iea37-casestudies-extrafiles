@@ -22,9 +22,10 @@
 \usepackage{placeins}	% Floatbarrier
 \usepackage{siunitx} 	% For the degree symbol "\ang{}"
 \usepackage{subcaption} % For subfigures
-\usepackage{wrapfig}	% For inline figures
 \usepackage{type1cm}
 \usepackage{todonotes}
+\usepackage{wasysym}
+\usepackage{wrapfig}	% For inline figures
 \usepackage{listings} %--- For including MATLAB code ---%
 \usepackage{color} %red, green, blue, yellow, cyan, magenta, black, white
 \definecolor{mygreen}{RGB}{28,172,0} % color values Red, Green, Blue
@@ -114,29 +115,31 @@ Katherine Dykes\thanks{Senior Engineer, National Wind Technology Center}\\
 	\import{./sections/}{iea37-wflocs-rslts.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% RESULTS
+% Conclusion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-%	\import{./sections/}{iea37-wflocs-conc.tex}
+	\import{./sections/}{iea37-wflocs-conc.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %							APPENDIX
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \pagebreak
-\section*{Appendix}
+\appendix
 
-\section*{Acknowledgments}
-This work is funded by Brigham Young University.
+%\section{Acknowledgments}
+%This work is funded by Brigham Young University.
 
-%\newpage
-\section{Announcement Document}
-\label{app:anndoc}
-\includepdf[pages={-}]{iea37-wflocs-announcement.pdf}
-
-\section{Python Code}
-\label{app:aepcalc}
-\lstinputlisting[language=python]{iea37-aepcalc.py}
+\todo[inline, color=red!40]{Incude a participant information list? (not assigned numbers, just individuals and sponsoring institutions)}
+\newpage
+\label{app:cs2-layouts}
+\includepdf[pages={-},scale=.8,pagecommand={\section{Pictoral Representations of Case Study 2's Participant Submissions}\label{pdf:myfile}},linktodoc=true]{./figures/iea37-opt9-5plots.pdf}
+\includepdf[pages={-},scale=.9,pagecommand={\section{Pictoral Representations of Case Study 1's 16-Turbine Submissions}\label{pdf:myfile}},linktodoc=true]{./figures/iea37-opt16-10plots.pdf}
+\includepdf[pages={-},scale=.9,pagecommand={\section{Pictoral Representations of Case Study 1's 36-Turbine Submissions}\label{pdf:myfile}},linktodoc=true]{./figures/iea37-opt36-10plots.pdf}
+\includepdf[pages={-},scale=.9,pagecommand={\section{Pictoral Representations of Case Study 1's 64-Turbine Submissions}\label{pdf:myfile}},linktodoc=true]{./figures/iea37-opt64-10plots.pdf}
+%\section{Python Code}
+%\label{app:aepcalc}
+%\lstinputlisting[language=python]{iea37-aepcalc.py}
 
 \FloatBarrier
 

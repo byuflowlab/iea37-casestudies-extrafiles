@@ -8,10 +8,7 @@ addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
 
 rng('shuffle');        % Ensures we're using "random" numbers
 %rng('default');         % For repeatable "random" numbers
-nNumCycles = 1000;
-
-%-- Set our global counter variable --%
-global nNumFnCalls;
+nNumCycles = 2;
 
 farmSize = 1;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
 switch(farmSize)
@@ -46,32 +43,37 @@ end
 
 % Initialize placeholders
 OptFarm = zeros(nNumCycles,(nNumRtrs*2));
-AEPlist = zeros(nNumCycles,2);     % format: [AEP, # function calls]
+AEPlist = zeros(nNumCycles,1);     % format: [AEP, # function calls]
+fnCallList = zeros(nNumCycles,1);  % format: [AEP, # function calls]
 BestAEP = [1,0];                   % To store the location of our best AEP. (index, value)
 
 %%{
 % Run the optimization and save our results as we go
 for i = 1:nNumCycles
     i                    % Output which iteration we're on
-    nNumFnCalls = 0;    % Initialize our function vall vounter
     x0 = ((rand(1,(nNumRtrs*2))-0.5)*farm_rad); % randomize turb locations between -farm radius and +farm radius
-    [xopt,fopt,~,~] = optimize_iea37_wflocs(x0, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, farm_rad);
+    [xopt,fopt,~,output] = optimize_iea37_wflocs(x0, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, farm_rad);
     
     OptFarm(i,:) = xopt;
-    AEPlist(i, 1) = fopt;           % Save the AEP
-    AEPlist(i, 2) = nNumFnCalls;    % Save the number of function calls
+    AEPlist(i) = fopt;           % Save the AEP
+    output.funcCount
+    fnCallList(i) = output.funcCount;    % Save the number of function calls
+end
+%%}
+
+for j = 1:nNumCycles
     if (BestAEP(2) > AEPlist(i))    % If our new AEP is better (Remember negative switches)
         BestAEP(2) = AEPlist(i);    % Save it
         BestAEP(1) = i;             % And the index of which run we're on
     end
 end
-%%}
-
 % Calculate AEP for best layout
 best_coords = makeCoordStruct(OptFarm(BestAEP(1),:));
 binned_AEP = calcAEP(best_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr);
+AEPlist = [AEPlist,fnCallList];
 
 % Save all values and write best result to a .yaml
+%{
 switch(farmSize)
     case 0
         csvwrite('ans-turbloc-opt9.csv',OptFarm)
@@ -92,14 +94,14 @@ switch(farmSize)
     otherwise
         error('Variable "FarmSize" not initilized properly');
 end
-
+%}
 % Plots the optimized rotor locations
 bestIndex = BestAEP(1)
 bestAEP = BestAEP(2)
 %OptFarm(BestAEP(1),:)
 
-color_num = 0;  % 0 = blue, 1 = red, 2 = yellow
-plotFarm(best_coords, turb_diam, farm_rad, plot_dimen, color_num)
+%color_num = 0;  % 0 = blue, 1 = red, 2 = yellow
+%plotFarm(best_coords, turb_diam, farm_rad, plot_dimen, color_num)
 %}
 
 %{

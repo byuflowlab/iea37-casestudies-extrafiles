@@ -1,0 +1,44 @@
+input_format_version: 0.0
+title: IEA Wind Task 37 Combined Case Study 9 Turbine Farm
+description: Result file of Nick Baker using simplified Gaussian-Wake
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+        - {ref: '"#/definitions/position"'}
+        - iea37-335mw.yaml
+  position:
+    type: array
+    items:
+      xc: [65.2786, 528.1835, -95.9952, -557.6479]
+      yc: [-852.3956, 124.472, 704.2611, 680.737]
+    additionalItems: false
+    description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
+    units: m
+  plant_energy:
+    type: object
+    description: energy production from simplified Bastankhah Gaussian wake model
+    properties:
+      wake_model_selection:
+        type: algorithm
+        description: wake model used to calculate AEP
+        items:
+        - {ref: '"iea37-aepcalc.py"'}
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties: {type: array}
+        items:
+        - {ref: iea37-windrose.yaml}
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [5413.756307, 5109.944028, 7238.327471, 8333.88293, 16227.071098,
+          14744.103836, 23675.295959, 30164.395126, 13629.026576, 8024.894734, 9809.753893,
+          19068.785426, 54982.216406, 10123.56444, 7541.578048, 5396.080379]
+        default: 239482.676659
+        units: MWh

@@ -4,9 +4,9 @@ clear, close all
 addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
 addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/FigureCode'));
 
-farmSize = 1;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
+farmSize = 0;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
 %participant_number = 9;     % Participant number, 1-10.
-for participant_number = 2:2   % Do all the participants
+for participant_number = 5:5   % Do all the participants
     switch(farmSize)
         case 0
             fname_turb_loc = strcat('iea37-par', num2str(participant_number), '-opt9.yaml');
@@ -41,6 +41,10 @@ for participant_number = 2:2   % Do all the participants
     % Get AEP data from turb locations
     binned_AEP = calcAEP(turb_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr);
     AEP = sum(binned_AEP)
+    
+    %tc = [turb_coords.x,turb_coords.y];     % Strip the struct into a long array
+    %write_fname = strcat('iea37-par5-cc', num2str(participant_number), '.yaml');     % Save the cross comparison name
+    %writeTurbLocYAML(write_fname, tc, fname_turb, fname_wr, binned_AEP);    % Write the computed AEP data
 
     %color_num = 2;  % 0 = blue, 1 = red, 2 = yellow, 3 = purple, 4 = green
     %clf     % Clear the figure for the next one

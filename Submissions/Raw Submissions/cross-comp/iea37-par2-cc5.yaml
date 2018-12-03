@@ -1,0 +1,52 @@
+input_format_version: 0
+title: participant 5's submission for IEA Wind Task 37 Combined Case Study 9 Turbine Farm
+description: participant 5's 9 turbine submission
+
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "iea37-335mw.yaml"
+  
+  position:
+    type: array
+    items:
+      xc: [-171.988638, -877.976788, 878.86414, -514.50498, 516.684328, 749.029769, -748.310762, 167.095315, -0.41292]
+      yc: [-883.381059, 197.170032, -193.009249, 737.519851, -734.690867, 498.86168, -499.949415, 884.323472, 1.441373]
+    additionalItems: false
+    description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
+    units: m
+  
+  plant_energy:
+    type: object
+    description: energy production from participant 5's wake model
+
+    properties:
+      # wake_model_selection:
+      #   type: algorithm
+      #   description: wake model used to calculate AEP
+      #   items:
+      #     - $ref: "iea37-aepcalc.py"
+
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties: 
+          type: array
+          items:
+            - $ref: "iea37-windrose.yaml"
+
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [ 6147.80515,  5963.93018,  7150.22548,  8834.49873,
+ 16193.34623, 15821.28802, 24538.49649, 31247.23296,
+ 15492.45916,  9442.88945,  9615.82097, 20368.42541,
+ 54748.93251, 11196.63929,  7852.28904,  5634.74693]
+        default: 250249.02599
+        units: MWh

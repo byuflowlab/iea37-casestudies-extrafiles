@@ -1,9 +1,5 @@
 function [AEP] = calcAEP(turb_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
     % Calculate the wind farm AEP
-
-    % increment our global counter
-    global nNumFnCalls;
-    nNumFnCalls = nNumFnCalls + 1;
     
     % Power produced by the wind farm from each wind direction
     % For each wind bin

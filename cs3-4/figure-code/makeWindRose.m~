@@ -1,0 +1,14 @@
+% Nick Baker
+% IEA37 cs3&4
+% Wind Rose interpolation from discreet points
+
+% Make matrix of points
+
+
+% Convert to Polar
+
+
+% Interpolate
+
+
+% Plot

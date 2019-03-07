@@ -1,0 +1,56 @@
+input_format_version: 0
+title: Andrew PJ Stanley's submission for IEA Wind Task 37 Combined Case Study 16 Turbine Farm
+description: Andrew PJ Stanley's 9 turbine submission using the FLORIS wake model
+
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "iea37-335mw.yaml"    # Reference for the .yaml containing turbine attributes.
+
+  position:
+    type: array
+    items:
+      xc: [ 731.3555484,  242.8441581, -730.9451632,  -75.1493225,
+           -885.3661725, -199.3544978,  534.3022589, -554.1869644,
+            882.5448127]
+      yc: [-524.5179348, -858.7009352,  525.0896766, -357.5812148,
+           -161.6377196,  877.6433155,  717.6842649, -683.6313844,
+            176.3934654]
+    additionalItems: false
+    description: Andrew PJ Stanley optimal x y turbine locations
+    units: m
+
+  plant_energy:
+    type: object
+    description: energy production from simplified Bastankhah Gaussian wake model
+
+    properties:
+      # wake_model_selection:
+      #   type: algorithm
+      #   description: wake model used to calculate AEP
+      #   items:
+      #     - $ref: "iea37-aepcalc.py"
+
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties:
+          type: array
+          items:
+            - $ref: "iea37-windrose.yaml"       # Reference for the .yaml containing the wind rose
+
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [ 5533.15094412,  5257.71012843,  7589.24280759,  8620.51653052,
+                   16625.69526192, 15370.74605766, 25000.87538526, 31447.30781758,
+                   13947.39173188,  8312.84136648, 10217.19909013, 19771.48907772,
+                   56210.68398099, 10641.53407445,  8000.28012328,  5668.36005435]
+        default: 248215.02443236415
+        units: MWh

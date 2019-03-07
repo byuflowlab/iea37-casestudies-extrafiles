@@ -1,0 +1,52 @@
+input_format_version: 0
+title: participant 1's submission for IEA Wind Task 37 Combined Case Study 9 Turbine Farm
+description: participant 1's 9 turbine submission
+
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "iea37-335mw.yaml"    # Reference for the .yaml containing turbine attributes.
+
+  position:
+    type: array
+    items:
+      xc: [ 731.3555484,  242.8441581, -730.9451632, -75.1493225,  -885.3661725,  -199.3544978, 534.3022589, -554.1869644, 882.5448127]
+      yc: [-524.5179348, -858.7009352,  525.0896766, -357.5812148, -161.6377196,  877.6433155,  717.6842649, -683.6313844, 176.3934654]
+    additionalItems: false
+    description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
+    units: m
+
+  plant_energy:
+    type: object
+    description: energy production from participant 1's wake model
+
+    properties:
+      # wake_model_selection:
+      #   type: algorithm
+      #   description: wake model used to calculate AEP
+      #   items:
+      #     - $ref: "iea37-aepcalc.py"
+
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties:
+          type: array
+          items:
+            - $ref: "iea37-windrose.yaml"       # Reference for the .yaml containing the wind rose
+
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [ 6137.29475,  5824.80016,  6902.63410,  8425.07144,
+                 15686.64154, 15727.72883, 24190.64171, 28655.15415,
+                 15511.74140,  9276.53938,  9234.08434, 19422.90227,
+                 53413.23507, 11100.77885,  7739.22135,  5183.07371]
+        default: 242431.54306  # corresponds to wake losses of about 8.2%
+        units: MWh

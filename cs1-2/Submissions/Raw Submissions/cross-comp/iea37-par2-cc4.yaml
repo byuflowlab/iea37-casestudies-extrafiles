@@ -1,0 +1,52 @@
+input_format_version: 0
+title: participant 4's submission for IEA Wind Task 37 Combined Case Study 9 Turbine Farm
+description: participant 4's 9 turbine submission
+
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "iea37-335mw.yaml"
+
+  position:
+    type: array
+    items:
+      xc: [-748.4648953978663, -880.3119446057738, 171.95031244384143, 510.527617409071, 880.3635576981662, -510.63206316128765, 748.5462047530148, 0.11389199458037742, -172.00234512524187]
+      yc: [-499.80026046122003, 187.21880296701278, 883.4212415663735, -740.5482235921368, -186.975951065988, 740.521401512993, 499.67847597218076, 0.07204461352695583, -883.4111122639515]
+    additionalItems: false
+    description: an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates
+    units: m
+
+  plant_energy:
+    type: object
+    description: energy production from participant 4's wake model
+
+    properties:
+      # wake_model_selection:
+      #   type: algorithm
+      #   description: wake model used to calculate AEP
+      #   items:
+      #     - $ref: "iea37-aepcalc.py"
+
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties:
+          type: array
+          items:
+            - $ref: "iea37-windrose.yaml"
+
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [ 6193.00353,  5972.15927,  7199.13136,  8902.02416,
+ 16061.71691, 16017.57434, 24716.84305, 30996.23966,
+ 15606.36854,  9455.91884,  9681.59046, 20524.11118,
+ 54303.90003, 11335.51435,  7909.39170,  5589.48584]
+        default: 250464.97322
+        units: MWh

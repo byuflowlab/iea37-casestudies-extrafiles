@@ -1,0 +1,68 @@
+% Nick Baker
+% IEA37 cs3&4
+% Adjust the original coordinates (Eastings and Northings) to zero out
+clear, close all;
+
+addpath('../support-files/')
+row = 0;
+col = 1; % Start on the second column (it can't read letters)
+
+% Read .csv files
+File3a = csvread('borsele-boundary-iiia(orig).csv',row,col);
+File3b = csvread('borsele-boundary-iiib(orig).csv',row,col);
+File4a = csvread('borsele-boundary-iva(orig).csv',row,col);
+File4b = csvread('borsele-boundary-ivb(orig).csv',row,col);
+File4c = csvread('borsele-boundary-ivc(orig).csv',row,col);
+
+% Adjust
+File3a = makeOffset(File3a);
+File3b = makeOffset(File3b);
+File4a = makeOffset(File4a);
+File4b = makeOffset(File4b);
+File4c = makeOffset(File4c);
+
+% Plot farm boundaries to check
+plotFiveBoundaries(File3a,File3b,File4a,
+%plotClosedBoundary(File4b)
+%plotClosedBoundary(File4c)
+% Zero out and scale our upper limits
+%ylim([0 2.25e4])
+%xlim([0 1.9e4])
+% Make sure it's proportional
+%axis square
+%hold off
+
+% write to .csv files
+dlmwrite('../support-files/borsele-boundary-iiia(adj).csv',File3a,'precision','%.3f');
+dlmwrite('../support-files/borsele-boundary-iiib(adj).csv',File3b,'precision','%.3f');
+dlmwrite('../support-files/borsele-boundary-iva(adj).csv',File4a,'precision','%.3f');
+dlmwrite('../support-files/borsele-boundary-ivb(adj).csv',File4b,'precision','%.3f');
+dlmwrite('../support-files/borsele-boundary-ivc(adj).csv',File4c,'precision','%.3f');
+
+%--- Changes the input coordinates by our Easting and Northing offset ---%
+function [coordsOut] = makeOffset(coordsIn)
+    coordOffset = [484178.50, 5716513.50];  % from pts 4 and 46
+
+    coordsOut(:,1) = coordsIn(:,1) - coordOffset(1);    % Change x
+    coordsOut(:,2) = coordsIn(:,2) - coordOffset(2);    % Change y
+end
+
+%--- Appends the first points in the list for the closed plot ---%
+function [] = plotClosedBoundary(coords)
+    plot([coords(:,1);coords(1,1)], [coords(:,2);coords(1,2)])
+end
+
+function [] = plotFiveBoundaries(b1,b2,b3,b4,b5)
+    %hold on
+    plotClosedBoundary(b1)
+    plotClosedBoundary(b2)
+    plotClosedBoundary(b3)
+    plotClosedBoundary(b4)
+    plotClosedBoundary(b5)
+    % Zero out and scale our upper limits
+    ylim([0 2.25e4])
+    xlim([0 1.9e4])
+    % Make sure it's proportional
+    axis square
+    hold off
+end

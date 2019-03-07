@@ -1,0 +1,70 @@
+% Intro:
+% - your paragraphs in your intro and often overly short.  I’m not really going to go through in detail and suggest where to fix this, but the fact that every paragraph in a whole page in short probably (though not necessarily) suggests that the flow could be better.
+% - the literature review is very insufficient.  After the end of the intro you only cited three papers (and one of them is ours).  Certainly we aren’t the only ones who have done relevant stuff in comparing wind farm layout optimization strategies.
+
+
+\lettrine[nindent=0pt]{O}{ptimizing} turbine placement within a wind farm is a complex problem characterized by many local optima.
+The large number of inter-dependent variables involved in wind farm layout optimization (WFLO) create a design space that is difficult to solve reliably.
+%The two main methods to attack WFLO are (1) utilization of engineering wake model and (2) computational optimization to iteratively discover an optimal set of inputs.
+In this study, we designed and conducted a set of case studies to discover superior practices in solving the WFLO problem.
+
+In WFLO, one of the most important factors is wake interaction between turbines \cite{HerbertAcero2014}.
+Downstream rotors in the wake-affected area from upstream turbines experience reduced power production (due to the decreased wind velocity) and a shortened lifespan (due to increased turbulence intensity) \cite{Sanderse2009}.
+Computational modeling can be used to optimize wind turbine layout and turbine attributes (such as hub height and rotor diameter) in order to reduce the effects of both the velocity deficit and the increased turbulence in the wake.
+
+Two approaches have been taken to improve computational analysis in the WFLO problem.
+The first approach aims at improving the quality of individual models.
+The second approach is to improve the formulation of the optimization problem, as well as the algorithms used to perform the optimization \cite{Padron2018}.
+
+To model the relevant fluid dynamics and wake interactions between turbines, researchers have taken two general approaches: (1) create  computationally inexpensive simplified theoretical wake models, based on fundamental fluids principles or empirical data from the wind turbine wakes \cite{Sanderse2009, Larsen2009, Vermeer2003}, or (2) use computationally expensive approaches, like the Reynolds-Averaged Navier-Stokes (RANS) equations, Large-Eddy Simulations (LES), or Direct Numerical Simulation (DNS), which increase the accuracy and granularity of their results \cite{Soren2011}.
+
+Complex computational methods such as DNS or LES use the Navier-Stokes equations, which require extensive computational time that is prohibitive in multi-iterative testing.
+Simplified engineering wake models (EWMs) respond to this obstacle by making certain limiting physics assumptions that result in greatly reduced computational costs \cite{HerbertAcero2014}.
+Optimization requires many evaluations, so reducing computational cost through simplifying methods like EWMs is necessary.
+%Yet these simpler, less accurate approximations may lead to inefficient recommendations for turbine placement, due to what can be incorrect assumptions in specific wake scenarios. %shorten to a single sentence
+
+The second approach described by Padr\'on et al. regards optimization algorithms, which alter input variables in order to optimize output values.
+One can use such algorithms to optimize for many objectives in WFLO (i.e. turbine longevity, noise reduction, etc.), with a common objective being annual energy production (AEP).
+For a given EWM, the choice of optimization methods may be limited by characteristics of both the EWM and optimization method.
+
+Optimization algorithms can be categorized as (1) gradient-based, or (2) gradient-free.
+Gradient-based algorithms require the governing functions to be continuous and differentiable in order to calculate derivatives.
+Flat models, those with large regions of zero-valued gradients, such as the Jensen ``top-hat'' \cite{Jensen1983} or FLORIS \cite{Gebraad2014}, may need a gradient-free algorithm for best performance.
+In contrast, Jensen's cosine model or Thomas' FLORIS improvement \cite{thomas2017}, both of which use differentiable functions, could use gradient-based optimizers \cite{Nocedal2006}.
+Generally, gradient-based optimizers are fast and efficient at finding local optima for differentiable functions, but have difficulties when functions are noisy or if discontinuities are present \cite{Nocedal2006}.
+Despite generally being slower, gradient-free methods can be used when gradients can't be obtained, or when obtaining the gradients is too costly \cite{Kramer2011}.
+Furthermore, within these gradient-based or gradient-free limitations, different optimization strategies have varying capacity to avoid local optima.
+%Factors such as step size or the ``temperature'' tolerances in simulated annealing optimization methods can permit algorithms to escape local concavities in a design space in order to pursue a superior optimum.
+%Our desire with this work is to discover superior methods of finding a global optimum for the highly modal problem of WFLO.
+
+Sub-optimal turbine placement results in lost energy and potentially millions of forfeit dollars over the course of a wind farm's typical 20-year life-span \cite{HerbertAcero2014}. Such errors could result from either an inaccurate wake model, or inefficient optimization algorithms. Mistakes in either of these two areas could be avoided with a clearer understanding of model and optimization best practices.
+
+To better understand the effects of EWMs and optimization algorithms, we created two case studies.
+We solicited participant involvement from different research labs and private companies in industry currently working on both general optimization methods, as well as methods specific to solving the WFLO problem.
+The first case study isolated optimization techniques for a single simplified EWM; the second case study aimed to observe the differences when combining variations in the EWM and optimization method.
+
+%In our research, we have not found case studies of a similar degree previously conducted.
+Though papers have been published that survey the state of the wind farm optimization (perhaps one of the most notable written by Herbert-Acero reviewing the current methodologies in the field \cite{HerbertAcero2014}),
+our case studies are the first time an international collaboration has been conducted to comparatively and empirically analyze optimization methods and EWM selection on a representative WFLO problem.% to determine best practices when addressing the WFLO problem.
+
+%This work is done in support of the International Energy Agency (IEA)'s Task 37.
+%The IEA was created in 1974, and currently has 30 member countries.
+%Its mission is ``to ensure reliable, affordable and clean energy''\cite{IEAwebsite} for those countries, and does so through four areas of focus:
+
+%    \begin{itemize}
+%        \item Energy security
+%        \vspace{-3mm}
+%        \item Economic development
+%        \vspace{-3mm}
+%        \item Environmental awareness
+%        \vspace{-3mm}
+%        \item Engagement worldwide.
+%    \end{itemize}
+%The IEA's Technology Collaboration Program (TCP) has a Working Party on Renewable Energy Technologies (REWP).
+%REWP, itself, has a Wind Energy TCP, which is further subdivided into numbered tasks.
+%These tasks cover individual concepts relative to wind energy\cite{ieawind}.
+%For example Task 19 deals with Wind Energy in Cold Climates, Task 26 deals with the Cost of Wind Technology.
+
+Our case studies are created in support of the International Energy Agency's (IEA's) Wind Task 37 (IEA37).
+IEA37 coordinates international research activities centered around the analysis of wind power plants as holistic systems \cite{IEATask372017}. Our case studies concentrate on optimization at the farm-level, and so contribute to IEA37's integrated approach \cite{IEATask372017} to wind energy.
+% Though our case studies concentrate mainly on wake modeling optimization at the farm-level scale, our results still contribute to IEA37's integrated approach \cite{IEATask372017} to wind energy.

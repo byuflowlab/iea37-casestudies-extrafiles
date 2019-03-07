@@ -1,0 +1,32 @@
+% This is how we did it
+
+To enable production of useful data, our case studies required a model wind farm with characteristics that were simultaneously restrictive enough to maintain simplicity, yet general enough to maintain relevance to more complex and realistic problems.
+The wind farm scenarios we selected to meet this criteria, and other details relevant to this project as a whole, are described below in \cref{sec:windfarm}.
+
+Many factors affect recommendations for superior turbine placement of a proposed wind farm.
+The two major factors we chose to study are
+1) EWM characteristics and 2) optimization algorithm \cite{HerbertAcero2014}.
+We designed two case studies in an attempt to quantify the effects of each of these choices.
+
+For the first case study, in which the goal was to isolate variability in the optimization method, we pre-coded a representative wake model as a control variable
+and permitted participants to use any optimization strategy to alter turbine locations that would deliver the best annual energy production (AEP) for the farm.
+This is called case study 1 and is described below in \cref{sec:optonly}.
+
+Isolating EWM variability proved more complicated.
+An EWM's compatibility with gradient-based or gradient-free optimization methods dictates which algorithms can be applied.
+As such, designing a case study that restricted participants to a single optimization algorithm would unnecessarily limit the scope of EWMs studied.
+For this reason, our second case study permitted not only participant selection of EWM but also the optimization algorithm.
+It is called case study 2 and is described below in \cref{sec:cmbnd}.
+
+\bigskip
+\subsection{Common to Both Case Studies} \label{sec:windfarm}
+
+	\import{./sections/}{iea37-wflocs-mthd-bothcs.tex}
+	
+\subsection{Case Study 1: Optimization Only} \label{sec:optonly}
+
+	\import{./sections/}{iea37-wflocs-mthd-optonly.tex}
+
+\subsection{Case Study 2: Combined Physics Model/Optimization Algorithm} \label{sec:cmbnd}
+
+	\import{./sections/}{iea37-wflocs-mthd-cmbnd.tex}

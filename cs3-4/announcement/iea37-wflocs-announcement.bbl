@@ -1,0 +1,10 @@
+\begin{thebibliography}{1}
+\newcommand{\enquote}[1]{``#1''}
+
+\bibitem{NREL10MW}
+Bortolotti, P., Dykes, K., Merz, K., Sethuraman, L., and Zahle, F.,
+  \enquote{IEA Wind Task 37 on System Engineering in Wind Energy, WP2 -
+  Reference Wind Turbines,} Tech. rep., National Renewable Energy Laboratory
+  (NREL), Golden, CO., May 2018.
+
+\end{thebibliography}

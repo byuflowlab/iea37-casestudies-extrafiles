@@ -1,0 +1,56 @@
+input_format_version: 0
+title: Andrew PJ Stanley's submission for IEA Wind Task 37 Combined Case Study 16 Turbine Farm
+description: Andrew PJ Stanley's 9 turbine submission using the FLORIS wake model
+
+definitions:
+  wind_plant:
+    type: object
+    description: specific plant design including turbine selection and placement
+    properties:
+      layout:
+        type: array
+        items:
+          - $ref: "#/definitions/position"
+          - $ref: "iea37-335mw.yaml"    # Reference for the .yaml containing turbine attributes.
+
+  position:
+    type: array
+    items:
+      xc: [ 731.3555484,  242.8441581, -730.9451632,  -75.1493225,
+           -885.3661725, -199.3544978,  534.3022589, -554.1869644,
+            882.5448127]
+      yc: [-524.5179348, -858.7009352,  525.0896766, -357.5812148,
+           -161.6377196,  877.6433155,  717.6842649, -683.6313844,
+            176.3934654]
+    additionalItems: false
+    description: Andrew PJ Stanley optimal x y turbine locations
+    units: m
+
+  plant_energy:
+    type: object
+    description: energy production from simplified Bastankhah Gaussian wake model
+
+    properties:
+      # wake_model_selection:
+      #   type: algorithm
+      #   description: wake model used to calculate AEP
+      #   items:
+      #     - $ref: "iea37-aepcalc.py"
+
+      wind_resource_selection:
+        type: object
+        description: specific wind resource used to calculate AEP
+        properties:
+          type: array
+          items:
+            - $ref: "iea37-windrose.yaml"       # Reference for the .yaml containing the wind rose
+
+      annual_energy_production:
+        type: number
+        description: binned and total (default) annual energy production for a wind plant given a layout and binned wind rose
+        binned: [ 6581.69025678,  6238.80077118,  7635.42228308,  9347.89620124,
+                   16618.79803995, 16951.54108974, 26319.69311606, 31996.15632058,
+                   16585.8594471 ,  9878.10122103, 10268.32651862, 21552.09401954,
+                   56187.36480174, 11996.47523274,  8422.30179714,  5769.79868076]
+        default: 262350.3197972916
+        units: MWh

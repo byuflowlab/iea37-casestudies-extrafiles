@@ -1,11 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Combined Case Study 36 Turbine Farm
-description:
-  Result file of Erik Quaeghebeur using his 'simple' pseudo-gradient approach
-  starting from the example layout using the following parameters-
-  # 100 model call cutoff,
-  # scale_multiplier = 0.9,
-  # step_scaler = 16 * farm_radius / n
+description: Participant 9's 36 turbine submission
 
 definitions:
   wind_plant:

@@ -1,6 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Combined Case Study 64 Turbine Farm
-description: Abhinav Prakash's submission for the 64 turbine wind plant model for IEA Task 37 Combined Case Study
+description: Participant 10's 64 turbine submission
 
 definitions:
   wind_plant:

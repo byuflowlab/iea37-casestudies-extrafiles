@@ -1,5 +1,5 @@
 function [wind_dir, wind_freq, wind_speed] = getWindRoseYaml(file_name)
-    %-- Function to pull the relevant data for the given wind rose .yaml file
+    %-- Function to pull the relevant data for the given wind rose .yaml file (cs1&2)
     
     WindRoseStruct = ReadYaml(file_name);    % Pull our .yaml file into a struct
     % Shortcuts for the .yaml paths

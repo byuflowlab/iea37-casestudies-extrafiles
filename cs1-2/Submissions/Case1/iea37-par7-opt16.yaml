@@ -1,6 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Combined Case Study 16 Turbine Farm
-description: Wiley's submission for the 16 turbine wind plant model for IEA Task 37 Combined Case Study
+description: Participant 7's 16 turbine submission
 
 definitions:
   wind_plant:

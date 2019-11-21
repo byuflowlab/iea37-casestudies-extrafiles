@@ -2,11 +2,12 @@
 clear, close all
 % Needed for .yaml reading ability
 addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
-addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/FigureCode'));
+addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/FigureCode'));
+addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/MatlabAEPCalc'));
 
 %farmSize = 1;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
-participant_number = 7;     % Participant number, 1-10.
-for farmSize = 1:1          % Do all the farm sizes
+participant_number = 12;     % Participant number, 1-11.
+for farmSize = 1:3          % Do all the farm sizes
     switch(farmSize)
         case 0
             fname_turb_loc = strcat('iea37-par', num2str(participant_number), '-opt9.yaml');
@@ -40,10 +41,12 @@ for farmSize = 1:1          % Do all the farm sizes
 
     % Get AEP data from turb locations
     binned_AEP = calcAEP(turb_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr);
-    AEP = sum(binned_AEP)
+    AEP(farmSize,1) = sum(binned_AEP);
 
     %color_num = 2;  % 0 = blue, 1 = red, 2 = yellow, 3 = purple, 4 = green
-    %clf     % Clear the figure for the next one
-    %plotFarm(turb_coords, turb_diam, farm_rad, plot_dimen, participant_number)
-    %saveas(gcf,fig_name)
+    clf     % Clear the figure for the next one
+    plotSingleFarm(turb_coords, turb_diam, farm_rad, plot_dimen, participant_number)
+    saveas(gcf,fig_name)
 end
+
+disp(num2str(AEP,'%.10f'))

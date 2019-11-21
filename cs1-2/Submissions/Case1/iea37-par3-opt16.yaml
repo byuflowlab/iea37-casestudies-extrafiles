@@ -1,12 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Combined Case Study 16 Turbine Farm
-description:
-  Result file of Erik Quaeghebeur using his 'full' pseudo-gradient approach
-  starting from the example layout using the following parameters-
-  # 100 model call cutoff,
-  # scale_multiplier = 0.95,
-  # step_scaler = 16 * farm_radius / n
-  # interleaving m=3, so 1 pushdown+pushback step followed by 2 crosswind steps
+description: Participant 3's 16 turbine submission
 
 definitions:
   wind_plant:

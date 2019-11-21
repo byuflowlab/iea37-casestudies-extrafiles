@@ -9,7 +9,7 @@ figuresdir = '/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/Figure
 % Non-normalized data
 % Data
 % Participant order: (1)PJ, (2)Tim, (3)Erik full, (4)Jared, (5)Nick,
-% (6)Sanchez, (7)Wiley, (8)Ning, (9)Erik partial, (10)Prakash
+% (6)Sanchez, (7)Wiley, (8)Ning, (9)Erik partial, (10)Prakash, (11)Salhi
 AEP = [1476689.663, 1506388.415, 1455075.608, 1513311.194, 1336164.550, 1364943.008, 1332883.433, 1445967.377, 1422268.714, 1480850.976];
 AEP = AEP ./ 1e6;
 Walltime = [288, 43.2, 10000, 5299.01, 57.6, 318, 1262.4, 90, 1000, 193];

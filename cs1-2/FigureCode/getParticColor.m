@@ -26,5 +26,7 @@ function [PlotColor] = getParticColor(color_num)
             PlotColor = 1/255*[200,200,200];
         case 11 % Brown
             PlotColor = 1/255*[153, 102, 51];
+        case 12 % Skyblue
+            PlotColor = [0.3010, 0.7450, 0.9330];
     end
 end

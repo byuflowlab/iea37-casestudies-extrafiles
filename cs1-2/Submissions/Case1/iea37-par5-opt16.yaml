@@ -1,6 +1,6 @@
 input_format_version: 0.0
-title: IEA Wind Task 37 Combined Case Study 9 Turbine Farm
-description: Result file of Nick Baker using simplified Gaussian-Wake
+title: IEA Wind Task 37 Combined Case Study 16 Turbine Farm
+description: Participant 5's 16 turbine submission
 
 definitions:
   wind_plant:

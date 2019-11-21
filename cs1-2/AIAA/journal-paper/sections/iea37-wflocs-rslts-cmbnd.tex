@@ -1,0 +1,65 @@
+% Winners
+%	Best Gradients
+\subsubsection{General Trends}
+
+	We expected participants to rank their own layout as superior to the others.
+	Each wake model accounts for different fluids phenomena, and what one wake model considers an optimal layout, another may not.
+	An example of this is if one EWM predicts a wake deficit due to some factor such as vorticity or turbulence.
+	A turbine placed downstream under such a model would, under a more simplistic wake model not accounting for this phenomena (such as the Jensen's model \cite{Jensen1983}), would feel the full brunt of the wake and deliver a suboptimal AEP.
+
+	Unexpectedly, only \textit{sub4} and \textit{sub5} found their own layouts to be superior to the other participants.
+	Furthermore, all other participants also found \textit{sub4} and \textit{sub5}'s layouts superior to their own, though to varying degrees.
+	Three participants (including \textit{sub4}) found \textit{sub4} to have the highest AEP-producing layout.
+	The other two participants found \textit{sub5} to have the highest AEP-producing layout.
+	% Visual representations
+
+\subsubsection{Analysis of Best Results}
+
+	Within expectations, \textit{sub4} and \textit{sub5} ranked their own layouts superior to all other participant results.
+	Two correlations are important to note regarding \textit{sub4} and \textit{sub5}.
+	First, both used variations of the same wake model.
+	From case study 1, \textit{sub5} used the simplified Gaussian wake model previously described \cite{Bastankhah2016,ThomasNing2018}.
+	Though \textit{sub4} also used the Gaussian wake model \cite{Bastankhah2016}, \textit{sub4} combined it with the model created by Niayifar and Porté-Agel \cite{Niayifar2016}, supplemented by the WEC method described earlier.
+	Furthermore, \textit{sub4} also accounted for wind shear and local turbulence intensity.
+	Neither of these factors were accounted for by \textit{sub5}.
+	The second factor to note is that despite using very similar wake models, \textit{sub4} and \textit{sub5} used different gradient-based optimization algorithms that reached very similar conclusions.
+
+	As can be seen in the figures included in the Appendix, \textit{sub4} and \textit{sub5} found nearly identical optimal turbine placements.
+	Though appearing identical, the actual coordinates do indeed differ, enough so to result in different AEP calculations shown in the tables above.
+
+	Without LES data, the conclusions able to be drawn from the cross-comparison analysis are limited.
+	Reasons that both \textit{sub4} and \textit{sub5} were found by the other participant wake models to have superior placement could be a result of more efficient optimization methods, better coupling between optimization method and wake model, or wake model superiority.
+	The reason that these minima existed within the other wake models (resulting in a higher computed AEP by those models), yet were nevertheless undiscovered in their optimizations, is inconclusive in telling us which it is.
+
+	Both \textit{sub4} and \textit{sub5} used similar wake models but very different optimization methods.
+	Coding in MATLAB, \textit{sub5} did 1,000 random starts and used MATLAB's fmincon (which uses a finite difference method to find gradients) to optimize for a minimum.
+	Using a combination of Python and FORTRAN, \textit{sub4} ran 1 optimization with a user-selected initial turbine configuration, and randomized the turbine starting locations for another 199 to make 200 optimizations altogether.
+	SNOPT's SQP algorithm (using algorithmic differentiation to obtain gradients) was \textit{sub4}'s implemented optimizer.
+
+	Of note, from trends seen above in case study 1, \textit{sub5}'s optimization methods demonstrated superior performance for small design variable sizes but comparatively degraded as the wind farm size increases.
+	The superior performance of this wake model and optimization method combination for this small farm may not be representative of performance on larger wind farms.
+
+% \subsubsection{Analysis of Worst Results}
+
+% 	Again, conlusions drawn from the cross-comparison analysis are limited due to the lack of LES data.
+% 	Suprisingly, however, \textit{sub2}'s results were found by every other participant to be inferior, even by \textit{sub2}.
+% 	As noted earlier, this could be a result of either poor wake model pairing with optimization method, or simply an optimization method shortcoming.
+% 	Using data from case study 1, \textit{sub2}'s optimization method shows inferior results for small sample sizes, but increases in comparative performance as wind farm size and number of design variables increase.
+% 	That data leads us to believe the inferior performance here is a product of the wind farm size, and not a poor pairing of wake model with optimization method.
+% 	However, both the LES analysis and attempts at farms of larger sizes would need to be done to find a definitive conclusion. 
+
+% 	Discounting the two universal top performers (\textit{sub4} and \textit{sub5}), \textit{sub1}'s results were more in line with what we expected from the cross-comparison.
+% 	Namely, that \textit{sub1} found its layout superior to the others, but that the others did not find it so.
+% 	%The LES will need to be run to determine how \textit{sub1}'s wake model compares to the others.
+
+\subsubsection{Discussion}
+
+	Participants of earlier case studies were critical of wind farm scenarios where non-novel, simplistic layouts (such as all turbines on the boundary border) are optimal.
+	The small farm radius with few turbines given for this case study seems to have fallen into this category.
+	%What is interesting, however, is that three of the five participants were trapped in local optima, and did not discover optima others found using different physics approximations and optimization methods.
+	Even with our very simple case studies, the participants found very different results.
+	Many factors could have led to these shortfalls (i.e., inferior optimization methods, lack of sufficient iterations, lack of sufficient wall time, etc.), and further testing would need to be done to discover which factors majorly contributed to the outcome.
+
+	%Border placement of turbines in concentric rings was supplied for the three wind farm sizes in case study 1, created from intuition.
+	%As an unintended validation, all participants of case study 2 reported layouts following this same pattern applied to this smaller farm size, despite being results of random starting locations.
+	%This confirms the hypothesis that, for small farm sizes, border placement and concentric rings will tend to deliver optimal farm AEP.

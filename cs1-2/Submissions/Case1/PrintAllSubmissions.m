@@ -5,10 +5,10 @@
 clear, close all
 % Needed for .yaml reading ability
 addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
-addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/FigureCode'));
-addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/MatlabAEPCalc'));
-addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/Submissions/Case2'));
-figuresdir = '/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/Figures/';
+addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/FigureCode'));
+addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/MatlabAEPCalc'));
+addpath(genpath('/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/Submissions/Case2'));
+figuresdir = '/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs1-2/Figures/';
 
 % Boolean values for functionality
 bDispAEP = false;        % if True, shows calculations in command window
@@ -16,19 +16,19 @@ bWriteYaml = false;     % If True, writes calculated AEP data to a .yaml file
 bDispFarm = true;      % If True, displays a fig of the wind farm
 bSingleOrAll = true;    % If True, shows just one farm per fig. If false, displays all farms of a given size in a single fig with subfigures.
 bSaveFig = true;       % If True, saves the WFL figure.
-nNumPar = 10;           % Number of participants to graph
+nNumPar = 12;           % Number of participants to graph
 lgdColor = [];
 lgdName = [];
 
 %nFarmSize = 1;   % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
 %nParmNum = 1;   % Participant number, 1-10.
-for nFarmSize = 3:3          % Do all the farm sizes
+for nFarmSize = 1:3          % Do all the farm sizes
     if (bDispFarm && ~(bSingleOrAll))    % If we are to display the farm, and it's got multiple figures
         figure('NumberTitle', 'off', 'Name', 'Case Study 2''s Layout Submissions');
         set(gcf,'Units','inches','Position',[0 0 8 11])
     end
     
-    for nParNum = 1:nNumPar   % Do all the participants
+    for nParNum = 11:nNumPar   % Do all the participants
         [turb_coords, wind_freq, wind_speed, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, fig_name, farm_rad, plot_dimen] = getFarmData(nParNum, nFarmSize);
         nNumRtrs = length(turb_coords.x);   % Pulls the number of turbines by how many x-coordinates we have.
 

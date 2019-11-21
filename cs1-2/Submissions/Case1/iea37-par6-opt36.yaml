@@ -1,6 +1,6 @@
 input_format_version: 0
-title: IEA Wind Task 37 Combined Case Study 36 Optimised Turbine Farm by Sebastian Sanchez
-description: Sebastian Sanchez's submission for the 36 turbine wind plant model for IEA Task 37 Combined Case Study
+title: IEA Wind Task 37 Combined Case Study 36 Optimised Turbine Farm
+description: Participant 6's 36 turbine submission
 
 definitions:
   wind_plant:

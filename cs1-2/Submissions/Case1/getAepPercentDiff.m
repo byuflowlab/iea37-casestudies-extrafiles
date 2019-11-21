@@ -14,7 +14,7 @@ figuresdir = '/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/Figure
 bDispAEP = false;           % if True, shows calculations in command window
 
 % Constants for calculations
-nNumPar = 10;               % Number of Particpanits we're comparing
+nNumPar = 12;               % Number of Particpanits we're comparing
 AEP = zeros((nNumPar+1),1);% Add one for the example layout
 nFarmSize = 3;              % 0 = 9 turbines, 1 = 16 turbs, 2 = 36 turbs, 3 = 64 turbs
 %nParNum = 1;               % Participant number, 1-10.

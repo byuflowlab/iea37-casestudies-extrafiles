@@ -1,7 +1,6 @@
 input_format_version: 0
 title: IEA Wind Task 37 Combined Case Study 64 Turbine Farm
-description: input file for the 64 turbine wind plant model for IEA Task 37 Combined Case Study
-             Template located at <https://github.com/IEAWindTask37/ontology/blob/develop/plant_energy_energy_convolution.yaml>
+description: Participant 2's 64 turbine wind plant model for IEA Task 37 Combined Case Study
 
 definitions:
   wind_plant:

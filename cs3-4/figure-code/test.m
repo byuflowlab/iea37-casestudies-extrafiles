@@ -2,22 +2,42 @@
 % iea37 cs3&4
 % test file to mess with code
 clear, close all;
+addpath('../startup-files/')
+%addpath('turb-layout/')
+addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
 
-printErikBounds();
+% Read in YAML files
+[turb_coords, fname_turb, fname_wr] = getTurbLocYAML('iea37-ex-opt4.yaml');
+%[turb_coords, fname_turb, fname_wr] = getTurbLocYAML('iea37-ex-opt3.yaml');
+[turb_ci, turb_co, rated_ws, rated_pwr, turb_diam] = getTurbineYaml(fname_turb);
+[wind_dir, wind_dir_freq, wind_speed, wind_speed_freq] = getWindroseYaml(fname_wr);
+num_speed_bins = length(wind_speed);
+[IIIa, IIIb, IVa, IVb, IVc] = getBorsBoundariesYaml('iea37-boundary-cs4.yaml');
+%[IIIa] = getBorsBoundaryYaml('iea37-boundary-cs3.yaml');
 
-function [] = printErikBounds()
-    % Boundary points from Erik's .yaml files. Needed to visualize.
-    xConst = [-0.316688,-0.965168,1.0,1.0,-0.316688];
-    yConst = [1.0,-1.0,-0.144082,0.362028,1.0];
-    xExc = [0.466179, 1.0, 0.466179];
-    yExc = [1.0, -0.497298, 1.0];
-    xBound = [0.521948, 0.676567, 0.200103, 0.429300, -0.870939, 0.521948];
-    yBound = [-0.852978, 0.220158, 0.442276, 0.903162, 0.491392, -0.852978];
+%hold on
+%plotBorsseleBoundaries(IIIa, IIIb, IVa, IVb, IVc)
+%plotBorsseleBoundary(IIIa)
+%plotBorselleTurbines(turb_coords, (turb_diam/2), 1)
+%hold off
 
-    hold on
-    plot(xConst, yConst)
-    plot(xExc, yExc)
-    plot(xBound, yBound)
-    axis square
-    hold off
-end
+%Plot a Weibull slice
+figure(1)
+hold on
+plot(wind_speed,wind_speed_freq(3,:))
+scatter(wind_speed,wind_speed_freq(3,:),4,'o','MarkerFaceColor',[0.6350 0.0780 0.1840])
+xlabel('Wind Speed (m/s)')
+ylabel('Frequency')
+ax = gca;
+ax.FontSize = 12;
+hold off
+
+% Test of boundary files
+% boundary = ReadYaml('iea37-boundary-cs4.yaml');    % Pull our .yaml file into a struct
+% vert_list = cell2mat(boundary(1).boundaries(1).IIIa(:,:));
+% loc_list = cell2mat(boundary(1).location(1).utm(:,:))
+
+%plotWindRoseFreq(deg2rad(wind_dir), wind_dir_freq)
+%[y] = calcWeibull(10, wind_speed(4,2), wind_speed(4,1))    % A test
+% calc the AEP at the every . wind speed
+%[AEP] = calcAEPcs3(turb_coords, wind_freq, wind_speed, num_speed_bins, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)

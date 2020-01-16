@@ -1,0 +1,57 @@
+The purpose of this case study was to determine the best optimization practices for WFLO, using a single representative EWM.
+We selected a generalized wake model that both gradient-based and gradient-free optimization algorithms could use and that was computationally inexpensive in comparison to LES and DNS methods.
+    
+    \subsubsection{Wake Model} \label{sec:wakemodel}
+        The wake model selected for case study 1 was a simplified version of Bastankhah's Gaussian wake model \cite{Bastankhah2016,ThomasNing2018}.
+        This wake model is described \cref{eq:wakemodel}.
+%
+        \begin{equation}
+            \frac{\Delta U}{U_{\infty}}
+            =
+            \Bigg(
+            1 - \sqrt{
+                1 - \frac{C_T}
+                {8\sigma_{y}^{2}/D^2}
+            }
+            \Bigg)
+            \text{exp}\bigg(
+            -0.5\Big(
+                \frac{y-\delta}{\sigma_{y}}
+                \Big)^2
+            \bigg)
+            \label{eq:wakemodel}
+        \end{equation}
+%
+        In \cref{eq:wakemodel}, $\Delta U/U_{\infty}$ is the wake velocity deficit, $C_T = 8/9$ is the thrust coefficient, $y-\delta$ is the distance of the point of interest from the wake center in the cross-stream horizontal direction, $D$ is the turbine diameter, and $\sigma_y$ is the standard deviation of the wake spread in the cross-stream horizontal direction as defined in \cref{eq:sigy}:
+
+        \begin{equation}
+            \sigma_y = (k_y x) + \frac{D}{\sqrt{8}} \\
+            \label{eq:sigy}
+        \end{equation}
+
+        In \cref{eq:sigy}, $x$ is the downstream distance from the turbine generating the wake to the turbine of interest, and $D$ is the turbine diameter. The variable $k_y$ is determined as a function of turbulence intensity ($I$).
+        In this case study turbulence intensity was treated as a constant of $0.075$, and we therefore used a corresponding $k_{y}$ of $0.0324555$ \cite{Niayifar2016,ThomasNing2018}.
+
+        Increasing turbulence intensity has numerous effects and draws attention away from the main purpose of this case study, which was to observe the differences of optimization strategies.
+        For the wake model we used (shown in \cref{eq:wakemodel}), increasing the turbulence intensity widened the wake cone, but second and third order effects are unknown.
+        As such, this first IEA37 set of case studies used a very low intensity in an attempt to minimize the considered variables.
+
+	\subsubsection{Farm Sizes}
+        Variability in wind farm size (and thus number of design variables) affects optimization algorithm performance.
+        To study how increased farm size (i.e. design space complexity) impacts the performance of optimization algorithms, three wind farm sizes were specified in case study 1. The three wind farms had 16, 36, and 64 turbines, respectively.
+        The three farm boundary radii were 1300 m, 2000 m, and 3000 m, respectively. The boundary radii were determined in the manner described previously in \cref{sec:farmgeog}.
+        %Inclusion of three farm sizes was to observe how increased complexity correlates to algorithm performance. %, to demonstrate trends of scalability in optimization algorithms.
+        The turbine numbers were selected as perfect squares that roughly double in size.
+        Perfect squares were used to permit participants to use even grid turbine arrangements, if desired.
+        
+    \subsubsection{Supplied Code} \label{sec:code}
+
+        We provided participants with a link to a GitHub repository\footnote{https://github.com/byuflowlab/iea37-wflo-casestudies} which included files with the following contents:
+            \begin{itemize}
+                \item Turbine characteristics, wind frequency, and wind speed in IEA 37's \texttt{.yaml} schema
+                \item Example turbine layouts for each farm size (in \texttt{.yaml} format)
+                \item Python parsers of the \texttt{.yaml} schema
+                \item Python target function to calculate AEP (given \texttt{.yaml} turbine locations and farm attributes)
+            \end{itemize}
+        We selected the programming language Python, since it is widely used by researchers in the industry, and is open source. Participants were allowed to alter our specific code implementation or replicate the provided model in another language to speed up the code or for compatibility with their optimization methods. 
+        This was with the understanding, however, that final wind farm layouts would be evaluated with the original Python code that we provided.

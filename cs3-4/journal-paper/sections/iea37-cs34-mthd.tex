@@ -1,0 +1,33 @@
+% This is how we did it
+
+Feedback we received from particiants of cs1 \& cs2 were that the wind farm scenarios were too simplistic.
+This was by design, to both incentivize participation and to allow the case study results to be valid for general application.
+But with this feedback in mind, we chose to increase the complexity of both the wind resource and the wind farm boundary.
+
+Regarding the wind farm boundary, a cs1 participant requested a farm boundary that existed in the real world, as opposed to the contrived ones used in the first two studies.
+We therefore selected for our model parcels III and IV of the Borssele Wind Farm, which is located in the North Sea between the Netherlands and England.
+This farm offered two characteristics that gradient-based optimizers would have difficulty with: (1) concavities in the boundaries (2) disjoint boundary sections.
+The boundary sizing was scaled so the model turbines we used would be adequately spaced, but the boundary shapes are those of the real-world farm, depicted in fig \textcolor{red}{FIGURE}.
+
+The first two case studies gave a simplified wind resource of \textcolor{red}{directions} and a constant wind speed across all directions.
+To increase realism in cs3 \& cs4 we gave participants \textcolor{red}{NumDir} and frequencies for \textcolor{red}{NumSpeeds} for each direction, giving \textcolor{red}{NumDataPoints} pieces of wind information in cs3 \& cs4 as opposed to the \textcolor{red}{NumDataPoints} given in cs1 \& cs2.
+
+For cs3 the goal was to isolate variability in participants' optimization methods.
+In order to do this we pre-coded a representative wake model as a control variable and permitted participants to use any optimization strategy to alter turbine locations that would deliver the best annual energy production (AEP) for the farm.
+We used only parcel IIIa of the Borssele farm in this case study, since it includes concavities but avoids the disjoint boundary problem.
+
+The cs4 boundary invloved five parcels from the Borssele farm.
+Besides adding the complexity of disjoint boundary sections, we also permitted participnats to use whatever wake model they chose for optimization purposes, though final comparisons would be conducted with our supplied EWM.
+
+\bigskip
+\subsection{Common to Both Case Studies} \label{sec:windfarm}
+
+	\import{./sections/}{iea37-cs34-mthd-allcs.tex}
+	
+\subsection{Case Study 1: Optimization Only} \label{sec:cs1}
+
+	\import{./sections/}{iea37-cs34-mthd-cs3.tex}
+
+\subsection{Case Study 2: Combined Physics Model/Optimization Algorithm} \label{sec:cs2}
+
+	\import{./sections/}{iea37-cs34-mthd-cs4.tex}

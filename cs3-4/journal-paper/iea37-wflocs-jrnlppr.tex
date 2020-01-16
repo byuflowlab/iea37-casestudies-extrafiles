@@ -1,0 +1,113 @@
+\documentclass[conf,hidelinks]{new-aiaa} % insert '[draft]' option to show overfull boxes
+%---------- USER-ADDED PACKAGES
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\usepackage{booktabs} 	% For tables
+\usepackage{breqn}
+\usepackage{caption} 	% For subfigures
+\usepackage[capitalise]{cleveref}
+\usepackage{color,soul} % For coloring text
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage[T1]{fontenc}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage{import}		% Package for breaking down lengthy documents into submodules
+\usepackage{pdfpages} 	% To include PDF pages in appendix
+\usepackage{placeins}	% Floatbarrier
+\usepackage{siunitx} 	% For the degree symbol "\ang{}"
+\usepackage{titlesec}
+\usepackage{todonotes}
+\usepackage{type1cm}
+\usepackage{wasysym}
+\usepackage{wrapfig}	% For inline figures
+\makeatletter
+\makeatother
+% ---------------------------------
+% Variables
+\newcommand{\figwidth}{3.4in}				% Width of single figure
+\newcommand{\figheight}{2.43in}				% Height of single figure
+\newcommand{\figwidthlegend}{4.0in}			% Width of single figure with outer legend
+\newcommand{\doubfigf}{.475}				% Text width factor in double figure
+\AtBeginDocument{\renewcommand{\abstractname}{}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% COVER PAGE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Method Comparisons for Wake Model and Optimization Algorithm Selection in Wind Farm Layout Optimization}
+
+\author{Nicholas F. Baker\footnote{Masters Student, Department of Mechanical Engineering, 360 EB, Provo, UT 84602, AIAA Student Member},
+		 Andrew P. J. Stanley\footnote{Ph.D. Candidate, Department of Mechanical Engineering, 360 EB, Provo, UT 84602, AIAA Student Member},
+		 and Andrew Ning\footnote{Assistant Professor, Department of Mechanical Engineering, 360 EB, Provo, UT 84602, AIAA Senior Member}}
+	\affil{Brigham Young University, Provo, Utah 84602.}
+\author{Katherine Dykes\footnote{DTU}}
+	\affil{Danmarks Tekniske Universitet, 2800 Kgs. Lyngby, Denmark.}
+
+\begin{document}
+\maketitle{}
+
+\import{./sections/}{iea37-cs34-abst.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% INTRODUCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+	\import{./sections/}{iea37-cs34-intro.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% METHODOLOGY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methodology} \label{sec:meth}
+
+	\import{./sections/}{iea37-cs34-mthd.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% RESULTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results} \label{sec:res}
+
+	\import{./sections/}{iea37-cs34-rslts.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Conclusion
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion} \label{sec:conc}
+
+	\import{./sections/}{iea37-cs34-conc.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%							APPENDIX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagebreak
+\appendix
+
+\section*{Acknowledgments}
+This work was authored [in part] by the National Renewable Energy Laboratory, operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308.
+Funding provided by the U.S. Department of Energy Office of Energy Efficiency and Renewable Energy Wind Energy Technologies Office.
+The views expressed in the article do not necessarily represent the views of the DOE or the U.S. Government.
+The U.S. Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S. Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
+
+The authors gratefully acknowledge the following individuals, in alphabetical order, as submitting participants in the case study:
+\begin{itemize}
+	%\item name (organization), etc
+	\item Tim Camp, Director, Turbine Engineering
+	\item Abhinav Prakash, Ph.D. Student, Texas A\&M University
+	\item Erik Quaeghebeur, Dr.ir, Delft University of Technology
+	\item Sebastian, Sanchez Perez Moreno, Ph.D. Student, Delft University of Technology
+	\item Landon Wiley, M.Sc Student, Brigham Young University
+\end{itemize}
+
+\newpage
+\section*{Appendix}
+
+%\section{Python Code}
+%\label{app:aepcalc}
+%\lstinputlisting[language=python]{iea37-aepcalc.py}
+
+\FloatBarrier
+
+\pagebreak
+%\bibliographystyle{new-aiaa}
+\bibliography{aiaa-jrnl}
+\end{document}

@@ -3,23 +3,64 @@
 % - the literature review is very insufficient.  After the end of the intro you only cited three papers (and one of them is ours).  Certainly we aren’t the only ones who have done relevant stuff in comparing wind farm layout optimization strategies.
 
 
-\lettrine[nindent=0pt]{T}{he} problem of wind farm layout optimization is multivariate and multimodal.
-Inclusion of both many possible inputs (turbine cost, turbine location, wind data granularity, geographic peculiarities, etc.) and many possible target functions (minimize construction costs, maximize energy production, minimize environmental impact, etc.) make the problem as simplistic or as complicated as the user desires.
-Computer automated modelling is used to analyze variable permutations and optimize target function calculations on a scale far greater than could be accomplished solely through real-world experimentation.
-For these computer optimizations to be successful, two separate factors must be addressed:
+\lettrine[nindent=0pt]{O}{ptimization} problems regarding in the layout of wind farms draw upon multivariate input and produce multimodal output.
+Analyzing selections of the many possible inputs (turbine cost, turbine location, wind data granularity, geographic peculiarities, etc.) and many possible target function outputs (minimized construction costs, maximize energy production, minimized environmental impact, etc.) can make these problems as simplistic or complicated as the user desires.
+Computer automated modelling assists in analyzing variable permutations and optimizing target function calculations on a scale far greater than could be accomplished solely through real-world experimentation.
+Yet for these computer optimizations to be successful, two separate factors must be addressed:
 \begin{enumerate}
-    \item Choice of model inputs and target 
+    \item Choice of model inputs/outputs %inputs and desired target to optimize
     \item Optimization algorithm selection
 \end{enumerate}
 
-Many papers have been written on various turbine and wake models, and even more have been written on optimizations algorithms.
-However little has been published on comparative pairings of the two, and how they play out with wind farm characteristics (i.i geography, wind resource, etc.)
+Sub-optimal turbine placement results in lost energy and potentially millions of forfeit dollars over the course of a wind farm's typical 20-year life-span \cite{HerbertAcero2014}.
+Such errors could result from inaccurate wake models or inefficient optimization algorithms.
+Mistakes in either of these two areas could be avoided with a clearer understanding of model and optimization best practices.
 
-We therefore undertook designing a series of simplified wind farm scenarios formed into case studies, where participants would use their model and method pairings to discover as optimal a solution as they were able.
-Our intent is to assist researchers in the field by presenting a standardized method of comparing widn farm layout optimization methods.
-Case studies 1 and 2 (cs1 \& cs2) were wind farm scenarios with circular boundaries of three differnt sizes to observe patterns over increasing complexity.
-Case studies 3 and 4 (cs2 \& cs4) introduced both non-uniform boundaries and a more complicated wind resource than cs1 \& cs2, to further test participant methods.
+%\subsection{Wind Turbine Wake}
+    The rotating blades of a horizontal wind turbine sweep out a circular geometry, and create a wake \cite{Burton2001}.
+    This wake both slows the free stream air passing through its face, and increases the diameter of the affected wind volume.
+    This three-dimensional wake volume is characterized by both a wind velocity decrease and a turbulence increase \cite{Larsen2008}.
+    As a result, downstream rotors in the wake-affected area experience reduced power production (due to the decreased wind velocity) and a shortened lifespan (as a result of the increased turbulence intensity) \cite{Sanderse2009}. 
+    Since waked turbines result in both decreased energy production and reduced turbine lifespan, wakes become an important consideration in windfarm design \cite{HerbertAcero2014}.
 
-\textcolor{red}{Mention results here}
+%\subsection{Engineering Wake Models} %-- Portion on EWMs --%
+    %Formulas
+    %engineering wake models
+    %LES
+    %DNS
+    Wake and turbulence modeling have been described as ``two of the most challenging research topics in the field of fluid mechanics and are considered unsolved problems in classic physics" \cite{HerbertAcero2014}.
+    The two general approaches taken to solve these complicated issues are (1) computationally inexpensive, simplified theoretical wake models, formulated to correlate to empirical data from the waked region \cite{Sanderse2009, Larsen2009, Vermeer2003}, or (2) computationally expensive approaches, using the Reynolds-Averaged Navier-Stokes (RANS) equations, Large-Eddy Simulations (LES), or Direct Numerical Simulation (DNS), which far better increase the accuracy and granularity of their results\cite{Soren2011}.
+    Many engineering wake models (EWMs) have been created, varying both their complexity and approach to the problem.
+    While some account for 2-D and 3-D phenomena, the simplest and most widely used wake model was created by Jensen \cite{Jensen1983} and is 1-Dimensional.
+    A more complicated EWM which takes into account all 3 dimensions was created by Bastankhah, and uses Gaussian curves for continuous and differentiable wake calculations. 
+
+    Optimization through iteration using models based on the RANS equations take on the scale of several hours to converge to a solution.
+    More complex still, LES models can take up to several weeks until convergence.
+    And finally, a DNS analysis, at least at the time attempted by Soren et.~al in 2011 \cite{Soren2011}, was infeasible in terms of computational time.
+    However, once an optimized solution has been reached by one of the simpler models described previously, a single LES can be run to validate the proposed optimized wind farm layout.
+
+%\subsection{Optimization}
+    % Portion on optimization algorithms
+    % Gradient-based, Gradient Free.
+    \textit{Optimization} refers to algorithms that conduct incremental calculations on input variables in an attempt to maximize or minimize some output target function or functions.
+    Optimization algorithms can be broadly categorized as either (1) gradient-based, or (2) gradient-free.   
+    Gradient based algorithms require that the governing functions be continuous, differentiable, and that derivatives can be calculated.
+    They scale well to large problems and are efficient at finding local optimums, but have difficulties with functions that are ``noisy" or when discontinuities are present \cite{Nocedal2006}.
+    Gradient free algorithms can be used if derivatives can't be obtained, but are usually much slower than gradient-based algorithms and don't always scale well.
+    Gradient-free algorithms are able to escape local optimums and are generally easier to implement.
+    Both types can be used if the objective function isn't known, but gradient-based algorithms greatly reduce computational time if it both knows the objective function and can calculate the derivatives \cite{Kramer2011}.
+
+%\subsection{Need}
+    Many papers have been written on various EWMs, and even more have been written on optimizations algorithms.
+    However little has been published on comparative pairings of the two in the area of wind farm technology, and how they play out with wind farm characteristics (i.e. geography, wind resource, etc.)
+    An internationally collaborative study was conducted by the International Energy Association (IEA) for modelling and optimizing blade geometry \cite{IEATask372017} in 2017,
+    but our research indicates that our case studies are the first time such a study has been conducted to comparatively and empirically analyze optimization methods and EWM selection on a broad wind farm layout optimization problem.
+
+    We therefore undertook designing a series of simplified wind farm scenarios formed into case studies, where participants would choose model and method pairings to discover as optimal a solution as they were able.
+    Our intent is to assist researchers in the field by presenting a standardized method of comparing widn farm layout optimization methods.
+    Case studies 1 and 2 (cs1 \& cs2) were wind farm scenarios with circular boundaries of three differnt sizes to observe patterns over increasing complexity.
+    Case studies 3 and 4 (cs3 \& cs4) introduced both non-uniform boundaries and a more complicated wind resource than cs1 \& cs2, to further test participant methods.
+
+    \textcolor{red}{Mention cs3 \& cs4 results here}
 
 %-----------------------%

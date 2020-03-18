@@ -1,16 +1,17 @@
-The intent of this case study was to assess both the effects that different optimization methods and physics model approximations have on turbine location recommendations.
-Case study 2 differs from case study 1 in that 1) no wake model was provided and 2) only a single wind farm size was to be optimized.
+The intent of this case study was to assess both
+(1) the effects different wake models have on optimization results and
+(2) how participants addressed a farm with discreet boundary sections seperated by non-viable areas.
+Like the relationship between cs2 and cs1, cs4 differs from cs3 in that no wake model was provided.
 Participants were free to choose their preferred EWM and optimization method combination.
 
-\subsubsection{Wake Model}
-Unlike case study 1, participant-reported AEP values were not comparable, since each participant used a different EWMs to calculate AEP. %(which account for different physics phenomena)
-To help us make fair comparisons and conclusions, we conducted a cross-comparison of results between participants.
-For the cross-comparison, each participant provided their optimal turbine layout in the standardized \texttt{.yaml} format. Each participant was then provided with every other participants' optimized layout file.
-Participants then used their own wake model to calculate the AEP of the other participant's proposed farm layouts with their EWMs.
-From this portion of the case study, we hoped to learn if any participants' results were consistently seen as superior by other EWMs.
+% \subsubsection{Wake Model}
+% Unlike cs3, participant-reported AEP values are not comparable, since each participant used a different EWMs to calculate AEP. %(which account for different physics phenomena)
+% To help us make fair comparisons and conclusions, we conducted a cross-comparison of results between participants.
+% For the cross-comparison, each participant provided their optimal turbine layout in the standardized \texttt{.yaml} format. Each participant was then provided with every other participants' optimized layout file.
+% Participants then used their own wake model to calculate the AEP of the other participant's proposed farm layouts with their EWMs.
+% From this portion of the case study, we hoped to learn if any participants' results were consistently seen as superior by other EWMs.
 
-\subsubsection{Farm Attributes}
-The wind farm size for the combined case study was limited to nine turbines.
-We did this to limit the computation time requirements when assessing results in a standardized LES, discussed later in \cref{sec:conc}.
-We used the previously described method under \cref{sec:farmgeog} to determine the boundary radius, which for the 9 turbine case is 900 m.
-The wind rose and wind speed were the same as in case study 1.
+%\subsubsection{Farm Attributes}
+The wind farm in cs4 consisted of eighty-one (81) turbines.
+It was entirely up to participants and their optimizers how to apportion the turbines across the disparate sections of the farm.
+The wind rose and wind speed frequencies were the same as in cs3.

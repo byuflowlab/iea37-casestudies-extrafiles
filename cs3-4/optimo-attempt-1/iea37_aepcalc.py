@@ -208,7 +208,7 @@ def getTurbAtrbtYAML(file_name):
     return turb_ci, turb_co, rated_ws, rated_pwr, turb_diam
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     """Used for demonstration.
 
     An example command line syntax to run this file is:
@@ -219,17 +219,17 @@ if __name__ == "__main__":
     """
     #-- Read necessary values from .yaml files --#
     # Get turbine locations and auxiliary <.yaml> filenames
-    turb_coords, fname_turb, fname_wr = getTurbLocYAML(sys.argv[1])
+#    turb_coords, fname_turb, fname_wr = getTurbLocYAML(sys.argv[1])
     # Get the array wind sampling bins, frequency at each bin, and wind speed
-    wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = getWindRoseYAML(
-        fname_wr)
+#    wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = getWindRoseYAML(
+#        fname_wr)
     # Pull the needed turbine attributes from file
-    turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = getTurbAtrbtYAML(
-        fname_turb)
+#    turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = getTurbAtrbtYAML(
+#        fname_turb)
 
     #-- Calculate the AEP from ripped values --#
-    AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir,
-                turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
+#    AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir,
+#                turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
     # Print AEP summed for all directions
-    print(np.around(AEP, decimals=5))
-    print(np.around(np.sum(AEP), decimals=5))
+#    print(np.around(AEP, decimals=5))
+#    print(np.around(np.sum(AEP), decimals=5))

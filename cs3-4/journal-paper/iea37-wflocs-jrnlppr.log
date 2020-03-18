@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.9.7)  16 JAN 2020 09:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.9.7)  30 JAN 2020 04:34
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1701,11 +1701,6 @@ File: tikzlibrarypositioning.code.tex 2008/10/06 v3.0.1a (rcs-revision 1.7)
 \c@@todonotes@numberoftodonotes=\count348
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/type1cm/type1cm.sty
 Package: type1cm 2002/09/05 v0.04 BlueSky/Y&Y Type1 CM font definitions (DPC, patched RF)
-) (/usr/local/texlive/2017/texmf-dist/tex/latex/wasysym/wasysym.sty
-Package: wasysym 2003/10/30 v2.0 Wasy-2 symbol support package
-\symwasy=\mathgroup8
-LaTeX Font Info:    Overwriting symbol font `wasy' in version `bold'
-(Font)                  U/wasy/m/n --> U/wasy/b/n on input line 90.
 ) (/usr/local/texlive/2017/texmf-dist/tex/latex/wrapfig/wrapfig.sty
 \wrapoverhang=\dimen352
 \WF@size=\dimen353
@@ -1860,7 +1855,7 @@ Package grfext Info: Graphics extension search list:
  (/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-\symgns@font=\mathgroup9
+\symgns@font=\mathgroup8
 LaTeX Font Info:    Overwriting symbol font `gns@font' in version `bold'
 (Font)                  TS1/ntxtlf/m/n --> TS1/ntxtlf/bx/n on input line 46.
 Package gensymb Info: Math companion symbols declared on input line 46.
@@ -1904,16 +1899,8 @@ LaTeX Font Info:    Try loading font information for U+ntxsyc on input line 46.
  (/usr/local/texlive/2017/texmf-dist/tex/latex/newtx/untxsyc.fd
 File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 )
-LaTeX Font Info:    Try loading font information for U+wasy on input line 46.
- (/usr/local/texlive/2017/texmf-dist/tex/latex/wasysym/uwasy.fd
-File: uwasy.fd 2003/10/30 v2.0 Wasy-2 symbol font definitions
-)
-
-LaTeX Font Warning: Font shape `U/wasy/m/n' in size <5.5> not available
-(Font)              size <5> substituted on input line 46.
-
 LaTeX Font Info:    Try loading font information for TS1+ntxtlf on input line 46.
-(/usr/local/texlive/2017/texmf-dist/tex/latex/newtx/ts1ntxtlf.fd
+ (/usr/local/texlive/2017/texmf-dist/tex/latex/newtx/ts1ntxtlf.fd
 File: ts1ntxtlf.fd 2015/01/18 v1.0 fd file for TS1/ntxtlf
 )
 LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
@@ -2003,67 +1990,75 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 16.525pt on input line 6.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 (Font)              scaled to size 24.44884pt on input line 6.
-) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd.tex [1
+ [1
 
-{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-allcs.tex
+{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd.tex
+<./figures/BorselleBoundary.pdf, id=102, pagebox=cropbox, 614.295pt x 794.97pt>
+File: ./figures/BorselleBoundary.pdf Graphic file (type pdf)
+<use ./figures/BorselleBoundary.pdf>
+Package pdftex.def Info: ./figures/BorselleBoundary.pdf  used on input line 16. on input line 16.
+Package pdftex.def Info: Requested size: 190.24818pt x 146.08626pt on input line 16.
+<./figures/cs4-layout.pdf, id=106, pagebox=cropbox, 614.295pt x 794.97pt>
+File: ./figures/cs4-layout.pdf Graphic file (type pdf)
+<use ./figures/cs4-layout.pdf>
+Package pdftex.def Info: ./figures/cs4-layout.pdf  used on input line 22. on input line 22.
+Package pdftex.def Info: Requested size: 190.24818pt x 159.01056pt on input line 22.
+ (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-allcs.tex [2]
+<./figures/iea37-10mw-pcurve.pdf, id=120, pagebox=cropbox, 614.295pt x 794.97pt>
+File: ./figures/iea37-10mw-pcurve.pdf Graphic file (type pdf)
+<use ./figures/iea37-10mw-pcurve.pdf>
+Package pdftex.def Info: ./figures/iea37-10mw-pcurve.pdf  used on input line 21. on input line 21.
+Package pdftex.def Info: Requested size: 289.07999pt x 241.62515pt on input line 21.
+ [3 <./figures/BorselleBoundary.pdf> <./figures/cs4-layout.pdf>] [4 <./figures/iea37-10mw-pcurve.pdf>]
 
-Package natbib Warning: Citation `NREL5MW' on page 2 undefined on input line 6.
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 70.
 
-<./figures/power_curve.pdf, id=90, pagebox=cropbox, 252.945pt x 180.675pt>
-File: ./figures/power_curve.pdf Graphic file (type pdf)
-<use ./figures/power_curve.pdf>
-Package pdftex.def Info: ./figures/power_curve.pdf  used on input line 22. on input line 22.
-Package pdftex.def Info: Requested size: 252.94438pt x 180.67455pt on input line 22.
-[2 <./figures/power_curve.pdf>]
-<./figures/windrose.pdf, id=126, pagebox=cropbox, 462.52798pt x 346.89601pt>
-File: ./figures/windrose.pdf Graphic file (type pdf)
-<use ./figures/windrose.pdf>
-Package pdftex.def Info: ./figures/windrose.pdf  used on input line 140. on input line 140.
-Package pdftex.def Info: Requested size: 234.8775pt x 176.15768pt on input line 140.
-) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-cs3.tex
-
-Package natbib Warning: Citation `Bastankhah2016' on page 3 undefined on input line 5.
-
-
-Package natbib Warning: Citation `ThomasNing2018' on page 3 undefined on input line 5.
-
-[3 <./figures/windrose.pdf>]
-
-Package natbib Warning: Citation `Niayifar2016' on page 4 undefined on input line 33.
-
-
-Package natbib Warning: Citation `ThomasNing2018' on page 4 undefined on input line 33.
-
-) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-cs4.tex [4])) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-rslts.tex) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-conc.tex) [5] [6] [7] (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.bbl)
-
-Package natbib Warning: There were undefined citations.
-
+<./figures/iea37-windrose.pdf, id=201, pagebox=cropbox, 462.52798pt x 346.89601pt>
+File: ./figures/iea37-windrose.pdf Graphic file (type pdf)
+<use ./figures/iea37-windrose.pdf>
+Package pdftex.def Info: ./figures/iea37-windrose.pdf  used on input line 72. on input line 72.
+Package pdftex.def Info: Requested size: 234.87749pt x 136.65959pt on input line 72.
+<./figures/windspeed-freq.pdf, id=203, pagebox=cropbox, 614.295pt x 794.97pt>
+File: ./figures/windspeed-freq.pdf Graphic file (type pdf)
+<use ./figures/windspeed-freq.pdf>
+Package pdftex.def Info: ./figures/windspeed-freq.pdf  used on input line 73. on input line 73.
+Package pdftex.def Info: Requested size: 216.81pt x 184.7601pt on input line 73.
+) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-cs3.tex [5 <./figures/iea37-windrose.pdf> <./figures/windspeed-freq.pdf>]) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-mthd-cs4.tex)) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-rslts.tex) (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/./sections/iea37-cs34-conc.tex) [6] [7] [8] (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.bbl
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 9.0pt on input line 1.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/it' will be
+(Font)              scaled to size 9.0pt on input line 15.
+LaTeX Font Info:    Font shape `OT1/ntxtlf/m/n' will be
+(Font)              scaled to size 9.0pt on input line 51.
+LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
+(Font)              scaled to size 8.09995pt on input line 51.
+LaTeX Font Info:    Font shape `T1/ntxtt/m/n' will be
+(Font)              scaled to size 9.0pt on input line 51.
+LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
+(Font)              scaled to size 9.0pt on input line 51.
+) [9]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 113.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 113.
-(/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.aux)
+ (/Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 113.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 113.
 Package rerunfilecheck Info: File `iea37-wflocs-jrnlppr.out' has not changed.
-(rerunfilecheck)             Checksum: 25CFF5D466AF34C913EA7289E8C94E9A;1197.
-
-
-LaTeX Font Warning: Size substitutions with differences
-(Font)              up to 0.5pt have occurred.
-
+(rerunfilecheck)             Checksum: 871327B3886787E158A8DD3AA464FDEA;1059.
  ) 
 Here is how much of TeX's memory you used:
- 37709 strings out of 492990
- 722103 string characters out of 6132637
- 793551 words of memory out of 5000000
- 40481 multiletter control sequences out of 15000+600000
- 616711 words of font info for 160 fonts, out of 8000000 for 9000
+ 37663 strings out of 492990
+ 722953 string characters out of 6132637
+ 791877 words of memory out of 5000000
+ 40400 multiletter control sequences out of 15000+600000
+ 629973 words of font info for 182 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 62i,11n,94p,10489b,771s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,11n,94p,10489b,794s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf-sc.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/tex-gyre/q-ts1.enc}</usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qtmb.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qtmr.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/tex-gyre/qtmri.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/newtx/rntxmi.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/newtx/rntxmi7.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/txfonts/rtxmi.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/txfonts/t1xtt.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/newtx/txexs.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/newtx/txsys.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on /Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.pdf (7 pages, 201279 bytes).
+Output written on /Users/nbaker/Documents/GitHub/iea37-casestudies-extrafiles/cs3-4/journal-paper/iea37-wflocs-jrnlppr.pdf (9 pages, 448887 bytes).
 PDF statistics:
- 239 PDF objects out of 1000 (max. 8388607)
- 186 compressed objects within 2 object streams
- 34 named destinations out of 1000 (max. 500000)
- 31391 words of extra memory for PDF output out of 35830 (max. 10000000)
+ 337 PDF objects out of 1000 (max. 8388607)
+ 245 compressed objects within 3 object streams
+ 51 named destinations out of 1000 (max. 500000)
+ 40636 words of extra memory for PDF output out of 42996 (max. 10000000)
 

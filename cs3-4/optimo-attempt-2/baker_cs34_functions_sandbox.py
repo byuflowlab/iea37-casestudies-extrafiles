@@ -319,111 +319,6 @@ def checkTurbSpacing(x0, turb_diam, scaledTC):
     return constraints  # Negative if ok, positive if too close
 
 
-def optimoStripArgTuples(args):
-    # Takes the passed array and strips items into their proper variables.
-    cntr = 0
-    wind_dir_freq_len = int(args[0])
-    cntr = cntr + 1
-    wind_dir_freq = args[cntr:(wind_dir_freq_len + cntr)]
-    cntr = cntr + wind_dir_freq_len
-    wind_speeds_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_speeds = args[cntr:(wind_speeds_len + cntr)]
-    cntr = cntr + wind_speeds_len
-    wind_speed_prob_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_speed_prob_wid = int(args[cntr])
-    cntr = cntr + 1
-    wind_speed_prob_size = wind_speed_prob_len * wind_speed_prob_wid
-    wind_speed_probs = args[cntr:(wind_speed_prob_size + cntr)]
-    wind_speed_probs = wind_speed_probs.reshape(
-        wind_speed_prob_len, wind_speed_prob_wid)
-    cntr = cntr + wind_speed_prob_size
-    wind_dir_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_dir = args[cntr:(wind_dir_len + cntr)]
-    cntr = cntr + wind_dir_len
-    turb_diam = float(args[cntr])
-    cntr = cntr + 1
-    turb_ci = float(args[cntr])
-    cntr = cntr + 1
-    turb_co = float(args[cntr])
-    cntr = cntr + 1
-    rated_ws = float(args[cntr])
-    cntr = cntr + 1
-    rated_pwr = float(args[cntr])
-    cntr = cntr + 1
-    scaledAEP = float(args[cntr])
-    cntr = cntr + 1
-    scaledTC = float(args[cntr])
-
-    return [wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir,
-            turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC]
-
-
-def optimoMakeArgTuples(wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC):
-    # Takes the list of passed variables and concatenates them into one long array with size markers for matricies
-    wind_speed_probs_size = len(wind_speed_probs) * len(wind_speed_probs[0])
-    argLen = len(wind_dir_freq) \
-        + len(wind_speeds) \
-        + wind_speed_probs_size \
-        + len(wind_dir) \
-        + 4 \
-        + 8  # 4 For lengths of first four entries
-    # 7 For single element items <turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTurbCoords>
-
-    args = np.zeros(argLen)
-    cntr = 0  # Where we are right now.
-
-    args[0] = len(wind_dir_freq)
-    cntr = cntr + 1
-    args[cntr:(len(wind_dir_freq)+cntr)] = wind_dir_freq
-    cntr = cntr + len(wind_dir_freq)
-    args[cntr] = len(wind_speeds)
-    cntr = cntr + 1
-    args[cntr:len(wind_speeds)+cntr] = wind_speeds
-    cntr = cntr + len(wind_speeds)
-    args[cntr] = len(wind_speed_probs)
-    cntr = cntr + 1
-    args[cntr] = len(wind_speed_probs[0])
-    cntr = cntr + 1
-    args[cntr:wind_speed_probs_size +
-         cntr] = np.asarray(wind_speed_probs).reshape(-1)
-    cntr = cntr + wind_speed_probs_size
-    args[cntr] = len(wind_dir)
-    cntr = cntr + 1
-    args[cntr:len(wind_dir)+cntr] = wind_dir
-    cntr = cntr + len(wind_dir)
-    args[cntr] = turb_diam
-    cntr = cntr + 1
-    args[cntr] = turb_ci
-    cntr = cntr + 1
-    args[cntr] = turb_co
-    cntr = cntr + 1
-    args[cntr] = rated_ws
-    cntr = cntr + 1
-    args[cntr] = rated_pwr
-    cntr = cntr + 1
-    args[cntr] = scaledAEP
-    cntr = cntr + 1
-    args[cntr] = scaledTC
-
-    return args
-
-#-- Specific for the optimizaiton --#
-def optimoFun(x0, args):
-    # Rip and parse the data we need
-    [wind_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam,
-        turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC] = optimoStripArgTuples(args)
-    newCoords = makeCoordMatrix(x0)
-
-    # Calculate the AEP, remembering to scale the coordinates
-    dirAEP = iea37aepC.calcAEPcs3((newCoords * scaledTC), wind_freq, wind_speeds, wind_speed_probs,
-                        wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
-    scaledAEP = dirAEP / scaledAEP
-    return -np.sum(scaledAEP)
-    #return np.sum(dirAEP)
-
 #-- Makes random start locations for cs3 --#
 def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
     #-- Initialize our array --#
@@ -471,7 +366,7 @@ def getUpDwnYvals(xCoord, splineList, vertexList, bndryPts):
         ymax = splineList[2](xCoord)  # Make it the left upper spline
     # If it's to the left of the rightmost point
     elif (xCoord < bndryPts[vertexList[0]].x):
-        ymax = splineList[3](xCoord)  # Make it the left upper spline
+        ymax = splineList[3](xCoord)  # Make it the right upper spline
     else:
         ymax = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
 
@@ -487,7 +382,7 @@ def getUpDwnYvals(xCoord, splineList, vertexList, bndryPts):
     
     return ymin,ymax
 
-#-- Returns neg numbers for oud of mounds coordinates, positive if it's in bounds --#
+#-- Returns neg numbers for out of bounds coordinates, positive if it's in bounds --#
 def checkBndryCons(x0, splineList, vertexList, bndryPts, scaledTC):
     x0 = x0 * scaledTC                   # Scale things to normal
     turbList = makeCoordStruct(x0)

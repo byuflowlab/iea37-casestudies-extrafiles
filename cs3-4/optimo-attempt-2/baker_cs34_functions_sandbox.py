@@ -246,11 +246,12 @@ def printBoundaryClr(bndryPts, colorNum):
     plt.axis('off')                         # Turn off the framing
 
 
-def printBoundaryArray(bndryPtsX, bndryPtsY, colorNum):
+def printBoundaryArray(bndryPtsX, bndryPtsY, size, colorNum):
     #-- Print the windfarm boundary. bndryPts must be <np.ndarray> of type <coordinate>
     plt.plot(bndryPtsX, bndryPtsY, color=getPltClrs().getColor(colorNum))
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
+    plt.gcf().set_size_inches(size.x, size.y)
 
 
 def printVerticies(coordList, vertList, colorName):
@@ -519,12 +520,12 @@ if __name__ == "__main__":
     bndryPts = getTurbAtrbtCs3YAML(fn)
     clsdBP = closeBndryList(bndryPts)   # Duplicate the 1st coord for a closed boundary
     # #- Load the turbine and windrose atributes -#
-    # fname_turb = "iea37-10mw.yaml"
+    fname_turb = "iea37-10mw.yaml"
     # fname_wr = "iea37-windrose-cs3.yaml"
     # wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = iea37aepC.getWindRoseYAML(
     #     fname_wr)
-    # turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = iea37aepC.getTurbAtrbtYAML(
-    #     fname_turb)
+    turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = iea37aepC.getTurbAtrbtYAML(
+        fname_turb)
 
     # #- Some display variables -#
     # displaySize = np.recarray(1, coordinate)

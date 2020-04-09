@@ -4,11 +4,12 @@
 % 18 Mar 19
 clear, close all
 addpath('../support-files/')
-addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
+%addpath(genpath('/Users/nbaker/Documents/MATLAB/YAMLMatlab'));
+addpath(genpath('C:/Users/Captain Baker/Documents/MATLAB/YAMLMatlab/'));
 
 % Make matrix of points
 nNumOrigBins = 12;
-nNumFinalBins = 20;
+nNumFinalBins = 360;
 maxWindSpeed = 25;
 oldBins = zeros(nNumOrigBins, 4); 
 
@@ -35,11 +36,11 @@ Freqs = (oldBins(:,4)/100)';  % Make a decimal from a percentage
 [~,~, newWeibVars] = extrapolateWeibull([oldBins(:,2),oldBins(:,3)],nNumFinalBins,maxWindSpeed);
 newDirs = round(rad2deg(newDirs),0);
 newWeibVars = round(newWeibVars,2);
-csvwrite('../support-files/WiebVars.csv',newWeibVars);
+%csvwrite('../support-files/new-WiebVars.csv',newWeibVars);
 newFreqs = round(newFreqs,4)';
-%csvwrite('../support-files/freqs.csv',newFreqs);
-
+%csvwrite('../support-files/new-freqs.csv',newFreqs);
+sum(newFreqs)
 %-- Plot and write the data --%
 % To plot the Wind Frequency distribution
-plotWindRoseFreq(newFreqs,newDirs);
-%writeWindroseYAML('../support-files/iea37-cs3-windrose-test.yaml', newDirs, newWeibVars, newFreqs);
+%plotWindRoseFreq(newFreqs,newDirs);
+%writeWindroseYAML('../support-files/new-iea37-cs3-windrose-test.yaml', newDirs, newWeibVars, newFreqs);

@@ -2,7 +2,6 @@
 from __future__ import print_function   # For Python 3 compatibility
 from scipy.interpolate import interp1d  # To create our splines
 #from scipy import optimize  # To create our splines
-import scipy.spatial.distance as ssd    # For turbine spacing, gets the straight-line distance between coordinates
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
@@ -266,13 +265,15 @@ def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
     plt.scatter(coordList.x, coordList.y, s=turbRadius, color=colorName)
     if bShowIndx:
         for i in range(len(coordList)):
-            plt.text(coordList[i].x, coordList[i].y, str(i))
+            # Plot the index number offset enough so the turb circle doesn't cover it
+            plt.text(coordList[i].x+turbRadius,
+                     coordList[i].y+turbRadius, str(i))
 
 #-- Code for optimization of turbine locaitons --#
-def makeCoordArray(turb_coords):
+def makeCoordArray(x0s):
     # Takes coordinates in form turb_coords.x and .y and puts them into a
     # single array. For optimizer to use.
-    x0 = np.concatenate((turb_coords.x, turb_coords.y))
+    x0 = np.concatenate((x0s.x, x0s.y))
     return x0
 
 
@@ -281,55 +282,63 @@ def makeCoordStruct(x0):
     # For optimzer use.
     nNumRtrs = int(len(x0)/2)
 
-    coordList = np.recarray(nNumRtrs, coordinate)
-    coordList.x = x0[0:nNumRtrs]
-    coordList.y = x0[nNumRtrs:len(x0)]
+    x0s = np.recarray(nNumRtrs, coordinate)
+    x0s.x = x0[0:nNumRtrs]
+    x0s.y = x0[nNumRtrs:len(x0)]
 
-    return coordList
+    return x0s
 
 
 def makeCoordMatrix(x0):
     # Makes an Mx2 matrix where [0,1] = [x,y]
     # For scipy.spatial.distance.pdist() function
     nNumRtrs = int(len(x0)/2)
-    coordMat = x0.reshape((nNumRtrs, 2))
-    return coordMat
+    x0m = x0.reshape((nNumRtrs, 2))
+    return x0m
 
 
-def makeFirstCoordStruct(turb_coords):
+def makeFirstCoordStruct(x0m):
     # Takes ripped .yaml coordinates and puts them into our struct format.
     # Only needs to be done once at the beginning.
-    nNumRtrs = len(turb_coords)
-    coordList = np.recarray(nNumRtrs, coordinate)
+    nNumRtrs = len(x0m)
+    x0s = np.recarray(nNumRtrs, coordinate)
 
-    coordList.x = turb_coords[:, 0]
-    coordList.y = turb_coords[:, 1]
-    # for i in range(nNumRtrs):
-    #     coordList[i].x = turb_coords[i,0]
-    #     coordList[i].y = turb_coords[i,1]
+    x0s.x = x0m[:, 0]
+    x0s.y = x0m[:, 1]
 
-    return coordList
+    return x0s
 
 
-def checkTurbSpacing(x0, turb_diam):
-    testCoordMat = makeCoordMatrix(x0)           # make [[x1,y1],[x2,y2],...]
+def checkTurbSpacing(turbCoords, fMinTurbDist):
+    #-- Returns an array of the distance between every pair of coordinates
+    #-- turbCoords should be of <coordinate> type.
+    nNumTurbs = len(turbCoords)         # Our number of turbines
+    # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
+    nNumPairs = comb(nNumTurbs, 2)
+    # Array holding the dist. between each pair
+    cTurbSpace = np.zeros(nNumPairs)
 
-    # Number will be C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
-    cTurbSpace = ssd.pdist(testCoordMat, metric='euclidean') # Get the distance between each turbine
-    constraints = cTurbSpace - (2*turb_diam)                 # Constrain that the turbines are less than 2 diams apart
+    nCntr = 0  # Logs where on the list we are
+    for i in range(nNumTurbs):          # For every turbine
+        for j in range(i):              # Check the space between pairs we haven't calculated
+            cTurbSpace[nCntr] = coordDist(turbCoords[i], turbCoords[j])
+            nCntr = nCntr + 1
+
+    # Constrain that the turbines are less than 2 diams apart
+    constraints = cTurbSpace - fMinTurbDist
     return constraints  # Negative if ok, positive if too close
 
 
 #-- Makes random start locations for cs3 --#
-def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
+def iea37cs3randomstarts(numTurbs, splineList, vertexPts, turb_diam):
     #-- Initialize our array --#
     buf = np.zeros((numTurbs, 2))
     turbRandoList = np.recarray((numTurbs), dtype=coordinate, buf=buf)
     minTurbDist = 2*turb_diam
 
     #-- Get the x-values --#
-    xmin = bndryPts[vertexList[2]].x   # Our minimum x-value
-    xmax = bndryPts[vertexList[0]].x   # our maximum x-value
+    xmin = min(vertexPts.x)   # Our minimum x-value
+    xmax = max(vertexPts.x)   # our maximum x-value
     for i in range(numTurbs):
         turbRandoList[i].x = np.random.uniform(xmin, xmax)
 
@@ -339,7 +348,7 @@ def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
     i = 0
     while i < numTurbs:
         ymin, ymax = getUpDwnYvals(
-            turbRandoList[i].x, splineList, vertexList, bndryPts)
+            turbRandoList[i].x, splineList, vertexPts)
         # Get a random number in our bounds
         turbRandoList[i].y = np.random.uniform(ymin, ymax)
         # Check it doesn't conflict with nearby turbines
@@ -347,39 +356,39 @@ def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
             # If this turbine has a proximity conflict
             if (coordDist(turbRandoList[i], turbRandoList[j]) < minTurbDist):
                 turbRandoList[i].x = np.random.uniform(
-                    xmin, xmax)  # Give it a new x-val
-                i = i-1  # Redo the y-val too
+                    xmin, xmax)  # Give it a new y-val
+                i = i-2  # Recheck new y-val 
                 break  # Stop checking for conflicts and redo the y-values
         i = i+1
 
     return turbRandoList
 
 #-- Returns the max and min y-vals for a given x-val in the cs3 boundary --#
-def getUpDwnYvals(xCoord, splineList, vertexList, bndryPts):
+def getUpDwnYvals(xCoord, splineList, vertexPts):
     # Given there are 4 splines (with 0&1 below, 2&3 above),
     # returns the indecies of splines the given x-coord falls between
     
     #-- Upper. If it's out of bounds
-    if (xCoord < bndryPts[vertexList[2]].x):
-        ymax = bndryPts[vertexList[2]].y # Give it the y-value of our leftmost point
+    if (xCoord < vertexPts[2].x):
+        ymax = vertexPts[2].y # Give it the y-value of our leftmost point
     # If it's to the left of the right upper spline
-    elif (xCoord < bndryPts[vertexList[3]].x):
+    elif (xCoord < vertexPts[3].x):
         ymax = splineList[2](xCoord)  # Make it the left upper spline
     # If it's to the left of the rightmost point
-    elif (xCoord < bndryPts[vertexList[0]].x):
+    elif (xCoord < vertexPts[0].x):
         ymax = splineList[3](xCoord)  # Make it the right upper spline
     else:
-        ymax = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
+        ymax = vertexPts[0].y # Give it the y-value of our rightmost point
 
     #-- Lower. If it's to the left of the right lower spline
-    if (xCoord < bndryPts[vertexList[2]].x):
-        ymin = bndryPts[vertexList[2]].y # Give it the y-value of our leftmost point
-    elif (xCoord < bndryPts[vertexList[1]].x):
+    if (xCoord < vertexPts[2].x):
+        ymin = vertexPts[2].y # Give it the y-value of our leftmost point
+    elif (xCoord < vertexPts[1].x):
         ymin = splineList[1](xCoord) # Make it the left upper spline
-    elif (xCoord < bndryPts[vertexList[0]].x):
+    elif (xCoord < vertexPts[0].x):
         ymin = splineList[0](xCoord)
     else:
-        ymin = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
+        ymin = vertexPts[0].y # Give it the y-value of our rightmost point
     
     return ymin,ymax
 

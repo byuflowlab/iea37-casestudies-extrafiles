@@ -8,9 +8,9 @@ import sys
 import yaml                             # For reading .yaml files
 # For the AEP calculation code
 import iea37_aepcalc as iea37aepC       # All the given cs3/cs4 functions
+from scipy.special import binom         # "Combination", for deterimining unique turbine pairs
 from math import radians as DegToRad    # For converting degrees to radians
 from math import log as ln              # For natural logrithm
-from math import comb                   # "Combination", for deterimining unique turbine pairs
 
 # Structured datatype for holding coordinate pair
 coordinate = np.dtype([('x', 'f8'), ('y', 'f8')])  
@@ -314,7 +314,7 @@ def checkTurbSpacing(turbCoords, fMinTurbDist):
     #-- turbCoords should be of <coordinate> type.
     nNumTurbs = len(turbCoords)         # Our number of turbines
     # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
-    nNumPairs = comb(nNumTurbs, 2)
+    nNumPairs = int(binom(nNumTurbs, 2))
     # Array holding the dist. between each pair
     cTurbSpace = np.zeros(nNumPairs)
 

@@ -82,3 +82,22 @@
  
 
  Matrix statistics
+ -----------------
+               Total      Normal        Free       Fixed     Bounded
+ Rows            400         400           0           0           0
+ Columns          50           0          50           0           0
+
+ No. of matrix elements                20000     Density     100.000
+ Biggest  constant element        0.0000E+00  (excluding fixed columns,
+ Smallest constant element        0.0000E+00   free rows, and RHS)
+
+ No. of objective coefficients             0
+
+ Nonlinear constraints     400     Linear constraints       0
+ Nonlinear variables        50     Linear variables         0
+ Jacobian  variables        50     Objective variables     50
+ Total constraints         400     Total variables         50
+1
+ 
+
+ 

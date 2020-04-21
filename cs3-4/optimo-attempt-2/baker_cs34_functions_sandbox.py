@@ -271,14 +271,15 @@ def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
 
 #-- Code for optimization of turbine locaitons --#
 def makeCoordArray(x0s):
-    # Takes coordinates in form turb_coords.x and .y and puts them into a
-    # single array. For optimizer to use.
+    # Takes <coordinate> input of [(x1,y1), (x2,y2),...]
+    # and gives [x1, x2, ... xn, y1 , y2, ...yn]
     x0 = np.concatenate((x0s.x, x0s.y))
     return x0
 
 
-def makeCoordStruct(x0):
-    # Takes coordinates in a line and puts them into the form turb_coords.x and .y
+def makeArrayCoord(x0):
+    # Takes array of values [x1, x2, ... xn, y1 , y2, ...yn]
+    # and puts them into type <coordinate> for [(x1,y1), (x2,y2),...]
     # For optimzer use.
     nNumRtrs = int(len(x0)/2)
 
@@ -289,17 +290,30 @@ def makeCoordStruct(x0):
     return x0s
 
 
-def makeCoordMatrix(x0):
-    # Makes an Mx2 matrix where [0,1] = [x,y]
-    # For scipy.spatial.distance.pdist() function
+def makeArrayMatrix(x0):
+    # Takes array of values [x1, x2, ... xn, y1 , y2, ...yn]
+    # and makes them [[x1, y1], [x2, y1], ...]
     nNumRtrs = int(len(x0)/2)
-    x0m = x0.reshape((nNumRtrs, 2))
+
+    x0m = np.zeros((nNumRtrs, 2))
+    x0m[:, 0] = x0[0:nNumRtrs]
+    x0m[:, 1] = x0[nNumRtrs:len(x0)]
     return x0m
 
 
-def makeFirstCoordStruct(x0m):
-    # Takes ripped .yaml coordinates and puts them into our struct format.
-    # Only needs to be done once at the beginning.
+def makeCoordMatrix(x0s):
+    # Takes <coordinate> type of values [(x1,y1), (x2,y2),...]
+    # and gives values in matrix form [[x1, y1], [x2, y1], ...]
+    nNumRtrs = len(x0s)
+    x0m = np.zeros((nNumRtrs, 2))
+    x0m[:, 0] = x0s.x
+    x0m[:, 1] = x0s.y
+    return x0m
+
+
+def makeMatrixCoord(x0m):
+    # Takes ripped .yaml coordinates (in matrix form [[x1, y1], [x2, y2], ...]
+    # and puts them into our struct format.
     nNumRtrs = len(x0m)
     x0s = np.recarray(nNumRtrs, coordinate)
 
@@ -316,17 +330,20 @@ def checkTurbSpacing(turbCoords, fMinTurbDist):
     # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
     nNumPairs = int(binom(nNumTurbs, 2))
     # Array holding the dist. between each pair
-    cTurbSpace = np.zeros(nNumPairs)
+    fTurbSpace = np.zeros(nNumPairs)
+    bSpacing = np.ones(nNumPairs)  # False means pair is too close, True means they're ok
 
     nCntr = 0  # Logs where on the list we are
     for i in range(nNumTurbs):          # For every turbine
         for j in range(i):              # Check the space between pairs we haven't calculated
-            cTurbSpace[nCntr] = coordDist(turbCoords[i], turbCoords[j])
+            fTurbSpace[nCntr] = coordDist(turbCoords[i], turbCoords[j])
+            if ((fTurbSpace[nCntr] - fMinTurbDist) < 0):
+                bSpacing[nCntr] = False
             nCntr = nCntr + 1
 
     # Constrain that the turbines are less than 2 diams apart
-    constraints = cTurbSpace - fMinTurbDist
-    return constraints  # Negative if ok, positive if too close
+    fSpaceConst = fTurbSpace - fMinTurbDist
+    return fSpaceConst, bSpacing  # Negative if ok, positive if too close
 
 
 #-- Makes random start locations for cs3 --#
@@ -572,7 +589,7 @@ if __name__ == "__main__":
     # #-- Use the example layout --#
     fn = "iea37-ex-opt3.yaml"
     turb_coords, fname_turb, fname_wr = iea37aepC.getTurbLocYAML(fn)
-    x0s = makeFirstCoordStruct(turb_coords)
+    x0s = makeMatrixCoord(turb_coords)
     # x0s = makeCoordStruct(x0a)
     x0a = makeCoordArray(x0s)
     # # printTurbines(x0s, getPltClrs().getColor(1), turb_diam/2)

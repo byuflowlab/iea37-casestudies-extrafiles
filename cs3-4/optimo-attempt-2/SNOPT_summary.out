@@ -1,0 +1,69 @@
+
+ ==============================
+ S N O P T  7.2-12.3 (Aug 2014)
+ ==============================
+ 
+ SNMEMB EXIT 100 -- finished successfully
+ SNMEMB INFO 104 -- memory requirements estimated
+
+ ==============================
+ S N O P T  7.2-12.3 (Aug 2014)
+ ==============================
+ 
+ 
+
+ Nonlinear constraints     400     Linear constraints       0
+ Nonlinear variables        50     Linear variables         0
+ Jacobian  variables        50     Objective variables     50
+ Total constraints         400     Total variables         50
+ 
+
+ 
+ The user has defined       0   out of   20000   constraint gradients.
+ The user has defined       0   out of      50   objective  gradients.
+ 
+
+        Minor   QPmult   nInf   SumInf   rgNorm  Elastic QPobj
+          100 -1.5E+07     78  1.8E+05           1.1194035E+11
+          200 -5.2E+06     93  1.5E+05           9.5373132E+10
+
+ Major Minors     Step   nCon Feasible  Optimal  MeritFunction    nS Penalty
+     0    285               1  1.3E-01  1.0E+00  1.0214121E+11     1           r i
+     1     31  1.2E-04      2  1.3E-01  1.0E+00  1.0213961E+11     3         n rli
+     2      1  1.4E-04      4  1.3E-01  1.0E+00  1.0213831E+11     3         n rli
+     3     45  1.0E+00      6  9.4E-02  1.0E+00  9.1244691E+10               n r i
+     4     34  1.0E+00      8  9.1E-02  4.8E-01  8.9743122E+10     1         sm  i
+     5     42  1.0E+00     10  8.9E-02  8.1E-01  8.9662888E+10     1 2.5E+03  m  i
+     6     18  1.0E+00     12  8.9E-02  5.6E-01  8.9553028E+10     2 5.7E+02  m  i
+     7     53  1.0E+00     14  8.9E-02  8.9E-01  8.9542961E+10     1 4.6E+02  m  i
+     7     72              14  8.9E-02  4.0E-01  8.9542963E+10     1 4.2E+01  m  i c
+     7     91              14  8.9E-02  3.7E-01  8.9542958E+10                mr i c
+     7     94              14  8.9E-02  3.7E-01  8.9542958E+10                mr i c
+ 
+ SNOPTC EXIT  40 -- terminated after numerical difficulties
+ SNOPTC INFO  41 -- current point cannot be improved
+
+ Problem name                 CaseStud
+ No. of iterations                 550   Objective value     -6.1822329471E+05
+ No. of infeasibilities             73   Sum of infeas        1.4630095355E+05
+ Elastic weight                6.1E+05   Scaled Merit         1.4634595897E+05
+ No. of major iterations             7   Linear objective     0.0000000000E+00
+ Penalty parameter           0.000E+00   Nonlinear objective -6.1822329471E+05
+ No. of calls to funobj            884   No. of calls to funcon            884
+ Calls with modes 1,2 (known g)     14   Calls with modes 1,2 (known g)     14
+ Calls for forward differencing    700   Calls for forward differencing    700
+ Calls for central differencing    100   Calls for central differencing    100
+ No. of degenerate steps            31   Percentage                       5.64
+ Max x                       7 9.0E+03   Max pi                    142 6.1E+05
+ Max Primal infeas         132 4.2E+03   Max Dual infeas            57 6.1E+05
+ Nonlinear constraint violn    4.2E+03
+ 
+ 
+
+ Solution printed on file  18
+ 
+ Time for MPS input                             0.00 seconds
+ Time for solving problem                     261.94 seconds
+ Time for solution output                       0.00 seconds
+ Time for constraint functions                277.87 seconds
+ Time for objective function                    0.00 seconds

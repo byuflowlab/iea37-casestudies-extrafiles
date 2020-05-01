@@ -9,6 +9,7 @@ import sys
 import yaml                             # For reading .yaml files
 # For the AEP calculation code
 import iea37_aepcalc as iea37aepC
+from scipy.special import binom         # "Combination", for deterimining unique turbine pairs
 from math import radians as DegToRad    # For converting degrees to radians
 from math import log as ln  # For natural logrithm
 
@@ -231,7 +232,7 @@ def closeBndryList(bndryPts):
     return coordList
 
 
-def printBoundary(bndryPts, size):
+def printBoundary(bndryPts):
     #-- Print the windfarm boundary. bndryPts must be <np.ndarray> of type <coordinate>
     plt.plot(bndryPts.x, bndryPts.y)
     plt.axis('scaled')                      # Trim the white space
@@ -264,172 +265,112 @@ def printTurbines(coordList, colorName, turbRadius):
     plt.scatter(coordList.x, coordList.y, s=turbRadius, color=colorName)
 
 #-- Code for optimization of turbine locaitons --#
-def makeCoordArray(turb_coords):
-    # Takes coordinates in form turb_coords.x and .y and puts them into a
-    # single array. For optimizer to use.
-    x0 = np.concatenate((turb_coords.x, turb_coords.y))
+def makeCoordArray(x0s):
+    # Takes <coordinate> input of [(x1,y1), (x2,y2),...]
+    # and gives [x1, x2, ... xn, y1 , y2, ...yn]
+    x0 = np.concatenate((x0s.x, x0s.y))
     return x0
 
 
-def makeCoordStruct(x0):
-    # Takes coordinates in a line and puts them into the form turb_coords.x and .y
+def makeArrayCoord(x0):
+    # Takes array of values [x1, x2, ... xn, y1 , y2, ...yn]
+    # and puts them into type <coordinate> for [(x1,y1), (x2,y2),...]
     # For optimzer use.
     nNumRtrs = int(len(x0)/2)
 
-    coordList = np.recarray(nNumRtrs, coordinate)
-    coordList.x = x0[0:nNumRtrs]
-    coordList.y = x0[nNumRtrs:len(x0)]
+    x0s = np.recarray(nNumRtrs, coordinate)
+    x0s.x = x0[0:nNumRtrs]
+    x0s.y = x0[nNumRtrs:len(x0)]
 
-    return coordList
+    return x0s
 
 
-def makeCoordMatrix(x0):
-    # Makes an Mx2 matrix where [0,1] = [x,y]
-    # For scipy.spatial.distance.pdist() function
+def makeArrayMatrix(x0):
+    # Takes array of values [x1, x2, ... xn, y1 , y2, ...yn]
+    # and makes them [[x1, y1], [x2, y1], ...]
     nNumRtrs = int(len(x0)/2)
-    coordMat = x0.reshape((nNumRtrs, 2))
-    return coordMat
+
+    x0m = np.zeros((nNumRtrs, 2))
+    x0m[:, 0] = x0[0:nNumRtrs]
+    x0m[:, 1] = x0[nNumRtrs:len(x0)]
+    return x0m
 
 
-def makeFirstCoordStruct(turb_coords):
-    # Takes ripped .yaml coordinates and puts them into our struct format.
-    # Only needs to be done once at the beginning.
-    nNumRtrs = len(turb_coords)
-    coordList = np.recarray(nNumRtrs, coordinate)
+def makeCoordMatrix(x0s):
+    # Takes <coordinate> type of values [(x1,y1), (x2,y2),...]
+    # and gives values in matrix form [[x1, y1], [x2, y1], ...]
+    nNumRtrs = len(x0s)
+    x0m = np.zeros((nNumRtrs, 2))
+    x0m[:, 0] = x0s.x
+    x0m[:, 1] = x0s.y
+    return x0m
 
-    coordList.x = turb_coords[:, 0]
-    coordList.y = turb_coords[:, 1]
-    # for i in range(nNumRtrs):
-    #     coordList[i].x = turb_coords[i,0]
-    #     coordList[i].y = turb_coords[i,1]
 
-    return coordList
+def makeMatrixCoord(x0m):
+    # Takes ripped .yaml coordinates (in matrix form [[x1, y1], [x2, y2], ...]
+    # and puts them into our struct format.
+    nNumRtrs = len(x0m)
+    x0s = np.recarray(nNumRtrs, coordinate)
+
+    x0s.x = x0m[:, 0]
+    x0s.y = x0m[:, 1]
+
+    return x0s
 
 
 def checkTurbSpacing(x0, turb_diam, scaledTC):
     x0 = x0 * scaledTC                          # Scale things to normal
-    testCoordMat = makeCoordMatrix(x0)           # make [[x1,y1],[x2,y2],...]
+    testCoordMat = makeArrayMatrix(x0)           # make [[x1,y1],[x2,y2],...]
 
     cTurbSpace = ssd.pdist(testCoordMat, metric='euclidean') # Get the distance between each turbine
     constraints = cTurbSpace - (2*turb_diam)                 # Constrain that the turbines are less than 2 diams apart
     return constraints  # Negative if ok, positive if too close
 
+def checkTurbSpacingSciPy(x0, fMinTurbDist):
+    #-- Returns an array of the distance between every pair of coordinates
+    #-- turbCoords should be of array type.
+    x0s = makeArrayCoord(x0)    #
+    nNumTurbs = len(x0s)         # Our number of turbines
+    # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
+    nNumPairs = int(binom(nNumTurbs, 2))
+    # Array holding the dist. between each pair
+    fTurbSpace = np.zeros(nNumPairs)
+    bSpacing = np.ones(nNumPairs)  # False means pair is too close, True means they're ok
 
-def optimoStripArgTuples(args):
-    # Takes the passed array and strips items into their proper variables.
-    cntr = 0
-    wind_dir_freq_len = int(args[0])
-    cntr = cntr + 1
-    wind_dir_freq = args[cntr:(wind_dir_freq_len + cntr)]
-    cntr = cntr + wind_dir_freq_len
-    wind_speeds_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_speeds = args[cntr:(wind_speeds_len + cntr)]
-    cntr = cntr + wind_speeds_len
-    wind_speed_prob_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_speed_prob_wid = int(args[cntr])
-    cntr = cntr + 1
-    wind_speed_prob_size = wind_speed_prob_len * wind_speed_prob_wid
-    wind_speed_probs = args[cntr:(wind_speed_prob_size + cntr)]
-    wind_speed_probs = wind_speed_probs.reshape(
-        wind_speed_prob_len, wind_speed_prob_wid)
-    cntr = cntr + wind_speed_prob_size
-    wind_dir_len = int(args[cntr])
-    cntr = cntr + 1
-    wind_dir = args[cntr:(wind_dir_len + cntr)]
-    cntr = cntr + wind_dir_len
-    turb_diam = float(args[cntr])
-    cntr = cntr + 1
-    turb_ci = float(args[cntr])
-    cntr = cntr + 1
-    turb_co = float(args[cntr])
-    cntr = cntr + 1
-    rated_ws = float(args[cntr])
-    cntr = cntr + 1
-    rated_pwr = float(args[cntr])
-    cntr = cntr + 1
-    scaledAEP = float(args[cntr])
-    cntr = cntr + 1
-    scaledTC = float(args[cntr])
+    nCntr = 0  # Logs where on the list we are
+    for i in range(nNumTurbs):          # For every turbine
+        for j in range(i):              # Check the space between pairs we haven't calculated
+            fTurbSpace[nCntr] = coordDist(x0s[i], x0s[j])
+            if ((fTurbSpace[nCntr] - fMinTurbDist) < 0):
+                bSpacing[nCntr] = False
+            nCntr = nCntr + 1
 
-    return [wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir,
-            turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC]
+    # Constrain that the turbines are less than 2 diams apart
+    fSpaceConst = fTurbSpace - fMinTurbDist
+    return fSpaceConst#, bSpacing  # Negative if ok, positive if too close
 
-
-def optimoMakeArgTuples(wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC):
-    # Takes the list of passed variables and concatenates them into one long array with size markers for matricies
-    wind_speed_probs_size = len(wind_speed_probs) * len(wind_speed_probs[0])
-    argLen = len(wind_dir_freq) \
-        + len(wind_speeds) \
-        + wind_speed_probs_size \
-        + len(wind_dir) \
-        + 4 \
-        + 8  # 4 For lengths of first four entries
-    # 7 For single element items <turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTurbCoords>
-
-    args = np.zeros(argLen)
-    cntr = 0  # Where we are right now.
-
-    args[0] = len(wind_dir_freq)
-    cntr = cntr + 1
-    args[cntr:(len(wind_dir_freq)+cntr)] = wind_dir_freq
-    cntr = cntr + len(wind_dir_freq)
-    args[cntr] = len(wind_speeds)
-    cntr = cntr + 1
-    args[cntr:len(wind_speeds)+cntr] = wind_speeds
-    cntr = cntr + len(wind_speeds)
-    args[cntr] = len(wind_speed_probs)
-    cntr = cntr + 1
-    args[cntr] = len(wind_speed_probs[0])
-    cntr = cntr + 1
-    args[cntr:wind_speed_probs_size +
-         cntr] = np.asarray(wind_speed_probs).reshape(-1)
-    cntr = cntr + wind_speed_probs_size
-    args[cntr] = len(wind_dir)
-    cntr = cntr + 1
-    args[cntr:len(wind_dir)+cntr] = wind_dir
-    cntr = cntr + len(wind_dir)
-    args[cntr] = turb_diam
-    cntr = cntr + 1
-    args[cntr] = turb_ci
-    cntr = cntr + 1
-    args[cntr] = turb_co
-    cntr = cntr + 1
-    args[cntr] = rated_ws
-    cntr = cntr + 1
-    args[cntr] = rated_pwr
-    cntr = cntr + 1
-    args[cntr] = scaledAEP
-    cntr = cntr + 1
-    args[cntr] = scaledTC
-
-    return args
 
 #-- Specific for the optimizaiton --#
 def optimoFun(x0, args):
     # Rip and parse the data we need
-    [wind_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam,
-        turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC] = optimoStripArgTuples(args)
-    newCoords = makeCoordMatrix(x0)
+    newCoords = makeArrayMatrix(x0) * args['fTCscale'] # Make sure to scale them up
 
     # Calculate the AEP, remembering to scale the coordinates
-    dirAEP = iea37aepC.calcAEPcs3((newCoords * scaledTC), wind_freq, wind_speeds, wind_speed_probs,
-                        wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
-    scaledAEP = dirAEP / scaledAEP
+    dirAEP = iea37aepC.calcAEPcs3(newCoords, args['wind_dir_freq'], args['wind_speeds'], args['wind_speed_probs'],
+                        args['wind_dir'], args['turb_diam'], args['turb_ci'], args['turb_co'], args['rated_ws'], args['rated_pwr'])
+    scaledAEP = dirAEP / args['fAEPscale']
     return -np.sum(scaledAEP)
-    #return np.sum(dirAEP)
 
 #-- Makes random start locations for cs3 --#
-def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
+def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam):
     #-- Initialize our array --#
     buf = np.zeros((numTurbs, 2))
     turbRandoList = np.recarray((numTurbs), dtype=coordinate, buf=buf)
     minTurbDist = 2*turb_diam
 
     #-- Get the x-values --#
-    xmin = bndryPts[vertexList[2]].x   # Our minimum x-value
-    xmax = bndryPts[vertexList[0]].x   # our maximum x-value
+    xmin = coordsCorners[2].x   # Our minimum x-value
+    xmax = coordsCorners[0].x   # our maximum x-value
     for i in range(numTurbs):
         turbRandoList[i].x = np.random.uniform(xmin, xmax)
 
@@ -439,7 +380,7 @@ def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
     i = 0
     while i < numTurbs:
         ymin, ymax = getUpDwnYvals(
-            turbRandoList[i].x, splineList, vertexList, bndryPts)
+            turbRandoList[i].x, splineList, coordsCorners)
         # Get a random number in our bounds
         turbRandoList[i].y = np.random.uniform(ymin, ymax)
         # Check it doesn't conflict with nearby turbines
@@ -455,55 +396,54 @@ def iea37cs3randomstarts(numTurbs, splineList, vertexList, bndryPts, turb_diam):
     return turbRandoList
 
 #-- Returns the max and min y-vals for a given x-val in the cs3 boundary --#
-def getUpDwnYvals(xCoord, splineList, vertexList, bndryPts):
+def getUpDwnYvals(xCoord, splineList, coordsCorners):
     # Given there are 4 splines (with 0&1 below, 2&3 above),
     # returns the indecies of splines the given x-coord falls between
     
     #-- Upper. If it's out of bounds
-    if (xCoord < bndryPts[vertexList[2]].x):
-        ymax = bndryPts[vertexList[2]].y # Give it the y-value of our leftmost point
+    if (xCoord < coordsCorners[2].x):
+        ymax = coordsCorners[2].y # Give it the y-value of our leftmost point
     # If it's to the left of the right upper spline
-    elif (xCoord < bndryPts[vertexList[3]].x):
+    elif (xCoord < coordsCorners[3].x):
         ymax = splineList[2](xCoord)  # Make it the left upper spline
     # If it's to the left of the rightmost point
-    elif (xCoord < bndryPts[vertexList[0]].x):
+    elif (xCoord < coordsCorners[0].x):
         ymax = splineList[3](xCoord)  # Make it the left upper spline
     else:
-        ymax = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
+        ymax = coordsCorners[0].y # Give it the y-value of our rightmost point
 
     #-- Lower. If it's to the left of the right lower spline
-    if (xCoord < bndryPts[vertexList[2]].x):
-        ymin = bndryPts[vertexList[2]].y # Give it the y-value of our leftmost point
-    elif (xCoord < bndryPts[vertexList[1]].x):
+    if (xCoord < coordsCorners[2].x):
+        ymin = coordsCorners[2].y # Give it the y-value of our leftmost point
+    elif (xCoord < coordsCorners[1].x):
         ymin = splineList[1](xCoord) # Make it the left upper spline
-    elif (xCoord < bndryPts[vertexList[0]].x):
+    elif (xCoord < coordsCorners[0].x):
         ymin = splineList[0](xCoord)
     else:
         ymin = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
     
     return ymin,ymax
 
-#-- Returns neg numbers for oud of mounds coordinates, positive if it's in bounds --#
-def checkBndryCons(x0, splineList, vertexList, bndryPts, scaledTC):
-    x0 = x0 * scaledTC                   # Scale things to normal
-    turbList = makeCoordStruct(x0)
-    numTurbs = int(len(turbList))
+#-- Returns neg numbers for out of bounds coordinates, positive if it's in bounds --#
+def checkBndryCons(x0, splineList, coordsCorners):
+    x0s = makeArrayCoord(x0)
+    numTurbs = int(len(x0s))
 
     # Check to make sure our poits are in
     bndryCons = np.zeros(numTurbs*4)   # four values (two x and two y) for every turbine
-    xmin = bndryPts[vertexList[2]].x   # Our minimum x-value
-    xmax = bndryPts[vertexList[0]].x   # our maximum x-value
+    xmin = coordsCorners[2].x   # Our minimum x-value
+    xmax = coordsCorners[0].x   # our maximum x-value
     
     # For every turbine
     for i in range(numTurbs):
         #- Check x-vals
-        bndryCons[4*i] = (xmax - turbList[i].x)   # Positive good, neg bad
-        bndryCons[4*i+1] = (turbList[i].x - xmin) # pos good, neg bad
+        bndryCons[4*i] = (xmax - x0s[i].x)   # Positive good, neg bad
+        bndryCons[4*i+1] = (x0s[i].x - xmin) # pos good, neg bad
         
         #- Check y-vals
-        ymin,ymax = getUpDwnYvals(turbList[i].x, splineList, vertexList, bndryPts)
-        bndryCons[4*i+2] = (ymax - turbList[i].y)
-        bndryCons[4*i+3] = (turbList[i].y - ymin)
+        ymin,ymax = getUpDwnYvals(x0s[i].x, splineList, coordsCorners)
+        bndryCons[4*i+2] = (ymax - x0s[i].y)
+        bndryCons[4*i+3] = (x0s[i].y - ymin)
             
     return bndryCons
 
@@ -524,70 +464,84 @@ if __name__ == "__main__":
         fname_turb)
 
     #- Some display variables -#
-    displaySize = np.recarray(1, coordinate)
-    displaySize.x = 5
-    displaySize.y = 5
     numLinspace = 10
     numGridLines = 10                   # How many gridlines we'll use for the visualization
     vertexList = [0, 6, 8, 9, 18]       # Hard code the vertices (though this could be done algorithmically)
     numSides = len(vertexList) - 1
-    scaledAEP = 1e5
+    scaledAEP = 1e3
     scaledTC = 1e3
+    coordsCorners = bndryPts[vertexList[0:4]] # Just the "corners" we've selected.
+    fMinTurbDist = (turb_diam * 2)
+    fMinTurbDistScaled = fMinTurbDist / scaledTC
     #- args in the correct format for optimization -#
-    Args = optimoMakeArgTuples(wind_dir_freq, wind_speeds, wind_speed_probs,
-                               wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr, scaledAEP, scaledTC)
+    Args = dict([('wind_dir_freq', wind_dir_freq), \
+                ('wind_speeds', wind_speeds), \
+                ('wind_speed_probs', wind_speed_probs), \
+                ('wind_dir', wind_dir), \
+                ('turb_diam', turb_diam), \
+                ('turb_ci', turb_ci), \
+                ('turb_co', turb_co), \
+                ('rated_ws', rated_ws), \
+                ('rated_pwr', rated_pwr), \
+                ('fAEPscale', scaledAEP), \
+                ('fTCscale', scaledTC),
+                ('fMinTurbDistScaled', fMinTurbDistScaled)])
 
     # Spline up the boundary
     [splineList, segCoordList] = makeCs3BndrySplines(vertexList, clsdBP, numGridLines)
 
     #-- Use the example layout --#
-    fn = "iea37-ex-opt3.yaml"
-    turb_coords, fname_turb, fname_wr = iea37aepC.getTurbLocYAML(fn)
-    x0s = makeFirstCoordStruct(turb_coords)
+    # fn = "iea37-ex-opt3.yaml"
+    # turb_coords, fname_turb, fname_wr = iea37aepC.getTurbLocYAML(fn)
+    # x0s = makeFirstCoordStruct(turb_coords)
     # x0s = makeCoordStruct(x0a)
-    x0a = makeCoordArray(x0s)
+    # x0a = makeCoordArray(x0s)
     # printTurbines(x0s, getPltClrs().getColor(1), turb_diam/2)
     # startAEP = optimoFun(x0a, Args)
-    numRestarts = 2                     # Number of restarts we're doing
+    numRestarts = 1                     # Number of restarts we're doing
+    print("Running: " + str(numRestarts) + " restarts.")
+
     listAEP = np.zeros(numRestarts)     # An array holding our AEP values
     listTurbLocs = np.zeros((numRestarts, (numTurbs*2)))
     bestResult = np.zeros(2)            # Index, AEP number
 
-#     for cntr in range(numRestarts):
-#         #-- Make some random starting turbine places --#
-#         # turbRandoList = iea37cs3randomstarts(
-#         #     numTurbs, splineList, vertexList, bndryPts, turb_diam)
-#         #- Get our turbine list ready for processing -#
-#         x0 = makeCoordArray(x0s)/scaledTC         # Get a random turbine placement and scale it
-#         # startAEP = optimoFun(x0, Args)
-#         # print(startAEP)
+    for cntr in range(numRestarts):
+        print("Restart #" + str(cntr+1) + "/" +  str(numRestarts) + " (index " + str(cntr) + ")")
+        #-- Make some random starting turbine places --#
+        x0s = iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam)
+        #- Get our turbine list ready for processing -#
+        x0 = makeCoordArray(x0s)/ Args['fTCscale']         # Get a random turbine placement and scale it
+        startAEP = optimoFun(x0, Args)
+        print("Start AEP = " + str(startAEP*Args['fAEPscale']))
 
-#         cons = ({'type': 'ineq', 'fun': lambda x:  checkBndryCons(x, splineList, vertexList, bndryPts, scaledTC)}, {
-#                 'type': 'ineq', 'fun': lambda x: checkTurbSpacing(x, turb_diam, scaledTC)})
-#         res = optimize.minimize(optimoFun, x0, args=Args, method='SLSQP',
-#                                 constraints=cons, options={'disp': True, 'maxiter': 1000})
-# #tol= 1e-6
-#         #-- Save our results --#
-#         listAEP[cntr] = optimoFun(res.x, Args)
-#         listTurbLocs[cntr] = res.x
+        cons = ({'type': 'ineq', 'fun': lambda x:  checkBndryCons(x, splineList, coordsCorners)}, {
+                'type': 'ineq', 'fun': lambda x: checkTurbSpacingSciPy(x, fMinTurbDist)})
+        res = optimize.minimize(optimoFun, x0, args=Args, method='SLSQP',
+                                constraints=cons, options={'disp': True, 'maxiter': 1000})
 
-#     for j in range(numRestarts):
-#         if (bestResult[1] > listAEP[j]):  # If our new AEP is better (Remember negative switches)
-#             bestResult[1] = listAEP[j]    # Save it
-#             bestResult[0] = j             # And the index of which run we're on
+        #-- Save our results --#
+        listAEP[cntr] = (optimoFun(res.x* Args['fTCscale'], Args) * Args['fAEPscale'])
+        listTurbLocs[cntr] = res.x * Args['fTCscale']
+        print("End AEP = " + str(listAEP[cntr]))
+        print()
+        
+    for j in range(numRestarts):
+        if (bestResult[1] > listAEP[j]):  # If our new AEP is better (Remember negative switches)
+            bestResult[1] = listAEP[j]    # Save it
+            bestResult[0] = j             # And the index of which run we're on
 
-#     listTurbLocs = listTurbLocs * scaledTC
-#     print("Best AEP:")
-#     print(listAEP[int(bestResult[0])])  # Print the best one, have to make sure the index is an (int)
-    print(optimoFun(x0a, Args))
-#     # save to csv file
-#     np.savetxt('turblocs-10run-ex.csv', listTurbLocs[int(bestResult[0])], delimiter=',') # Save the best setup
 
-    # for i in range(numSides):
-    #     plt.hold = True
-    #     printBoundaryArray(segCoordList[i].x, splineList[i](
-    #         segCoordList[i].x), 5)
+    print("Best run: " + str(bestResult[0]))
+    print(listAEP[int(bestResult[0])])  # Print the best one, have to make sure the index is an (int)
 
-    # plt.axis('scaled')                      # Trim the white space
-    # plt.axis('off')                         # Turn off the framing
-    # plt.show()
+    bestTurbs =  makeArrayCoord(listTurbLocs[int(bestResult[0])]/scaledTC)
+    np.savetxt('turblocs-' + str(numRestarts) + 'run.csv', listTurbLocs, delimiter=',')
+
+    plt.figure()
+    plt.hold = True
+    plt.plot(clsdBP.x, clsdBP.y, color=getPltClrs().getColor(5), linewidth=1)
+    plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color='black', linestyle='', markersize=7)
+    plt.axis('scaled')                      # Trim the white space
+    plt.axis('off')                         # Turn off the framing
+
+    plt.show()

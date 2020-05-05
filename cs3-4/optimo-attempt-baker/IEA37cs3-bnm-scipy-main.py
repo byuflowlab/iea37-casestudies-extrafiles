@@ -122,13 +122,13 @@ if __name__ == "__main__":
 
     # If we've already saved this kind of run, give it a new name
     for i in range(100):
-        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + 'run(' + str(i) + ').csv') == False):
-            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + 'run(' + str(i) + ').csv', listTurbLocs, delimiter=',')
+        if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv') == False):
+            np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv', listTurbLocs, delimiter=',')
             break
     
     for i in range(100):
-        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv') == False):
-            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv', timeArray, delimiter=',')
+        if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv') == False):
+            np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv', timeArray, delimiter=',')
             break
 
     x0Start = Iea37sb.makeArrayCoord(PreStarts[int(bestResult[0])])

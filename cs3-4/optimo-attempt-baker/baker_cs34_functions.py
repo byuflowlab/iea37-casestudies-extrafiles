@@ -507,7 +507,7 @@ def calcDistNorms(x0, vertices, unit_normals):
         if np.all(face_distance[i] <= 0):
             inside[i] = True
 
-    bndryCons = np.flatten(face_distance) # Flatten into an array
+    bndryCons = face_distance.flatten # Flatten into an array
     return bndryCons#, inside
 
 

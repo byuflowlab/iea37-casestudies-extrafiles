@@ -253,10 +253,10 @@ def printBoundaryArray(bndryPtsX, bndryPtsY, colorNum):
     plt.axis('off')                         # Turn off the framing
 
 
-def printVerticies(coordList, vertList, colorName):
+def printVerticies(coordList, vertList, colorNum):
     plt.hold = True
     plt.plot(coordList[vertList].x,
-             coordList[vertList].y, 'o', color=colorName)
+             coordList[vertList].y, 'o', color=getPltClrs().getColor(colorNum))
 
 
 def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
@@ -268,7 +268,7 @@ def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
             plt.text(coordList[i].x+turbRadius,
                      coordList[i].y+turbRadius, str(i))
 
-#-- Code for optimization of turbine locaitons --#
+#---- Functions for coordinate data manipulation --#
 def makeCoordArray(x0s):
     # Takes <coordinate> input of [(x1,y1), (x2,y2),...]
     # and gives [x1, x2, ... xn, y1 , y2, ...yn]
@@ -322,10 +322,12 @@ def makeMatrixCoord(x0m):
     return x0s
 
 
-def checkTurbSpacing(turbCoords, fMinTurbDist):
+#---- Turbine Spacing constraint function ----#
+def checkTurbSpacing(x0, fMinTurbDist):
     #-- Returns an array of the distance between every pair of coordinates
+    x0s = makeArrayCoord(x0)
     #-- turbCoords should be of <coordinate> type.
-    nNumTurbs = len(turbCoords)         # Our number of turbines
+    nNumTurbs = len(x0s)         # Our number of turbines
     # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
     nNumPairs = int(binom(nNumTurbs, 2))
     # Array holding the dist. between each pair
@@ -335,18 +337,19 @@ def checkTurbSpacing(turbCoords, fMinTurbDist):
     nCntr = 0  # Logs where on the list we are
     for i in range(nNumTurbs):          # For every turbine
         for j in range(i):              # Check the space between pairs we haven't calculated
-            fTurbSpace[nCntr] = coordDist(turbCoords[i], turbCoords[j])
+            fTurbSpace[nCntr] = coordDist(x0s[i], x0s[j])
             if ((fTurbSpace[nCntr] - fMinTurbDist) < 0):
                 bSpacing[nCntr] = False
             nCntr = nCntr + 1
 
     # Constrain that the turbines are less than 2 diams apart
     fSpaceConst = fTurbSpace - fMinTurbDist
-    return fSpaceConst, bSpacing  # Negative if ok, positive if too close
+    return fSpaceConst#, bSpacing  # Negative if ok, positive if too close
 
 
-#-- Specific for the optimizaiton --#
+#-- Specific for the scipy optimizaiton --#
 def optimoFun(x0, args):
+    # Assume coordinates are coming in scaled, so upscale accordingly
     # Rip and parse the data we need
     newCoords = makeArrayMatrix(x0) * args['fTCscale'] # Make sure to scale them up
 
@@ -390,6 +393,7 @@ def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam):
 
     return turbRandoList
 
+#---- Boundary Partition Method constraint functions ----#
 #-- Returns the max and min y-vals for a given x-val in the cs3 boundary --#
 def getUpDwnYvals(xCoord, splineList, coordsCorners):
     # Given there are 4 splines (with 0&1 below, 2&3 above),
@@ -442,8 +446,8 @@ def checkBndryCons(x0, splineList, coordsCorners):
             
     return bndryCons
 
-
-    #-- Functions for checking if turbines are inside a concave boundary --#
+#---- Boundary Normal Method constraint functions ----#
+#-- Functions for checking if turbines are inside a concave boundary --#
 def bndryNormals(bndryList):
     # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
     # Number of verticies in our boundary (minus the repeat for closure)
@@ -471,17 +475,6 @@ def bndryNormals(bndryList):
     return unit_normals_coords
 
 
-def convertCoordToArray(Coords):
-    # Quick conversion froma list of <coordinate> to a list of vectors
-    numPts = Coords.shape[0]
-    Array = np.zeros([numPts, 2])
-    for i in range(numPts):
-        Array[i][0] = Coords[i].x
-        Array[i][1] = Coords[i].y
-
-    return Array
-
-
 def calcDistNorms(points, vertices, unit_normals):
     # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
     # print points.shape, vertices.shape, unit_normals.shape
@@ -495,9 +488,9 @@ def calcDistNorms(points, vertices, unit_normals):
     pa = np.zeros(2)
     d_vec = np.zeros(2)               # Temp vector
     #-- Convert from <coordinate> --#
-    unit_norms = convertCoordToArray(unit_normals)
-    turbCoords = convertCoordToArray(points)
-    bndryCoords = convertCoordToArray(vertices)
+    unit_norms = makeCoordMatrix(unit_normals)
+    turbCoords = makeCoordMatrix(points)
+    bndryCoords = makeCoordMatrix(vertices)
 
     for i in range(nPoints):          # loop through pts and find dist to each face
         # determine if pt is in or out of each face, and dist from each face
@@ -522,7 +515,6 @@ def line(p1, p2):
     C = (p1.x*p2.y - p2.x*p1.y)
     return A, B, -C
 
-
 def intersection(L1, L2):
     # Finds intersection of the given lines
     D = L1[0] * L2[1] - L1[1] * L2[0]
@@ -535,7 +527,7 @@ def intersection(L1, L2):
     else:
         return False
 
-
+#- Construct the simplified (concave) cs3 boundary -#
 def makeSimpleCs3Bndry(clsdBP):
     # Given the boundary points for cs3, this simplifies them into a non-concave shape
     numVertices = 4  # Our new closed boundary. Will be made of only 4 values, to stay convex

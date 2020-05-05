@@ -2,16 +2,15 @@
 from __future__ import print_function   # For Python 3 compatibility
 from scipy.interpolate import interp1d  # To create our splines
 from scipy import optimize  # To create our splines
-import scipy.spatial.distance as ssd
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
 import yaml                             # For reading .yaml files
 # For the AEP calculation code
-import iea37_aepcalc as iea37aepC
+import iea37_aepcalc as iea37aepC       # All the given cs3/cs4 functions
 from scipy.special import binom         # "Combination", for deterimining unique turbine pairs
 from math import radians as DegToRad    # For converting degrees to radians
-from math import log as ln  # For natural logrithm
+from math import log as ln              # For natural logrithm
 
 # Structured datatype for holding coordinate pair
 coordinate = np.dtype([('x', 'f8'), ('y', 'f8')])  
@@ -260,9 +259,14 @@ def printVerticies(coordList, vertList, colorName):
              coordList[vertList].y, 'o', color=colorName)
 
 
-def printTurbines(coordList, colorName, turbRadius):
+def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
     plt.hold = True
     plt.scatter(coordList.x, coordList.y, s=turbRadius, color=colorName)
+    if bShowIndx:
+        for i in range(len(coordList)):
+            # Plot the index number offset enough so the turb circle doesn't cover it
+            plt.text(coordList[i].x+turbRadius,
+                     coordList[i].y+turbRadius, str(i))
 
 #-- Code for optimization of turbine locaitons --#
 def makeCoordArray(x0s):
@@ -318,19 +322,10 @@ def makeMatrixCoord(x0m):
     return x0s
 
 
-def checkTurbSpacing(x0, turb_diam, scaledTC):
-    x0 = x0 * scaledTC                          # Scale things to normal
-    testCoordMat = makeArrayMatrix(x0)           # make [[x1,y1],[x2,y2],...]
-
-    cTurbSpace = ssd.pdist(testCoordMat, metric='euclidean') # Get the distance between each turbine
-    constraints = cTurbSpace - (2*turb_diam)                 # Constrain that the turbines are less than 2 diams apart
-    return constraints  # Negative if ok, positive if too close
-
-def checkTurbSpacingSciPy(x0, fMinTurbDist):
+def checkTurbSpacing(turbCoords, fMinTurbDist):
     #-- Returns an array of the distance between every pair of coordinates
-    #-- turbCoords should be of array type.
-    x0s = makeArrayCoord(x0)    #
-    nNumTurbs = len(x0s)         # Our number of turbines
+    #-- turbCoords should be of <coordinate> type.
+    nNumTurbs = len(turbCoords)         # Our number of turbines
     # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
     nNumPairs = int(binom(nNumTurbs, 2))
     # Array holding the dist. between each pair
@@ -340,14 +335,14 @@ def checkTurbSpacingSciPy(x0, fMinTurbDist):
     nCntr = 0  # Logs where on the list we are
     for i in range(nNumTurbs):          # For every turbine
         for j in range(i):              # Check the space between pairs we haven't calculated
-            fTurbSpace[nCntr] = coordDist(x0s[i], x0s[j])
+            fTurbSpace[nCntr] = coordDist(turbCoords[i], turbCoords[j])
             if ((fTurbSpace[nCntr] - fMinTurbDist) < 0):
                 bSpacing[nCntr] = False
             nCntr = nCntr + 1
 
     # Constrain that the turbines are less than 2 diams apart
     fSpaceConst = fTurbSpace - fMinTurbDist
-    return fSpaceConst#, bSpacing  # Negative if ok, positive if too close
+    return fSpaceConst, bSpacing  # Negative if ok, positive if too close
 
 
 #-- Specific for the optimizaiton --#
@@ -420,7 +415,7 @@ def getUpDwnYvals(xCoord, splineList, coordsCorners):
     elif (xCoord < coordsCorners[0].x):
         ymin = splineList[0](xCoord)
     else:
-        ymin = bndryPts[vertexList[0]].y # Give it the y-value of our rightmost point
+        ymin = coordsCorners[0].y # Give it the y-value of our rightmost point
     
     return ymin,ymax
 
@@ -448,100 +443,121 @@ def checkBndryCons(x0, splineList, coordsCorners):
     return bndryCons
 
 
-if __name__ == "__main__":
-    numTurbs = 25
+    #-- Functions for checking if turbines are inside a concave boundary --#
+def bndryNormals(bndryList):
+    # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
+    # Number of verticies in our boundary (minus the repeat for closure)
+    nVerts = len(bndryList)-1
+    unit_normals = np.zeros([nVerts, 2])  # For our unit Normals
+    unit_normals_coords = np.recarray(nVerts, coordinate)
 
-    #- Load the boundary -#
-    fn = "iea37-boundary-cs3.yaml"
-    bndryPts = getTurbAtrbtCs3YAML(fn)
-    clsdBP = closeBndryList(bndryPts)   # Duplicate the 1st coord for a closed boundary
-    #- Load the turbine and windrose atributes -#
-    fname_turb = "iea37-10mw.yaml"
-    fname_wr = "iea37-windrose-cs3.yaml"
-    wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = iea37aepC.getWindRoseYAML(
-        fname_wr)
-    turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = iea37aepC.getTurbAtrbtYAML(
-        fname_turb)
+    # determine if point is inside or outside of each face, and distance from each face
+    for j in range(nVerts):
+        # calculate the unit normal vector of the current face (taking points CCW)
+        if j < nVerts:  # all but the set of point that close the shape
+            normal = np.array([bndryList[j+1].y - bndryList[j].y,
+                               -(bndryList[j+1].x-bndryList[j].x)])
+            unit_normals[j] = normal/np.linalg.norm(normal)
+        else:   # the set of points that close the shape
+            normal = np.array([bndryList[0].y-bndryList[j].y,
+                               -(bndryList[0].x-bndryList[j].x)])
+            unit_normals[j] = normal/np.linalg.norm(normal)
 
-    #- Some display variables -#
-    numLinspace = 10
-    numGridLines = 10                   # How many gridlines we'll use for the visualization
-    vertexList = [0, 6, 8, 9, 18]       # Hard code the vertices (though this could be done algorithmically)
-    numSides = len(vertexList) - 1
-    scaledAEP = 1e3
-    scaledTC = 1e3
-    coordsCorners = bndryPts[vertexList[0:4]] # Just the "corners" we've selected.
-    fMinTurbDist = (turb_diam * 2)
-    fMinTurbDistScaled = fMinTurbDist / scaledTC
-    #- args in the correct format for optimization -#
-    Args = dict([('wind_dir_freq', wind_dir_freq), \
-                ('wind_speeds', wind_speeds), \
-                ('wind_speed_probs', wind_speed_probs), \
-                ('wind_dir', wind_dir), \
-                ('turb_diam', turb_diam), \
-                ('turb_ci', turb_ci), \
-                ('turb_co', turb_co), \
-                ('rated_ws', rated_ws), \
-                ('rated_pwr', rated_pwr), \
-                ('fAEPscale', scaledAEP), \
-                ('fTCscale', scaledTC),
-                ('fMinTurbDistScaled', fMinTurbDistScaled)])
+    #Convert to our <coordinate> data type
+    for i in range(nVerts):
+        unit_normals_coords[i].x = unit_normals[i][0]
+        unit_normals_coords[i].y = unit_normals[i][1]
 
-    # Spline up the boundary
-    [splineList, segCoordList] = makeCs3BndrySplines(vertexList, clsdBP, numGridLines)
-
-    #-- Use the example layout --#
-    # fn = "iea37-ex-opt3.yaml"
-    # turb_coords, fname_turb, fname_wr = iea37aepC.getTurbLocYAML(fn)
-    # x0s = makeFirstCoordStruct(turb_coords)
-    # x0s = makeCoordStruct(x0a)
-    # x0a = makeCoordArray(x0s)
-    # printTurbines(x0s, getPltClrs().getColor(1), turb_diam/2)
-    # startAEP = optimoFun(x0a, Args)
-    numRestarts = 1                     # Number of restarts we're doing
-    print("Running: " + str(numRestarts) + " restarts.")
-
-    listAEP = np.zeros(numRestarts)     # An array holding our AEP values
-    listTurbLocs = np.zeros((numRestarts, (numTurbs*2)))
-    bestResult = np.zeros(2)            # Index, AEP number
-
-    for cntr in range(numRestarts):
-        print("Restart #" + str(cntr+1) + "/" +  str(numRestarts) + " (index " + str(cntr) + ")")
-        #-- Make some random starting turbine places --#
-        x0s = iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam)
-        #- Get our turbine list ready for processing -#
-        x0 = makeCoordArray(x0s)/ Args['fTCscale']         # Get a random turbine placement and scale it
-        startAEP = optimoFun(x0, Args)
-        print("Start AEP = " + str(startAEP*Args['fAEPscale']))
-
-        cons = ({'type': 'ineq', 'fun': lambda x:  checkBndryCons(x, splineList, coordsCorners)}, {
-                'type': 'ineq', 'fun': lambda x: checkTurbSpacingSciPy(x, fMinTurbDist)})
-        res = optimize.minimize(optimoFun, x0, args=Args, method='SLSQP',
-                                constraints=cons, options={'disp': True, 'maxiter': 1000})
-
-        #-- Save our results --#
-        listAEP[cntr] = (optimoFun(res.x* Args['fTCscale'], Args) * Args['fAEPscale'])
-        listTurbLocs[cntr] = res.x * Args['fTCscale']
-        print("End AEP = " + str(listAEP[cntr]))
-        print()
-        
-    for j in range(numRestarts):
-        if (bestResult[1] > listAEP[j]):  # If our new AEP is better (Remember negative switches)
-            bestResult[1] = listAEP[j]    # Save it
-            bestResult[0] = j             # And the index of which run we're on
+    return unit_normals_coords
 
 
-    print("Best run: " + str(bestResult[0]))
-    print(listAEP[int(bestResult[0])])  # Print the best one, have to make sure the index is an (int)
+def convertCoordToArray(Coords):
+    # Quick conversion froma list of <coordinate> to a list of vectors
+    numPts = Coords.shape[0]
+    Array = np.zeros([numPts, 2])
+    for i in range(numPts):
+        Array[i][0] = Coords[i].x
+        Array[i][1] = Coords[i].y
 
-    bestTurbs =  makeArrayCoord(listTurbLocs[int(bestResult[0])]/scaledTC)
-    np.savetxt('turblocs-' + str(numRestarts) + 'run.csv', listTurbLocs, delimiter=',')
+    return Array
 
-    plt.figure()
-    plt.hold = True
-    plt.plot(clsdBP.x, clsdBP.y, color=getPltClrs().getColor(5), linewidth=1)
-    plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color='black', linestyle='', markersize=7)
-    plt.axis('scaled')                      # Trim the white space
-    plt.axis('off')                         # Turn off the framing
 
-    plt.show()
+def calcDistNorms(points, vertices, unit_normals):
+    # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
+    # print points.shape, vertices.shape, unit_normals.shape
+    nPoints = points.shape[0]
+    nVertices = vertices.shape[0] - 1
+    # initialize array to hold distances from each point to each face
+    face_distance = np.zeros([nPoints, nVertices])
+    # init bool array indicating whether a pt is in the hull or not
+    inside = np.zeros(nPoints)
+    # Temp vector from turbine to boundary face
+    pa = np.zeros(2)
+    d_vec = np.zeros(2)               # Temp vector
+    #-- Convert from <coordinate> --#
+    unit_norms = convertCoordToArray(unit_normals)
+    turbCoords = convertCoordToArray(points)
+    bndryCoords = convertCoordToArray(vertices)
+
+    for i in range(nPoints):          # loop through pts and find dist to each face
+        # determine if pt is in or out of each face, and dist from each face
+        for j in range(nVertices):
+            # define the vector from the point of interest to the first point of the face
+            pa = [[bndryCoords[j, 0]-turbCoords[i, 0],
+                   bndryCoords[j, 1]-turbCoords[i, 1]]]
+            # find perpendicular distance from point to current surface (vector projection)
+            d_vec = np.vdot(pa, unit_norms[j])*unit_norms[j]
+            # calculate the sign of perpendicular distance from point to current face (- is inside, + is outside)
+            face_distance[i, j] = np.vdot(d_vec, unit_norms[j])
+        # check if the point is inside the convex hull by checking the sign of the distance
+        if np.all(face_distance[i] <= 0):
+            inside[i] = True
+    return face_distance, inside
+
+
+def line(p1, p2):
+    # Makes a line from the given <coordinate> points
+    A = (p1.y - p2.y)
+    B = (p2.x - p1.x)
+    C = (p1.x*p2.y - p2.x*p1.y)
+    return A, B, -C
+
+
+def intersection(L1, L2):
+    # Finds intersection of the given lines
+    D = L1[0] * L2[1] - L1[1] * L2[0]
+    Dx = L1[2] * L2[1] - L1[1] * L2[2]
+    Dy = L1[0] * L2[2] - L1[2] * L2[0]
+    if D != 0:
+        x = Dx / D
+        y = Dy / D
+        return x, y
+    else:
+        return False
+
+
+def makeSimpleCs3Bndry(clsdBP):
+    # Given the boundary points for cs3, this simplifies them into a non-concave shape
+    numVertices = 4  # Our new closed boundary. Will be made of only 4 values, to stay convex
+    # Our new closed boundary. Will be made of only 4 values, to stay convex
+    newVertices = np.recarray(numVertices, coordinate)
+
+    #-- Make our line equations --#
+    lineRgt = line(clsdBP[0], clsdBP[1])  # - Right side line equation -#
+    lineBtm = line(clsdBP[6], clsdBP[8])  # - Bottom side line equation -#
+    lineLft = line(clsdBP[8], clsdBP[9])  # - Left side line equation -#
+    #- Top side line equation -#
+    crdTemp = np.recarray(1, coordinate)
+    crdTemp.x = 0
+    crdTemp.y = clsdBP[12].y
+    # point [12] is the min y-val of that curve
+    lineTop = line(crdTemp[0], clsdBP[12])
+
+    #-- Figure out intersection points --#
+    [newVertices[0].x, newVertices[0].y] = intersection(lineRgt, lineTop)
+    [newVertices[1].x, newVertices[1].y] = intersection(lineRgt, lineBtm)
+    newVertices[2] = clsdBP[8]
+    [newVertices[3].x, newVertices[3].y] = intersection(lineLft, lineTop)
+    newVertices = closeBndryList(newVertices)  # Close up the loop for plotting
+
+    return newVertices

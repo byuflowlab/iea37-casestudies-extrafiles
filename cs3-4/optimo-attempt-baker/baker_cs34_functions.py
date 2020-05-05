@@ -506,7 +506,9 @@ def calcDistNorms(x0, vertices, unit_normals):
         # check if the point is inside the convex hull by checking the sign of the distance
         if np.all(face_distance[i] <= 0):
             inside[i] = True
-    return face_distance#, inside
+
+    bndryCons = np.flatten(face_distance) # Flatten into an array
+    return bndryCons#, inside
 
 
 def line(p1, p2):

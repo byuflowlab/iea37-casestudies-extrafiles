@@ -474,7 +474,7 @@ def bndryNormals(bndryList):
 
     return unit_normals_coords
 
-
+#-- Returns neg numbers for out of bounds, pos numbers for in-bounds --#
 def calcDistNorms(x0, vertices, unit_normals):
     # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
     # print points.shape, vertices.shape, unit_normals.shape
@@ -507,9 +507,7 @@ def calcDistNorms(x0, vertices, unit_normals):
         if np.all(face_distance[i] <= 0):
             inside[i] = True
 
-    bndryCons = face_distance.flatten # Flatten into an array
-    return bndryCons#, inside
-
+    return (face_distance.flatten() * -1)#, inside
 
 def line(p1, p2):
     # Makes a line from the given <coordinate> points

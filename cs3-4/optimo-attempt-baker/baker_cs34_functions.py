@@ -475,9 +475,10 @@ def bndryNormals(bndryList):
     return unit_normals_coords
 
 
-def calcDistNorms(points, vertices, unit_normals):
+def calcDistNorms(x0, vertices, unit_normals):
     # Rewritten and adapted from Jared Thomas' code on 25.Mar.20
     # print points.shape, vertices.shape, unit_normals.shape
+    points = makeArrayCoord(x0)
     nPoints = points.shape[0]
     nVertices = vertices.shape[0] - 1
     # initialize array to hold distances from each point to each face
@@ -505,7 +506,7 @@ def calcDistNorms(points, vertices, unit_normals):
         # check if the point is inside the convex hull by checking the sign of the distance
         if np.all(face_distance[i] <= 0):
             inside[i] = True
-    return face_distance, inside
+    return face_distance#, inside
 
 
 def line(p1, p2):

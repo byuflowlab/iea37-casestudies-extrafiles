@@ -23,7 +23,7 @@ This is the "main" function to run an optimization for IEA37's cs3 using:
 """
 if __name__ == "__main__":
     numTurbs = 25
-    scaledAEP = 1e3
+    scaledAEP = 1e5
     scaledTC = 1e3
 
     #- Load the boundary (with scaling) -#
@@ -91,7 +91,7 @@ if __name__ == "__main__":
         #- Get our turbine list ready for processing -#
         x0 = Iea37sb.makeCoordArray(x0s)#/ Args['fTCscale']         # Get a random turbine placement and scale it
         startAEP = Iea37sb.optimoFun(x0, Args)
-        print("Start AEP = " + str(startAEP))#*Args['fAEPscale']))
+        print("Start AEP = " + str(startAEP*scaledAEP))#*Args['fAEPscale']))
 
         cons = ({'type': 'ineq', 'fun': lambda x:  Iea37sb.checkBndryCons(x, splineList, coordsCorners)}, {
                 'type': 'ineq', 'fun': lambda x: Iea37sb.checkTurbSpacing(x, fMinTurbDist)})
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     plt.figure("Start point")
     plt.hold = True
     plt.plot(clsdBP.x*scaledTC, clsdBP.y*scaledTC, color=Iea37sb.getPltClrs().getColor(5), linewidth=1)
-    plt.plot(x0Start.x, x0Start.y, marker='o', color='black', linestyle='', markersize=7)
+    plt.plot(x0Start.x*scaledTC, x0Start.y*scaledTC, marker='o', color='black', linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
 

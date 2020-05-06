@@ -336,7 +336,7 @@ def checkTurbSpacing(x0, fMinTurbDist):
 
     nCntr = 0  # Logs where on the list we are
     for i in range(nNumTurbs):          # For every turbine
-        for j in range(i):              # Check the space between pairs we haven't calculated
+        for j in range((i+1), nNumTurbs):# Check the space between pairs we haven't calculated
             fTurbSpace[nCntr] = coordDist(x0s[i], x0s[j])
             if ((fTurbSpace[nCntr] - fMinTurbDist) < 0):
                 bSpacing[nCntr] = False
@@ -344,7 +344,7 @@ def checkTurbSpacing(x0, fMinTurbDist):
 
     # Constrain that the turbines are less than 2 diams apart
     fSpaceConst = fTurbSpace - fMinTurbDist
-    return fSpaceConst#, bSpacing  # Negative if ok, positive if too close
+    return fSpaceConst#, bSpacing  # Positive if ok, negative if too close
 
 
 #-- Specific for the scipy optimizaiton --#
@@ -360,11 +360,10 @@ def optimoFun(x0, args):
     return -np.sum(scaledAEP)
 
 #-- Makes random start locations for cs3 --#
-def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam):
+def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, fMinTurbDist):
     #-- Initialize our array --#
     buf = np.zeros((numTurbs, 2))
     turbRandoList = np.recarray((numTurbs), dtype=coordinate, buf=buf)
-    minTurbDist = 2*turb_diam
 
     #-- Get the x-values --#
     xmin = coordsCorners[2].x   # Our minimum x-value
@@ -384,7 +383,7 @@ def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, turb_diam):
         # Check it doesn't conflict with nearby turbines
         for j in range(i):  # Check only the ones we've place so far
             # If this turbine has a proximity conflict
-            if (coordDist(turbRandoList[i], turbRandoList[j]) < minTurbDist):
+            if (coordDist(turbRandoList[i], turbRandoList[j]) < fMinTurbDist):
                 turbRandoList[i].x = np.random.uniform(
                     xmin, xmax)  # Give it a new x-val
                 i = i-1  # Redo the y-val too
@@ -501,13 +500,13 @@ def calcDistNorms(x0, vertices, unit_normals):
                    bndryCoords[j, 1]-turbCoords[i, 1]]]
             # find perpendicular distance from point to current surface (vector projection)
             d_vec = np.vdot(pa, unit_norms[j])*unit_norms[j]
-            # calculate the sign of perpendicular distance from point to current face (- is inside, + is outside)
-            face_distance[i, j] = np.vdot(d_vec, unit_norms[j])
+            # calculate the sign of perpendicular distance from point to current face (inverted so that + is inside, - is outside)
+            face_distance[i, j] = np.vdot(d_vec, unit_norms[j]) * -1
         # check if the point is inside the convex hull by checking the sign of the distance
-        if np.all(face_distance[i] <= 0):
+        if np.all(face_distance[i] >= 0):
             inside[i] = True
 
-    return (face_distance.flatten() * -1)#, inside
+    return face_distance.flatten()#, inside
 
 def line(p1, p2):
     # Makes a line from the given <coordinate> points

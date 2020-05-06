@@ -23,8 +23,8 @@ This is the "main" function to run an optimization for IEA37's cs3 using:
 """
 if __name__ == "__main__":
     numTurbs = 25
-    scaledAEP = 1e5
-    scaledTC = 1e3
+    scaledAEP = 1#e5
+    scaledTC = 1#e3
 
     #- Load the boundary (with scaling) -#
     fn = "../startup-files/iea37-boundary-cs3.yaml"
@@ -99,7 +99,7 @@ if __name__ == "__main__":
         cons = ({'type': 'ineq', 'fun': lambda x:  Iea37sb.calcDistNorms(x, coordsCorners, BndryNormals)}, {
                 'type': 'ineq', 'fun': lambda x: Iea37sb.checkTurbSpacing(x, fMinTurbDist)})
         res = optimize.minimize(Iea37sb.optimoFun, x0, args=Args, method='SLSQP',
-                                constraints=cons, options={'disp': True, 'maxiter': 1000})
+                                constraints=cons, options={'disp': True, 'maxiter': 1000}, tol=1e-10)
 
         #-- Save our results (scaling back up to normal) --#
         listAEP[cntr] =  (Iea37sb.optimoFun(res.x* Args['fTCscale'], Args) * Args['fAEPscale']) #(Iea37sb.optimoFun(res.x, Args))
@@ -115,21 +115,23 @@ if __name__ == "__main__":
         if (bestResult[1] > listAEP[j]):  # If our new AEP is better (Remember negative switches)
             bestResult[1] = listAEP[j]    # Save it
             bestResult[0] = j             # And the index of which run we're on
-    print("Best run: " + str(bestResult[0]))
-    print(listAEP[int(bestResult[0])])  # Print the best one, have to make sure the index is an (int)
+    print("Best run: " + str(int(bestResult[0])))
+    print("Best AEP: " + str(listAEP[int(bestResult[0])]))  # Print the best one, have to make sure the index is an (int)
+    percentImprovement = ((listAEP[int(bestResult[0])] - startAEP)/startAEP) *100
+    print("Improvement: " + str(percentImprovement))
 
     bestTurbs =  Iea37sb.makeArrayCoord(listTurbLocs[int(bestResult[0])]) #/scaledTC)
 
     # If we've already saved this kind of run, give it a new name
-    for i in range(100):
-        if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv') == False):
-            np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv', listTurbLocs, delimiter=',')
-            break
+    # for i in range(100):
+    #     if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv') == False):
+    #         np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ').csv', listTurbLocs, delimiter=',')
+    #         break
     
-    for i in range(100):
-        if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv') == False):
-            np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv', timeArray, delimiter=',')
-            break
+    # for i in range(100):
+    #     if(path.exists('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv') == False):
+    #         np.savetxt('./results/turblocs-bnm-' + str(numRestarts) + 'run(' + str(i) + ')-time.csv', timeArray, delimiter=',')
+    #         break
 
     x0Start = Iea37sb.makeArrayCoord(PreStarts[int(bestResult[0])])
     plt.figure("Start point")
@@ -145,5 +147,14 @@ if __name__ == "__main__":
     plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color='black', linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
+
+    plt.figure("Overlay")
+    plt.hold = True
+    plt.plot(clsdBP.x*scaledTC, clsdBP.y*scaledTC, color=Iea37sb.getPltClrs().getColor(5), linewidth=1)
+    plt.plot(x0Start.x*scaledTC, x0Start.y*scaledTC, marker='o', color=Iea37sb.getPltClrs().getColor(5), linestyle='', markersize=7)
+    plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color=Iea37sb.getPltClrs().getColor(1), linestyle='', markersize=7)
+    plt.axis('scaled')                      # Trim the white space
+    plt.axis('off')                         # Turn off the framing
+
 
     plt.show()

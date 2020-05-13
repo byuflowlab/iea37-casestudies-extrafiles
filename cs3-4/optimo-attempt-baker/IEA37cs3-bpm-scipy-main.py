@@ -109,7 +109,7 @@ if __name__ == "__main__":
         x0l = []                        # Initialize our turbine <coord> list
         for i in range(nNumRegions):    # Loop through our regions
             PreStarts = np.loadtxt('./results/randostarts-' + Iea37sb.cs34Regions().getRegionName(i) + '-200.csv', delimiter=',')
-            x0l.extend(Iea37sb.makeArrayCoord(PreStarts[numRestarts]))
+            x0l.extend(Iea37sb.makeArrayCoord(PreStarts[cntr]))
         x0  = Iea37sb.makeCoordListArray(x0l)
         x0s = Iea37sb.makeArrayCoord(x0)
 

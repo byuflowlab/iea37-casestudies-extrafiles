@@ -1,7 +1,6 @@
 """IEA Task 37 Case Study 3 AEP Calculation Code
 
-Written by Nicholas F. Baker, PJ Stanley, Jared Thomas (BYU FLOW lab)
-         and Erik Quaeghebeur (TU Delft)
+Written by Nicholas F. Baker, PJ Stanley, Jared Thomas (BYU FLOW lab) and Erik Quaeghebeur (TU Delft)
 Released 22 Aug 2018 with case studies 1 & 2
 Modified 15 Apr 2019 for case studies 3 and 4
 """
@@ -11,8 +10,8 @@ import numpy as np
 import sys
 import yaml                             # For reading .yaml files
 from math import radians as DegToRad    # For converting degrees to radians
-# from math import log as ln              # For natural logarithm
-from numba import jit
+from math import log as ln              # For natural logrithm
+
 # Structured datatype for holding coordinate pair
 coordinate = np.dtype([('x', 'f8'), ('y', 'f8')])
 
@@ -39,14 +38,14 @@ def WindFrame(turb_coords, wind_dir_deg):
 
     return frame_coords
 
-@jit
+
 def GaussianWake(frame_coords, turb_diam):
     """Return each turbine's total loss due to wake from upstream turbines"""
     # Equations and values explained in <iea37-wakemodel.pdf>
     num_turb = len(frame_coords)
 
     # Constant thrust coefficient
-    CT = 4. * 1. / 3. * (1. - 1. / 3.)
+    CT = 4.0*1./3.*(1.0-1./3.)
     # Constant, relating to a turbulence intensity of 0.075
     k = 0.0324555
     # Array holding the wake deficit seen at each turbine
@@ -58,26 +57,25 @@ def GaussianWake(frame_coords, turb_diam):
             x = frame_coords.x[i] - frame_coords.x[j]   # Calculate the x-dist
             y = frame_coords.y[i] - frame_coords.y[j]   # And the y-offset
             if x > 0.:                   # If Primary is downwind of the Target
-                # Calculate the wake loss
-                sigma = k * x + turb_diam / np.sqrt(8.)
+                sigma = k*x + turb_diam/np.sqrt(8.)  # Calculate the wake loss
                 # Simplified Bastankhah Gaussian wake model
-                exponent = -0.5 * (y / sigma)**2
-                radical = 1. - CT / (8. * sigma**2 / turb_diam**2)
-                loss_array[j] = (1. - np.sqrt(radical)) * np.exp(exponent)
+                exponent = -0.5 * (y/sigma)**2
+                radical = 1. - CT/(8.*sigma**2 / turb_diam**2)
+                loss_array[j] = (1.-np.sqrt(radical)) * np.exp(exponent)
             # Note that if the Target is upstream, loss is defaulted to zero
         # Total wake losses from all upstream turbs, using sqrt of sum of sqrs
         loss[i] = np.sqrt(np.sum(loss_array**2))
 
     return loss
 
-@jit
+
 def DirPower(frame_coords, dir_loss, wind_speed,
              turb_ci, turb_co, rated_ws, rated_pwr):
     """Return the power produced by each turbine."""
     num_turb = frame_coords.shape[0]
 
     # Effective windspeed is freestream multiplied by wake deficits
-    wind_speed_eff = wind_speed * (1. - dir_loss)
+    wind_speed_eff = wind_speed*(1.-dir_loss)
     # By default, the turbine's power output is zero
     turb_pwr = np.zeros(num_turb)
 
@@ -87,8 +85,8 @@ def DirPower(frame_coords, dir_loss, wind_speed,
         if ((turb_ci <= wind_speed_eff[n])
                 and (wind_speed_eff[n] < rated_ws)):
             # Calculate the curve's power
-            turb_pwr[n] = rated_pwr * ((wind_speed_eff[n] - turb_ci)
-                                       / (rated_ws - turb_ci))**3
+            turb_pwr[n] = rated_pwr * ((wind_speed_eff[n]-turb_ci)
+                                       / (rated_ws-turb_ci))**3
         # If we're between the rated and cut-out wind speeds
         elif ((rated_ws <= wind_speed_eff[n])
                 and (wind_speed_eff[n] < turb_co)):
@@ -102,7 +100,7 @@ def DirPower(frame_coords, dir_loss, wind_speed,
 
 
 def calcAEPcs3(turb_coords, wind_freq, wind_speeds, wind_speed_probs, wind_dir,
-               turb_diam, turb_ci, turb_co, rated_ws, rated_pwr):
+            turb_diam, turb_ci, turb_co, rated_ws, rated_pwr):
     """Calculate the wind farm AEP."""
     num_dir_bins = wind_freq.shape[0]       # Number of bins used for our windrose
     num_speed_bins = wind_speeds.shape[0]   # Number of wind speed bins
@@ -124,12 +122,12 @@ def calcAEPcs3(turb_coords, wind_freq, wind_speeds, wind_speed_probs, wind_dir,
             # Find the farm's power for the current direction and speed,
             # multiplied by the probability that the speed will occur
             pwr_prod_ws[i][j] = DirPower(frame_coords, dir_loss, wind_speeds[j],
-                                         turb_ci, turb_co, rated_ws,
-                                         rated_pwr) * wind_speed_probs[i][j]
+                                        turb_ci, turb_co, rated_ws,
+                                        rated_pwr) * wind_speed_probs[i][j]
         pwr_prod_dir[i] = sum(pwr_prod_ws[i]) * wind_freq[i]
 
     #  Convert power to AEP
-    hrs_per_year = 365. * 24.
+    hrs_per_year = 365.*24.
     AEP = hrs_per_year * pwr_prod_dir
     AEP /= 1.E6  # Convert to MWh
 
@@ -210,7 +208,7 @@ def getTurbAtrbtYAML(file_name):
     return turb_ci, turb_co, rated_ws, rated_pwr, turb_diam
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     """Used for demonstration.
 
     An example command line syntax to run this file is:
@@ -219,22 +217,19 @@ if __name__ == "__main__":
 
     For Python .yaml capability, in the terminal type "pip install pyyaml".
     """
-    # #-- Read necessary values from .yaml files --#
-    # # Get turbine locations and auxiliary <.yaml> filenames
-    # turb_coords, fname_turb, fname_wr = getTurbLocYAML(sys.argv[1])
-    # # Get the array wind sampling bins, frequency at each bin, and wind speed
-    # wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = getWindRoseYAML(
-    #     fname_wr)
-    # # Pull the needed turbine attributes from file
-    # turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = getTurbAtrbtYAML(
-    #     fname_turb)
+    #-- Read necessary values from .yaml files --#
+    # Get turbine locations and auxiliary <.yaml> filenames
+#    turb_coords, fname_turb, fname_wr = getTurbLocYAML(sys.argv[1])
+    # Get the array wind sampling bins, frequency at each bin, and wind speed
+#    wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed = getWindRoseYAML(
+#        fname_wr)
+    # Pull the needed turbine attributes from file
+#    turb_ci, turb_co, rated_ws, rated_pwr, turb_diam = getTurbAtrbtYAML(
+#        fname_turb)
 
-    # #-- Calculate the AEP from ripped values --#
-    # import time
-    # start = time.time()
-    # AEP = calcAEPcs3(turb_coords, wind_dir_freq[::1], wind_speeds, wind_speed_probs[::1], wind_dir[::1],
-    #                  turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
-    # print(time.time() - start, "seconds")
-    # # Print AEP summed for all directions
-    # # print(np.around(AEP, decimals=5))
-    # print(np.around(np.sum(AEP), decimals=5))
+    #-- Calculate the AEP from ripped values --#
+#    AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir,
+#                turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
+    # Print AEP summed for all directions
+#    print(np.around(AEP, decimals=5))
+#    print(np.around(np.sum(AEP), decimals=5))

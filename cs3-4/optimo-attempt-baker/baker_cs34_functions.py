@@ -17,7 +17,7 @@ coordinate = np.dtype([('x', 'f8'), ('y', 'f8')])
 
 # -- Helper Functions --#
 # Read in boundary (originally written in MATLAB, needed to be translated)
-def getTurbAtrbtCs4YAML(file_name):
+def getTurbAtrbtCs4YAML(file_name, bCoordType=True):
     '''Retreive boundary coordinates from the <.yaml> file'''
     # Read in the .yaml file
     with open(file_name, 'r') as f:
@@ -59,7 +59,10 @@ def getTurbAtrbtCs4YAML(file_name):
         coordList4c[i].x = float(ptList4c[i][0])
         coordList4c[i].y = float(ptList4c[i][1])
 
-    return coordList3a, coordList3b, coordList4a, coordList4b, coordList4c
+    if(bCoordType == True):
+        return coordList3a, coordList3b, coordList4a, coordList4b, coordList4c
+    else:
+        return ptList3a, ptList3b, ptList4a, ptList4b, ptList4c
 
 
 def getTurbAtrbtCs3YAML(file_name):
@@ -175,7 +178,7 @@ class getPltClrs(object):
         """Dispatch method"""
         method_name = 'color_' + str(argument)
         # Get the method from 'self'. Default to a lambda.
-        method = getattr(self, method_name, lambda: "Invalid month")
+        method = getattr(self, method_name, lambda: "Invalid color number")
         # Call the method as we return it
         return method()
 
@@ -214,6 +217,64 @@ class getPltClrs(object):
 
     def color_12(self):
         return [0.3010, 0.7450, 0.9330]  # SkyBlue
+
+class cs34Regions(object):
+    #-- Gives frequently used region attributes --#    
+    def getRegionName(self, argument):
+        name = 'no such region'
+
+        if(argument == 0):
+            name = '3a'
+        elif(argument == 1):
+            name = '3b'
+        elif(argument == 2):
+            name = '4a'
+        elif(argument == 3):
+            name = '4b'
+        elif(argument == 4):
+            name = '4c'
+        
+        return name
+
+    #Gives number of preallocated turbines in the region
+    def getNumTurbs(self, argument):
+        numTurbs = None
+
+        if(argument == 'cs3'):
+            numTurbs = 25
+        elif(argument == 'cs4'):
+            numTurbs = 81
+        elif(argument == '3a'):
+            numTurbs = 31
+        elif(argument == '3b'):
+            numTurbs = 11
+        elif(argument == '4a'):
+            numTurbs = 14
+        elif(argument == '4b'):
+            numTurbs = 16
+        elif(argument == '4c'):
+            numTurbs = 9
+        
+        return numTurbs
+
+    def getVertList(self, argument):
+        vertList = None
+
+        if(argument == 'cs3'):
+            vertList = [0, 6, 8, 9, 18]
+        elif(argument == '3a'):
+            vertList = [0, 6, 8, 9, 18]
+        elif(argument == '3b'):
+            vertList = [0, 1, 2, 3, 8]
+        elif(argument == '4a'):
+            vertList = [0, 1, 2, 3, 6]
+        elif(argument == '4b'):
+            vertList = [0, 1, 2, 3]
+        elif(argument == '4c'):
+            vertList = [0, 1, 4, 5]
+        
+        return vertList
+    
 #--- Code for visualizing farm area ---#
 def closeBndryList(bndryPts):
     # Appends the first element to the end of an <np.ndarray> of type <coordinate> for closed boundary #
@@ -238,9 +299,9 @@ def printBoundary(bndryPts):
     plt.axis('off')                         # Turn off the framing
 
 
-def printBoundaryClr(bndryPts, colorNum):
+def printBoundaryClr(bndryPts, colorNum, lineWidth):
     #-- Print the windfarm boundary. bndryPts must be <np.ndarray> of type <coordinate>
-    plt.plot(bndryPts.x, bndryPts.y, color=getPltClrs().getColor(colorNum))
+    plt.plot(bndryPts.x, bndryPts.y, color=getPltClrs().getColor(colorNum), linewidth=lineWidth)
     #plt.xlim(coordList.x.min(), coordList.x.max()) # scales the x-axis to only include the boundary
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
@@ -321,12 +382,19 @@ def makeMatrixCoord(x0m):
 
     return x0s
 
+def makeCoordListArray(listIn):
+    listOut = []
+    for i in range(len(listIn)):
+        listOut.append(listIn[i][0])
+    for i in range(len(listIn)):
+        listOut.append(listIn[i][1])
+    return listOut
 
 #---- Turbine Spacing constraint function ----#
-def checkTurbSpacing(x0, fMinTurbDist):
+def checkTurbSpacing(x0s, fMinTurbDist):
     #-- Returns an array of the distance between every pair of coordinates
-    x0s = makeArrayCoord(x0)
-    #-- turbCoords should be of <coordinate> type.
+    #x0s = makeArrayCoord(x0)
+    #-- x0s should be of <coordinate> type.
     nNumTurbs = len(x0s)         # Our number of turbines
     # Number of unique turbine pairs > C(numTurbs, 2) = numTurbs! / (2*(numTurbs-2)!).
     nNumPairs = int(binom(nNumTurbs, 2))
@@ -344,7 +412,36 @@ def checkTurbSpacing(x0, fMinTurbDist):
 
     # Constrain that the turbines are less than 2 diams apart
     fSpaceConst = fTurbSpace - fMinTurbDist
-    return fSpaceConst#, bSpacing  # Positive if ok, negative if too close
+    return fSpaceConst, bSpacing  # Positive if ok, negative if too close
+
+
+def checkTurbSpacingCs4(x0, nNumTurbs, fMinTurbDist):
+    #--- Checks turbine spacing in the five (5) discrete regions. Only checks within regions --#
+    #-- Constants needed --#
+    # The number of regions we're dealing with
+    x0s = makeArrayCoord(x0)
+    nNumRegions = len(nNumTurbs)
+    
+    # Number of turbine pairs in each region
+    nNumPairs = np.zeros(nNumRegions, dtype=np.int32)
+    for i in range(nNumRegions):     
+        nNumPairs[i] = int(binom(nNumTurbs[i], 2))
+    
+    # Array holding the dist. between each pair
+    fTurbSpace = np.zeros(np.sum(nNumPairs, dtype=np.int32))
+    bSpacing = np.ones(np.sum(nNumPairs, dtype=np.int32))    # False means pair is too close, True means they're ok
+    
+    # Calculate all the spacing for our turbines (each region separately)
+    piTurbs = 0
+    piPairs = 0
+    for i in range(nNumRegions):
+        niTurbs = (nNumTurbs[i] + piTurbs)  # Next index for our Turbines
+        niPairs = (nNumPairs[i] + piPairs)  # Next index for our pair counting 
+        [fTurbSpace[piPairs:niPairs], bSpacing[piPairs:niPairs]]= checkTurbSpacing(x0s[piTurbs:niTurbs], fMinTurbDist) 
+        piTurbs = (nNumTurbs[i] + piTurbs)
+        piPairs = (nNumPairs[i] + piPairs)
+ 
+    return fTurbSpace#, bSpacing
 
 
 #-- Specific for the scipy optimizaiton --#
@@ -397,21 +494,35 @@ def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, fMinTurbDist):
 def getUpDwnYvals(xCoord, splineList, coordsCorners):
     # Given there are 4 splines (with 0&1 below, 2&3 above),
     # returns the indecies of splines the given x-coord falls between
-    
-    #-- Upper. If it's out of bounds
-    if (xCoord < coordsCorners[2].x):
-        ymax = coordsCorners[2].y # Give it the y-value of our leftmost point
-    # If it's to the left of the right upper spline
-    elif (xCoord < coordsCorners[3].x):
-        ymax = splineList[2](xCoord)  # Make it the left upper spline
-    # If it's to the left of the rightmost point
-    elif (xCoord < coordsCorners[0].x):
-        ymax = splineList[3](xCoord)  # Make it the left upper spline
-    else:
-        ymax = coordsCorners[0].y # Give it the y-value of our rightmost point
+    bTriangle = False # Default to work with squares
+    if (len(coordsCorners) == 3):
+        bTriangle = True    # If we have 3 sides, let it know it's a triangle.
+
+
+    if (bTriangle): # If we're dealing with a 3-sided boundary
+        #-- Upper. If it's out of bounds
+        if (xCoord <= coordsCorners[2].x):
+            ymax = coordsCorners[2].y # Give it the y-value of our leftmost point
+        # If it's to the left of the rightmost point
+        elif (xCoord < coordsCorners[0].x):
+            ymax = splineList[2](xCoord)  # Make it the left upper spline
+        else:
+            ymax = coordsCorners[0].y # Give it the y-value of our rightmost point
+    else: # If we're dealing with a 4-sided boundary
+            #-- Upper. If it's out of bounds
+        if (xCoord <= coordsCorners[2].x):
+            ymax = coordsCorners[2].y # Give it the y-value of our leftmost point
+        # If it's to the left of the right upper spline
+        elif (xCoord < coordsCorners[3].x):
+            ymax = splineList[2](xCoord)  # Make it the left upper spline
+        # If it's to the left of the rightmost point
+        elif (xCoord < coordsCorners[0].x):
+            ymax = splineList[3](xCoord)  # Make it the left upper spline
+        else:
+            ymax = coordsCorners[0].y # Give it the y-value of our rightmost point
 
     #-- Lower. If it's to the left of the right lower spline
-    if (xCoord < coordsCorners[2].x):
+    if (xCoord <= coordsCorners[2].x):
         ymin = coordsCorners[2].y # Give it the y-value of our leftmost point
     elif (xCoord < coordsCorners[1].x):
         ymin = splineList[1](xCoord) # Make it the left upper spline
@@ -426,24 +537,51 @@ def getUpDwnYvals(xCoord, splineList, coordsCorners):
 def checkBndryCons(x0, splineList, coordsCorners):
     x0s = makeArrayCoord(x0)
     numTurbs = int(len(x0s))
+    numSides = int(len(coordsCorners))
 
     # Check to make sure our poits are in
-    bndryCons = np.zeros(numTurbs*4)   # four values (two x and two y) for every turbine
+    bndryCons = np.zeros((numTurbs, 4))   # four values (two x and two y) for every turbine
+    bCons = np.ones((numTurbs,numSides))
+    
     xmin = coordsCorners[2].x   # Our minimum x-value
     xmax = coordsCorners[0].x   # our maximum x-value
     
     # For every turbine
     for i in range(numTurbs):
         #- Check x-vals
-        bndryCons[4*i] = (xmax - x0s[i].x)   # Positive good, neg bad
-        bndryCons[4*i+1] = (x0s[i].x - xmin) # pos good, neg bad
+        bndryCons[i,0] = (xmax - x0s[i].x)   # Positive good, neg bad
+        bndryCons[i,1] = (x0s[i].x - xmin) # pos good, neg bad
         
         #- Check y-vals
         ymin,ymax = getUpDwnYvals(x0s[i].x, splineList, coordsCorners)
-        bndryCons[4*i+2] = (ymax - x0s[i].y)
-        bndryCons[4*i+3] = (x0s[i].y - ymin)
-            
-    return bndryCons
+        bndryCons[i,2] = (ymax - x0s[i].y)
+        bndryCons[i,3] = (x0s[i].y - ymin)
+        
+        #- Fill in our boolean array (False = out, True = in bounds)
+        for j in range(numSides):
+            if (bndryCons[i,j] < 0):
+                bCons[i,j] = False
+    
+    return bndryCons.flatten()#, bCons
+
+
+def checkBndryConsCs4(x0, nNumTurbs, splineMatDict, coordsCornersDict):
+    # Pull values from diciontary (splines, corners)
+    # Apportion turbines to each area (by index)
+    x0s = makeArrayCoord(x0)
+    nNumRegions = len(nNumTurbs)
+    fBndryCons = []
+    
+    #-- Loop through and do all regions --#
+    piTurbs = 0
+    for i in range(nNumRegions):
+        niTurbs = (nNumTurbs[i] + piTurbs)  # Next index for our Turbines
+        x0region = makeCoordArray(x0s[piTurbs:niTurbs])
+        fBndryCons.extend(checkBndryCons(x0region, splineMatDict[cs34Regions().getRegionName(i)], coordsCornersDict[cs34Regions().getRegionName(i)]))
+        piTurbs = (nNumTurbs[i] + piTurbs)
+    
+    return np.asarray(fBndryCons)
+
 
 #---- Boundary Normal Method constraint functions ----#
 #-- Functions for checking if turbines are inside a concave boundary --#

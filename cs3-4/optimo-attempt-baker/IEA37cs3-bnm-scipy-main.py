@@ -47,6 +47,7 @@ if __name__ == "__main__":
         fname_turb)
     turb_diam = turb_diam/scaledTC 
 
+
     #- Some display variables -#
     numLinspace = 10
     numGridLines = 10                   # How many gridlines we'll use for the visualization
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     # Spline up the boundary
     [splineList, segCoordList] = Iea37sb.makeCs3BndrySplines(vertexList, clsdBP, numGridLines)
     # Load the premade restarts
-    PreStarts = np.loadtxt('./results/rando-starts-200.csv', delimiter=',')
+    PreStarts = np.loadtxt('./results/randostarts-3a-200.csv', delimiter=',')
     PreStarts = PreStarts / scaledTC
 
     numRestarts = 1                     # Number of restarts we're doing

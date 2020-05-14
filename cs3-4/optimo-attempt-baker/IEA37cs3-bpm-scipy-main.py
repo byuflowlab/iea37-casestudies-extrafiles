@@ -91,7 +91,7 @@ if __name__ == "__main__":
     for i in range(nNumRegions):
         nRegionNumTurbs[i] = Iea37sb.cs34Regions().getNumTurbs(Iea37sb.cs34Regions().getRegionName(i))
 
-    numRestarts = 20                     # Number of restarts we're doing
+    numRestarts = 3                     # Number of restarts we're doing
     print("Running region: " + strCase)
     print("Running: " + str(numRestarts) + " restarts.")
 
@@ -137,13 +137,13 @@ if __name__ == "__main__":
         if (bestResult[1] > listAEP[j]):  # If our new AEP is better (Remember negative switches)
             bestResult[1] = listAEP[j]    # Save it
             bestResult[0] = j             # And the index of which run we're on
-    print("Best run: " + str(bestResult[0]))
+    print("Best run: " + str(int(bestResult[0])+1))
     print("Best AEP: " + str(listAEP[int(bestResult[0])]))  # Print the best one, have to make sure the index is an (int)
     percentImprovement = ((listAEP[int(bestResult[0])] - startAEP)/startAEP) *100
     print("Improvement: " + str(percentImprovement))
 
     bestTurbs =  Iea37sb.makeArrayCoord(listTurbLocs[int(bestResult[0])]) #/scaledTC)
-    print("Best Result was try: " + str(int(bestResult[0])) )
+    print("Best result was index: " + str(int(bestResult[0])) )
     # If we've already saved this kind of run, give it a new name
     for i in range(100):
         if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + 'run-' + strCase + '-(' + str(i) + ').csv') == False):
@@ -201,5 +201,3 @@ if __name__ == "__main__":
     plt.savefig('./results/' + strCase + '(' + str(i) + ').pdf')
 
     plt.show()
-
-    print("Best Result was try: " + str(int(bestResult[0])) )

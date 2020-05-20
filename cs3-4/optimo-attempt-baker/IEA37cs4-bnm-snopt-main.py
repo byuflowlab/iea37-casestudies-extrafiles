@@ -1,18 +1,19 @@
 #- Load all previously written and tested functions -#
 import random
-
-from baker_cs34_functions_sandbox import *
 from baker_cs34_SNOPT_functions import *
+from scipy.interpolate import interp1d  # To create our splines
+import baker_cs34_functions as Iea37sb
 import iea37_aepcalc as iea37aepC
+import numpy as np
 
 #-- Setting up objFun --#
 def cs3posObjFun(posDict):
     #- Target function (AEP calculation) -#
 
     # Take our turbine array [x1 ... y1...] and make a matrix
-    x0m = makeArrayMatrix(posDict['aTurbCoords'])
-    nTurbs = len(x0m)  # get the number of turbines
-    nPairs = int(binom(nTurbs, 2))  # Number of unique turbine pairs
+    x0m = Iea37sb.makeArrayMatrix(posDict['aTurbCoords'])
+    #nTurbs = len(x0m)  # get the number of turbines
+    #nPairs = int(binom(nTurbs, 2))  # Number of unique turbine pairs
     funcs = {}
     AEP = g(x0m)         # Our tricky global function
     totAEP = np.sum(AEP)
@@ -20,11 +21,11 @@ def cs3posObjFun(posDict):
 
     #- Prep data for constraints -#
     #fScaleFactorTurbLoc = posDict['fTCscale']
-    x0s = makeArrayCoord(posDict['aTurbCoords'])
-    [fNormVals, __] = calcDistNorms(
+    x0s = Iea37sb.makeArrayCoord(posDict['aTurbCoords'])
+    [fNormVals, __] = Iea37sb.calcDistNorms(
         x0s, dictParams['cncvVerts'], dictParams['cncvNorms'])
     funcs['bndry'] = fNormVals.flatten()
-    fTurbSpace, __ = checkTurbSpacing(x0s, dictParams['minTurbSpace'])
+    fTurbSpace, __ = Iea37sb.checkTurbSpacing(x0s, dictParams['minTurbSpace'])
     funcs['spacing'] = fTurbSpace
 
     #- Constraints (Pairwise distance [C(numTurbs, 2)], and all boundary checks [4* numTurbs]) -#
@@ -39,30 +40,16 @@ def cs3posObjFun(posDict):
 
     return funcs, fail
 
-#-- Working the wrapper method --#
-def f(ParamsDict):
-    # To follow Dr. Ning's rubric
-    return lambda x0: iea37aepC.calcAEPcs3(x0, ParamsDict['wind_dir_freq'],
-                                           ParamsDict['wind_speeds'],
-                                           ParamsDict['wind_speed_probs'],
-                                           ParamsDict['wind_dir'],
-                                           ParamsDict['turb_diam'],
-                                           ParamsDict['turb_ci'],
-                                           ParamsDict['turb_co'],
-                                           ParamsDict['rated_ws'],
-                                           ParamsDict['rated_pwr'])
-
-
 if __name__ == "__main__":
 
     #--- Load boundary, turb attributes, and windrose data ---#
         #-- Load the Boundary --#
     fn = "iea37-boundary-cs3.yaml"
-    bndryPts = getTurbAtrbtCs3YAML(fn)      # Pull the boundary vertices
-    clsdBP = closeBndryList(bndryPts)       # repeat the first so it's 'closed'
-    cncvVerts = makeSimpleCs3Bndry(clsdBP)  # Make the simplified Concave shape
+    bndryPts = Iea37sb.getTurbAtrbtCs3YAML(fn)      # Pull the boundary vertices
+    clsdBP = Iea37sb.closeBndryList(bndryPts)       # repeat the first so it's 'closed'
+    cncvVerts = Iea37sb.makeSimpleCs3Bndry(clsdBP)  # Make the simplified Concave shape
     # Calculate the normals for the concave shape
-    cncvNorms = bndryNormals(cncvVerts)
+    cncvNorms = Iea37sb.bndryNormals(cncvVerts)
     #- Load the turbine and windrose atributes -#
     fname_turb = "iea37-10mw.yaml"
     fname_wr = "iea37-windrose-cs3.yaml"
@@ -95,7 +82,7 @@ if __name__ == "__main__":
         # Extract the points for the "edge" we want
         BndPts = clsdBP[vertexList[i]:(vertexList[i+1]+1)]
         # Reparameterize the boundry to be defined by <numGridLines> many points
-        segCoordList[i] = sliceBoundary(BndPts, numGridLines)
+        segCoordList[i] = Iea37sb.sliceBoundary(BndPts, numGridLines)
         # Make the spline using NumPy's <interp1d>
         splineList[i] = interp1d(
             segCoordList[i].x, segCoordList[i].y, kind='linear')
@@ -103,10 +90,10 @@ if __name__ == "__main__":
     #-- Make random turbine locations --#
     # Make an array of just the four "vertex" points we're using
     vertexPts = bndryPts[vertexList[0:4]]
-    turbRandoList = iea37cs3randomstarts(
+    turbRandoList = Iea37sb.iea37cs3randomstarts(
         numTurbs, splineList, vertexPts, turb_diam)
     # Use the random locations calculated previously
-    randoMatrix = makeCoordMatrix(turbRandoList)
+    randoMatrix = Iea37sb.makeCoordMatrix(turbRandoList)
 
 
     #--- Running the optimization ---#
@@ -119,7 +106,7 @@ if __name__ == "__main__":
     optProb = Optimization('CaseStudy3', cs3posObjFun)
     optProb.addObj('obj')
     #-- Setup variables to alter (turbine locations) --#
-    x0rando = makeCoordArray(turbRandoList)   # Make our coordinate list an array
+    x0rando = Iea37sb.makeCoordArray(turbRandoList)   # Make our coordinate list an array
     # two (2) values for each turbine (x&y)
     optProb.addVarGroup('aTurbCoords', 2*nNumTurbs, type='c', value=x0rando)
 

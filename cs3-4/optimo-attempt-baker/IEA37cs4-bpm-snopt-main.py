@@ -140,7 +140,11 @@ if __name__ == "__main__":
         #--- Running the optimization ---#
         #- Constants --#
         nNumTurbs = len(x0s)    # Number of turbines we're passed
-        nNumPairs = int(binom(nNumTurbs, 2))  # Number of unique turbine pairs
+        # Number of turbine pairs in each region
+        nNumPairs = np.zeros(nNumRegions, dtype=np.int32)
+        for i in range(nNumRegions):     
+            nNumPairs[i] = int(binom(nNumTurbs[i], 2))
+        nNumTotPairs = np.sum(nNumPairs, dtype=np.int32) # Number of total pairs across the farm
         g = f(dictParams)
 
         #-- Setup optimization --#
@@ -153,7 +157,7 @@ if __name__ == "__main__":
         # 4 boundaries to chek for each turbine
         optProb.addConGroup('bndry', 4*nNumTurbs, lower=0.0, upper=None)
         #-- Spacing constraint (setup to stay positive) --#
-        optProb.addConGroup('spacing', nNumPairs, lower=0.0, upper=None)
+        optProb.addConGroup('spacing', nNumTotPairs, lower=0.0, upper=None)
 
         #-- Run the actual optimization --#
         opt = SNOPT()

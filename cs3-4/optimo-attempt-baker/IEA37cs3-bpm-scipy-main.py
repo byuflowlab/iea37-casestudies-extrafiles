@@ -165,11 +165,11 @@ if __name__ == "__main__":
     plt.figure(figsize=(20,10))
     plt.hold = True
     #- Plot all the boundaries -#
-    Iea37sb.printBoundaryClr(clsdBP3a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP3b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4c, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4c, 5, 1)
     plt.plot(x0sStart.x*scaledTC, x0sStart.y*scaledTC, marker='o', color='black', linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
@@ -177,11 +177,11 @@ if __name__ == "__main__":
     plt.figure("End point")
     plt.hold = True
     #- Plot all the boundaries -#
-    Iea37sb.printBoundaryClr(clsdBP3a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP3b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4c, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4c, 5, 1)
     plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color='black', linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
@@ -189,11 +189,11 @@ if __name__ == "__main__":
     plt.figure("Overlay")
     plt.hold = True
     #- Plot all the boundaries -#
-    Iea37sb.printBoundaryClr(clsdBP3a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP3b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4a, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4b, 5, 1)
-    Iea37sb.printBoundaryClr(clsdBP4c, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP3b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4a, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4b, 5, 1)
+    Iea37sb.printBndryCoord(clsdBP4c, 5, 1)
     plt.plot(x0sStart.x*scaledTC, x0sStart.y*scaledTC, marker='o', color=Iea37sb.getPltClrs().getColor(5), linestyle='', markersize=7)
     plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color=Iea37sb.getPltClrs().getColor(1), linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space

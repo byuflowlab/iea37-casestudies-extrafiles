@@ -97,8 +97,8 @@ def findNewPtOnLine(pt0, pt1, dist):
 
 
 def sliceBoundary(totCoordList, numGridLines):
-    # Given a set of <coordinate> on a line (or boundary), and number of grid lines,
-    # This will return a set of pts that have sliced that boundary line <numGridLines> many times.
+    # Given a list of <coordinate>s on a line, and number of grid lines,
+    # this function returns a set of pts that have sliced that boundary line <numGridLines> many times.
     # TERMINOLOGY: 'Segment' slice of boundary line, 'Leg' means portion of boundary we're on
     tol = 1e-6  # Tolerance for reaching the end of the line
     # If we have 5 grid lines, that gives us 4 sectors (or divisions)
@@ -156,7 +156,7 @@ def getArcLength(coordList):
     return totDist
 
 
-def makeCs3BndrySplines(vertexList, clsdBP, numGridLines):
+def makeCs3BndrySplines(vertexList, clsdBP, numGridLines = 10):
     #-- Spline the boundary --#
     numSides = len(vertexList) - 1      # The number of sides for our original coordinate system. Usually (4) to Euclidean, but could be any number)
     splineList = np.empty(numSides, interp1d)                  # Init. array IOT save the Splines for each "side"
@@ -299,15 +299,15 @@ def printBoundary(bndryPts):
     plt.axis('off')                         # Turn off the framing
 
 
-def printBoundaryClr(bndryPts, colorNum, lineWidth):
-    #-- Print the windfarm boundary. bndryPts must be <np.ndarray> of type <coordinate>
+def printBndryCoord(bndryPts, colorNum=5, lineWidth=1):
+    #-- Print the windfarm boundary. bndryPts must be of type <coordinate>
+    #- Default linewidth to 1, default color to "Matlab"  blue 
     plt.plot(bndryPts.x, bndryPts.y, color=getPltClrs().getColor(colorNum), linewidth=lineWidth)
-    #plt.xlim(coordList.x.min(), coordList.x.max()) # scales the x-axis to only include the boundary
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
 
 
-def printBoundaryArray(bndryPtsX, bndryPtsY, colorNum):
+def printBndryArray(bndryPtsX, bndryPtsY, colorNum=5):
     #-- Print the windfarm boundary. bndryPts must be <np.ndarray> of type <coordinate>
     plt.plot(bndryPtsX, bndryPtsY, color=getPltClrs().getColor(colorNum))
     plt.axis('scaled')                      # Trim the white space
@@ -320,9 +320,9 @@ def printVerticies(coordList, vertList, colorNum):
              coordList[vertList].y, 'o', color=getPltClrs().getColor(colorNum))
 
 
-def printTurbines(coordList, colorName, turbRadius, bShowIndx=False):
+def printTurbines(coordList, colorNum=1, turbRadius=10, bShowIndx=False):
     plt.hold = True
-    plt.scatter(coordList.x, coordList.y, s=turbRadius, color=colorName)
+    plt.scatter(coordList.x, coordList.y, s=turbRadius, color=getPltClrs().getColor(colorNum))
     if bShowIndx:
         for i in range(len(coordList)):
             # Plot the index number offset enough so the turb circle doesn't cover it

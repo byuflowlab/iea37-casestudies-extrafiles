@@ -96,6 +96,13 @@ if __name__ == "__main__":
     for i in range(nNumRegions):
         nRegionNumTurbs[i] = Iea37sb.cs34Regions().getNumTurbs(Iea37sb.cs34Regions().getRegionName(i))
 
+    nTotTurbs = int(sum(nRegionNumTurbs))    # Number of turbines we're passed
+    # Number of turbine pairs in each region
+    nRegionNumPairs = np.zeros(nNumRegions, dtype=np.int32)
+    for i in range(nNumRegions):     
+        nRegionNumPairs[i] = int(binom(nRegionNumTurbs[i], 2))
+    nTotPairs = np.sum(nRegionNumPairs, dtype=np.int32) # Number of total pairs across the farm
+
     #- Make a dictionary for variable passing -#
     dictParams = dict([('wind_dir_freq', wind_dir_freq),
                       ('wind_speeds', wind_speeds),
@@ -139,25 +146,19 @@ if __name__ == "__main__":
 
         #--- Running the optimization ---#
         #- Constants --#
-        nNumTurbs = len(x0s)    # Number of turbines we're passed
-        # Number of turbine pairs in each region
-        nNumPairs = np.zeros(nNumRegions, dtype=np.int32)
-        for i in range(nNumRegions):     
-            nNumPairs[i] = int(binom(nNumTurbs[i], 2))
-        nNumTotPairs = np.sum(nNumPairs, dtype=np.int32) # Number of total pairs across the farm
         g = f(dictParams)
 
         #-- Setup optimization --#
         optProb = Optimization('CaseStudy4', cs4posObjFun)
         optProb.addObj('obj')
         # two (2) values for each turbine (x&y)
-        optProb.addVarGroup('aTurbCoords', 2*nNumTurbs, type='c', value=x0)
+        optProb.addVarGroup('aTurbCoords', 2*nTotTurbs, type='c', value=x0)
 
         #-- Boundary constraints (setup to stay positive) --#
         # 4 boundaries to chek for each turbine
-        optProb.addConGroup('bndry', 4*nNumTurbs, lower=0.0, upper=None)
+        optProb.addConGroup('bndry', 4*nTotTurbs, lower=0.0, upper=None)
         #-- Spacing constraint (setup to stay positive) --#
-        optProb.addConGroup('spacing', nNumTotPairs, lower=0.0, upper=None)
+        optProb.addConGroup('spacing', nTotPairs, lower=0.0, upper=None)
 
         #-- Run the actual optimization --#
         opt = SNOPT()

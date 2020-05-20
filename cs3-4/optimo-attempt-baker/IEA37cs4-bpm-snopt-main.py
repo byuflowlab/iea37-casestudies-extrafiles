@@ -120,7 +120,7 @@ if __name__ == "__main__":
                       ('coordsCornersDict',coordsCornersDict),
                       ('nRegionNumTurbs',nRegionNumTurbs)])
 
-    numRestarts = 1                     # Number of restarts we're doing
+    numRestarts = 16                     # Number of restarts we're doing
     print("Running region: " + strCase)
     print("Running: " + str(numRestarts) + " restarts.")
 
@@ -166,17 +166,17 @@ if __name__ == "__main__":
         opt.setOption('Iterations limit', 1000000)
         opt.setOption('Major optimality tolerance', 1.e-5)
         opt.setOption('Major feasibility tolerance', 1.e-6)
-        #opt.setOption('Print file', 'print_file.out')
-        #opt.setOption('Summary file','summary_file.out')
+        opt.setOption('Print file', 'print_file'+ str(cntr)+ '.out')
+        opt.setOption('Summary file','summary_file'+ str(cntr)+ '.out')
 
         #print(optProb)
 
         sol = opt(optProb)
-        print(sol)
+        #print(sol)
 
         #-- Save our results (scaling back up to normal) --#
-        listAEP[cntr] =  (Iea37sb.optimoFun(sol.xStar['nTurbCoords']* dictParams['fTCscale'], dictParams) * dictParams['fAEPscale']) #(Iea37sb.optimoFun(res.x, Args))
-        listTurbLocs[cntr] = sol.xStar['nTurbCoords'] * dictParams['fTCscale']
+        listAEP[cntr] =  (Iea37sb.optimoFun(sol.xStar['aTurbCoords']* dictParams['fTCscale'], dictParams) * dictParams['fAEPscale']) #(Iea37sb.optimoFun(res.x, Args))
+        listTurbLocs[cntr] = sol.xStar['aTurbCoords'] * dictParams['fTCscale']
         timeEnd = time.time()
         timeArray[cntr] = timeEnd - timeStart
         print("End AEP = " + str(listAEP[cntr]))
@@ -197,13 +197,15 @@ if __name__ == "__main__":
     print("Best result was index: " + str(int(bestResult[0])) )
     # If we've already saved this kind of run, give it a new name
     for i in range(100):
-        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + 'run-' + strCase + '-(' + str(i) + ').csv') == False):
-            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + 'run-' + strCase + '-(' + str(i) + ').csv', listTurbLocs, delimiter=',')
+        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + '-snopt-run-' + strCase + '-(' + str(i) + ').csv') == False):
+            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + '-snopt-run-' +
+                       strCase + '-(' + str(i) + ').csv', listTurbLocs, delimiter=',')
             break
     
     for i in range(100):
-        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + 'run-' + strCase + '-(' + str(i) + ')-time.csv') == False):
-            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + 'run-' + strCase + '-(' + str(i) + ')-time.csv', timeArray, delimiter=',')
+        if(path.exists('./results/turblocs-bpm-' + str(numRestarts) + '-snopt-run-' + strCase + '-(' + str(i) + ')-time.csv') == False):
+            np.savetxt('./results/turblocs-bpm-' + str(numRestarts) + '-snopt-run-' +
+                       strCase + '-(' + str(i) + ')-time.csv', timeArray, delimiter=',')
             break
 
     #--- Print it all out and save the overlay ---#
@@ -249,6 +251,6 @@ if __name__ == "__main__":
     plt.plot(bestTurbs.x, bestTurbs.y, marker='o', color=Iea37sb.getPltClrs().getColor(1), linestyle='', markersize=7)
     plt.axis('scaled')                      # Trim the white space
     plt.axis('off')                         # Turn off the framing
-    plt.savefig('./results/' + strCase + '(' + str(i) + ').pdf')
+    plt.savefig('./results/' + strCase + '-bpm-snopt-(' + str(i) + ').pdf')
 
     plt.show()

@@ -39,8 +39,8 @@ newWeibVars = round(newWeibVars,2);
 %csvwrite('../support-files/new-WiebVars.csv',newWeibVars);
 newFreqs = round(newFreqs,4)';
 %csvwrite('../support-files/new-freqs.csv',newFreqs);
-sum(newFreqs)
+%sum(newFreqs)
 %-- Plot and write the data --%
 % To plot the Wind Frequency distribution
-%plotWindRoseFreq(newFreqs,newDirs);
+plotWindRoseFreq(newFreqs,newDirs);
 %writeWindroseYAML('../support-files/new-iea37-cs3-windrose-test.yaml', newDirs, newWeibVars, newFreqs);

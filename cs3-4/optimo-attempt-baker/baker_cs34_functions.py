@@ -249,9 +249,9 @@ class cs34Regions(object):
         elif(argument == '3b'):
             numTurbs = 11
         elif(argument == '4a'):
-            numTurbs = 14
-        elif(argument == '4b'):
             numTurbs = 16
+        elif(argument == '4b'):
+            numTurbs = 14
         elif(argument == '4c'):
             numTurbs = 9
         

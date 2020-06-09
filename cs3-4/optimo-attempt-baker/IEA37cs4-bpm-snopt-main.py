@@ -120,7 +120,7 @@ if __name__ == "__main__":
                       ('coordsCornersDict',coordsCornersDict),
                       ('nRegionNumTurbs',nRegionNumTurbs)])
 
-    numRestarts = 16                     # Number of restarts we're doing
+    numRestarts = 20                     # Number of restarts we're doing
     print("Running region: " + strCase)
     print("Running: " + str(numRestarts) + " restarts.")
 

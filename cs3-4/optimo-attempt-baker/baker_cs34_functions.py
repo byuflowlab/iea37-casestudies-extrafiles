@@ -382,6 +382,7 @@ def makeMatrixCoord(x0m):
 
     return x0s
 
+
 def makeCoordListArray(listIn):
     listOut = []
     for i in range(len(listIn)):
@@ -493,7 +494,7 @@ def iea37cs3randomstarts(numTurbs, splineList, coordsCorners, fMinTurbDist):
 #-- Returns the max and min y-vals for a given x-val in the cs3 boundary --#
 def getUpDwnYvals(xCoord, splineList, coordsCorners):
     # Given there are 4 splines (with 0&1 below, 2&3 above),
-    # returns the indecies of splines the given x-coord falls between
+    # returns the indicies of splines the given x-coord falls between
     bTriangle = False # Default to work with squares
     if (len(coordsCorners) == 3):
         bTriangle = True    # If we have 3 sides, let it know it's a triangle.

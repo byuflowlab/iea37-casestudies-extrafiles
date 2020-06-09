@@ -153,10 +153,11 @@ function getBndryCs4YAML(file_name)
     # Read in the .yaml file
     f = YAML.load(open(file_name))
     bndrs = f["boundaries"]
-    
+    # Initialize some variables
     nRegions = 5;
     nPts = fill(0, 1, nRegions)
     ptList = []
+    # Go through all our regions to get the boundary points
     for cntr in 1:nRegions
         #println(cntr)
         #println(length(bndrs[getCs34NameYAML(cntr)]))
@@ -174,8 +175,8 @@ function getBndryCs4YAML(file_name)
     y_boundary_coords = fill(0.0, 1, nRegions)
     for i in 1:nRegions
         for j in 1:nPts[i]
-            x_boundary_coords[i] = pushlast!(x_boundary_coords[i], ptList[i][j][1])
-            y_boundary_coords[i] = pushlast!(x_boundary_coords[i], ptList[i][j][2])
+            x_boundary_coords[i] = push!(x_boundary_coords[i], ptList[i][j][1])
+            y_boundary_coords[i] = push!(x_boundary_coords[i], ptList[i][j][2])
         end
     end
 

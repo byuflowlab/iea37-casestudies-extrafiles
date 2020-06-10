@@ -187,32 +187,32 @@ function getWindRoseYAML(file_name)
     return wind_dir, wind_dir_freq, wind_speeds, wind_speed_probs, num_speed_bins, min_speed, max_speed
 end
 
-file_name = "iea37-ex-opt3.yaml"
-# Get turbine locations
-turb_locs = getTurbLocYAML(file_name)
-turb_coords = turb_locs[1]
-fname_turb = turb_locs[2]
-fname_wr = turb_locs[3]
+# file_name = "iea37-ex-opt3.yaml"
+# # Get turbine locations
+# turb_locs = getTurbLocYAML(file_name)
+# turb_coords = turb_locs[1]
+# fname_turb = turb_locs[2]
+# fname_wr = turb_locs[3]
 
-# Get turbine attributes
-turb_data = getTurbAtrbtYAML(fname_turb)
-turb_ci = turb_data[1]
-turb_co = turb_data[2]
-rated_ws = turb_data[3]
-rated_pwr = turb_data[4]
-turb_diam = turb_data[5]
+# # Get turbine attributes
+# turb_data = getTurbAtrbtYAML(fname_turb)
+# turb_ci = turb_data[1]
+# turb_co = turb_data[2]
+# rated_ws = turb_data[3]
+# rated_pwr = turb_data[4]
+# turb_diam = turb_data[5]
 
-# Get windrose info
-wr_data = getWindRoseYAML(fname_wr)
-wind_dir = wr_data[1]
-wind_dir_freq = wr_data[2]
-wind_speeds = wr_data[3]
-wind_speed_probs = wr_data[4]
-num_speed_bins = wr_data[5]
-min_speed = wr_data[6]
-max_speed = wr_data[7]
+# # Get windrose info
+# wr_data = getWindRoseYAML(fname_wr)
+# wind_dir = wr_data[1]
+# wind_dir_freq = wr_data[2]
+# wind_speeds = wr_data[3]
+# wind_speed_probs = wr_data[4]
+# num_speed_bins = wr_data[5]
+# min_speed = wr_data[6]
+# max_speed = wr_data[7]
 
-AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
+# AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
 
-print(AEP, "\n")
-print("AEP = ", sum(AEP), "\n")
+# print(AEP, "\n")
+# print("AEP = ", sum(AEP), "\n")

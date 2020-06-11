@@ -101,8 +101,10 @@ function getBndryCs4YAML(file_name)
     end
 
     # Reorder points from 3b and 4a to be CCW from NE corner
-    ptList[2] = circshift(ptList[2],1)
-    ptList[3] = circshift(ptList[3],-3)
+    ptList[1] = circshift(ptList[1],-1)
+    ptList[3] = circshift(ptList[3],-4)
+    ptList[4] = circshift(ptList[4],-1)
+    ptList[5] = circshift(ptList[5],-1)
     # Change from CW -> CCW
     for i in 1:nRegions
         ptList[i] = reverse(ptList[i])

@@ -83,6 +83,44 @@ function getCs34VertList(sReg::String)
     
     return vertList
 end
+
+function getBndryCs4YAML(file_name)
+    """Retreive boundary coordinates from the <.yaml> file"""
+
+    # Read in the .yaml file
+    f = YAML.load(open(file_name))
+    bndrs = f["boundaries"]
+    # Initialize some variables
+    nRegions = 5;
+    nPts = fill(0, 1, nRegions)
+    ptList = []
+    # Go through all our regions to get the boundary points
+    for cntr in 1:nRegions
+        ptList = push!(ptList, bndrs[getCs34NameYAML(cntr)])
+        nPts[cntr] = floor(length(bndrs[getCs34NameYAML(cntr)]))
+    end
+
+    # Reorder points from 3b and 4a to be CCW from NE corner
+    ptList[2] = circshift(ptList[2],1)
+    ptList[3] = circshift(ptList[3],-3)
+    # Change from CW -> CCW
+    for i in 1:nRegions
+        ptList[i] = reverse(ptList[i])
+    end
+
+    # Initialize our arrays for the coordinates
+    x_boundary_coords = [ Float64[] for i in 1:nRegions ]
+    y_boundary_coords = [ Float64[] for i in 1:nRegions ]
+    # Read in all the coordinates
+    for i in 1:nRegions             # Looping through all regions
+        for j in 1:nPts[i]          # Looping through all point sin this region
+            x_boundary_coords[i] = push!(x_boundary_coords[i], ptList[i][j][1])
+            y_boundary_coords[i] = push!(y_boundary_coords[i], ptList[i][j][2])
+        end
+    end
+
+    return x_boundary_coords, y_boundary_coords
+end
 #-- End specific cs3/cs4 functions --#
 
 ### Complete and functional ###

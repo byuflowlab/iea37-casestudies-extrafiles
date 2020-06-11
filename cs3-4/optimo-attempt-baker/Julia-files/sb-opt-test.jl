@@ -5,60 +5,32 @@ using Parameters
 include("baker_cs34_functions.jl")
 include("../aepcalc-baker1.jl")
 
-### Complete, functional ###
-function getBndryCs4YAML(file_name)
-    """Retreive boundary coordinates from the <.yaml> file"""
-
-    # Read in the .yaml file
-    f = YAML.load(open(file_name))
-    bndrs = f["boundaries"]
-    # Initialize some variables
-    nRegions = 5;
-    nPts = fill(0, 1, nRegions)
-    ptList = []
-    # Go through all our regions to get the boundary points
-    for cntr in 1:nRegions
-        ptList = push!(ptList, bndrs[getCs34NameYAML(cntr)])
-        nPts[cntr] = floor(length(bndrs[getCs34NameYAML(cntr)]))
-    end
-
-    # Reorder points from 3b and 4a to be CCW from NE corner
-    ptList[2] = circshift(ptList[2],1)
-    ptList[3] = circshift(ptList[3],-3)
-    # Change from CW -> CCW
-    for i in 1:nRegions
-        ptList[i] = reverse(ptList[i])
-    end
-
-    # Initialize our arrays for the coordinates
-    x_boundary_coords = [ Float64[] for i in 1:nRegions ]
-    y_boundary_coords = [ Float64[] for i in 1:nRegions ]
-    # Read in all the coordinates
-    for i in 1:nRegions             # Looping through all regions
-        for j in 1:nPts[i]          # Looping through all point sin this region
-            x_boundary_coords[i] = push!(x_boundary_coords[i], ptList[i][j][1])
-            y_boundary_coords[i] = push!(y_boundary_coords[i], ptList[i][j][2])
-        end
-    end
-
-    return x_boundary_coords, y_boundary_coords
-end
-
-function writeCs4TurbLocs(x_coords, y_coords, file_name, fname_turb, fname_wr, binned_AEP)
+function writeCs4TurbLocs(x_coords, y_coords, binned_AEP, file_name)
     """Write the passed turbine locations to a file in the iea37 format """
+    #set_bigfloat_precision(5)
     # Combine coordinates
 
     # Header info
     Data = Dict()
-    Data["title"] = "IEA Wind Task 37 case study 4"
-    Data["definitions"] = "Result file of Nick Baker using SNOPT and BPM"
+    # Data["Turbines"] = x_coords
 
-    defs = Data["definitions"]
-    # Turbine info
-    wp = defs["wind_plant"]
-    wp["description"] = "specific plant design including turbine selection and placement'"
-    wp["properties"]["type"] = "array"
-    # wp["properties"]["items{2}"] = fname_turb
+    Data["AEP"] = Dict()
+    AEP = Data["AEP"]
+    #AEP["binned"] = binned_AEP
+    AEP["default"] = big(sum(binned_AEP))
+
+    # Data["title"] = "IEA Wind Task 37 case study 4"
+    # Data["description"] = "Result file of Nick Baker using SNOPT and BPM"
+
+    # Data["definitions"] = Dict()
+    # defs = Data["definitions"]
+    # # Turbine info
+    # defs["wind_plant"] = Dict()
+    # wp = defs["wind_plant"]
+    # wp["description"] = "specific plant design including turbine selection and placement'"
+    # wp["properties"] = Dict()
+    # wp["properties"]["type"] = "array"
+    # wp["properties"]["items"] = fname_turb
 
     # # Turbine Locations
     # Data.definitions.position.description = 'an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates'
@@ -86,30 +58,37 @@ function writeCs4TurbLocs(x_coords, y_coords, file_name, fname_turb, fname_wr, b
     # Data.definitions.plant_energy.properties.annual_energy_production.default = round(sum(binned_AEP),digits=6)
 
     YAML.write_file(file_name, Data)
+    return Data
 end
 
+function checkBndryConsCs4(turbine_x, turbine_y, turbs_per_region, bndry_x_clsd, bndry_y_clsd, bndry_corner_indcies)
+end
+
+########################################## MAIN ################################
+
 #--- Read in the data ---#
-# scaledAEP = 1#e5
-# scaledTC = 1#e3
-# strCase = "cs4"  # Which case study we're doing. 'cs3' or 'cs4'
-# numGridLines = 10                   # How many gridlines we'll use for the splining
-# nRegions = 5                     # Number of reigons we're using (cs4 = 5, cs3 = 1)
+scaledAEP = 1#e5
+scaledTC = 1#e3
+strCase = "cs4"  # Which case study we're doing. 'cs3' or 'cs4'
+numGridLines = 10                   # How many gridlines we'll use for the splining
+nRegions = 5                     # Number of reigons we're using (cs4 = 5, cs3 = 1)
 
-# #- Rip the boundary coordinates from the .yaml file -# 
-# bnry_file_name = "../../startup-files/iea37-boundary-" * strCase * ".yaml"
-# x_bndry_coords, y_bndry_coords = getBndryCs4YAML(bnry_file_name)
-# x_bndry_coords_clsd, y_bndry_coords_clsd = closeBndryLists(x_bndry_coords, y_bndry_coords)
+#- Rip the boundary coordinates from the .yaml file -# 
+bnry_file_name = "../../startup-files/iea37-boundary-" * strCase * ".yaml"
+bndry_x, bndry_y = getBndryCs4YAML(bnry_file_name)
+bndry_x_clsd, bndry_y_clsd = closeBndryLists(bndry_x, bndry_y)
 
+#--- Read in Turbine data to calculate AEP ---#
 file_dir = "../../startup-files/"
-file_name = "iea37-ex-opt4.yaml"
-file_name = string(file_dir,file_name)
+file_name_orig = "iea37-ex-opt4.yaml"
+file_name = string(file_dir,file_name_orig)
 # Get turbine locations
 turb_locs = getTurbLocYAML(file_name)
 turb_coords = turb_locs[1]
-fname_turb = turb_locs[2]
-fname_turb = string(file_dir,fname_turb)
-fname_wr = turb_locs[3]
-fname_wr = string(file_dir,fname_wr)
+fname_turb_orig = turb_locs[2]
+fname_turb = string(file_dir,fname_turb_orig)
+fname_wr_orig = turb_locs[3]
+fname_wr = string(file_dir,fname_wr_orig)
 
 # Get turbine attributes
 turb_data = getTurbAtrbtYAML(fname_turb)
@@ -129,13 +108,12 @@ num_speed_bins = wr_data[5]
 min_speed = wr_data[6]
 max_speed = wr_data[7]
 
-AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
+# AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)
 
-print(AEP, "\n")
-print("AEP = ", sum(AEP), "\n")
+# print(AEP, "\n")
+# print("AEP = ", sum(AEP), "\n")
 
-writeCs4TurbLocs(1, 2, "test_julia.yaml", fname_turb, fname_wr, AEP)
-
+#--- Print Boundary coordinates (Debug) ---#
 # for cntr in 1:nRegions
 #     println(x_bndry_coords_clsd[cntr])
 # end
@@ -145,4 +123,10 @@ writeCs4TurbLocs(1, 2, "test_julia.yaml", fname_turb, fname_wr, AEP)
 # end
 
 
-# Augment the data so it's CCW and from NW "corner"
+
+#--- YAML reading and writing ---#
+# f = YAML.load(open(file_name))
+# #println(f)
+
+# g = writeCs4TurbLocs(turb_coords, 2,  AEP, "test_julia.yaml")
+# println(g)

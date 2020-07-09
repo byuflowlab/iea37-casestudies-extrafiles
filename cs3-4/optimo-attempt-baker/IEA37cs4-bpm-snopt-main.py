@@ -120,7 +120,7 @@ if __name__ == "__main__":
                       ('coordsCornersDict',coordsCornersDict),
                       ('nRegionNumTurbs',nRegionNumTurbs)])
 
-    numRestarts = 20                     # Number of restarts we're doing
+    numRestarts = 1                     # Number of restarts we're doing
     print("Running region: " + strCase)
     print("Running: " + str(numRestarts) + " restarts.")
 
@@ -130,6 +130,11 @@ if __name__ == "__main__":
     bestResult = np.zeros(2)            # Index, AEP number
     timeArray = np.zeros(numRestarts)   # To hold timing information
 
+    file_name = "../startup-files/iea37-ex-opt4.yaml"
+    x0s, _, _ = iea37aepC.getTurbLocYAML(file_name)
+    x0 = Iea37sb.makeCoordListArray(x0s)
+    bndry_cons = Iea37sb.checkBndryConsCs4(x0, nRegionNumTurbs, splineMatDict, coordsCornersDict)
+    print(bndry_cons)
     #- Loop for every restart -#
     for cntr in range(numRestarts):
         print("Restart #" + str(cntr+1) + "/" +  str(numRestarts) + " (index " + str(cntr) + ")")

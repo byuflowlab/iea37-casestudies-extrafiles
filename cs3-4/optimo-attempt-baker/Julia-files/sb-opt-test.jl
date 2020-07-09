@@ -4,69 +4,9 @@ using PyPlot
 using Printf
 using Parameters
 using FlowFarm; const FF = FlowFarm
+using FLOWMath; const FM = FLOWMath
 include("baker_cs34_functions.jl")
 include("../aepcalc-baker1.jl")
-
-function writeCs4TurbLocs(x_coords, y_coords, binned_AEP, file_name)
-    """Write the passed turbine locations to a file in the iea37 format """
-    #set_bigfloat_precision(5)
-    # Combine coordinates
-
-    # Header info
-    Data = Dict()
-    # Data["Turbines"] = x_coords
-
-    Data["AEP"] = Dict()
-    AEP = Data["AEP"]
-    #AEP["binned"] = binned_AEP
-    AEP["default"] = big(sum(binned_AEP))
-
-    # Data["title"] = "IEA Wind Task 37 case study 4"
-    # Data["description"] = "Result file of Nick Baker using SNOPT and BPM"
-
-    # Data["definitions"] = Dict()
-    # defs = Data["definitions"]
-    # # Turbine info
-    # defs["wind_plant"] = Dict()
-    # wp = defs["wind_plant"]
-    # wp["description"] = "specific plant design including turbine selection and placement'"
-    # wp["properties"] = Dict()
-    # wp["properties"]["type"] = "array"
-    # wp["properties"]["items"] = fname_turb
-
-    # # Turbine Locations
-    # Data.definitions.position.description = 'an array of x-coordinates [x0, x1, ...] and y-coordinates [y0, y1, ...] of wind turbine positions in cartesian coordinates'
-    # Data.definitions.position.units = 'm'
-    # # num_coords = length(turb_coords);
-    # # x_coords = turb_coords(1:(num_coords/2));
-    # # y_coords = turb_coords((num_coords/2 +1):num_coords);
-    # # Data.definitions.position.items.xc = round(x_coords, 6);
-    # # Data.definitions.position.items.yc = round(y_coords, 6);
-
-    # # Wake model
-    # Data.definitions.plant_energy.description = 'energy production from simplified Bastankhah Gaussian wake model'
-    # Data.definitions.plant_energy.properties.wake_model.description = 'wake model used to calculate AEP'
-    # Data.definitions.plant_energy.properties.wake_model.items{1}.ref = '"iea37-aepcalc.py"'
-
-    # # WindRose
-    # Data.definitions.plant_energy.properties.wind_resource.description = 'specific wind resource used to calculate AEP'
-    # Data.definitions.plant_energy.properties.wind_resource.description = 'MWh'
-    # Data.definitions.plant_energy.properties.wind_resource.items{1}.ref = fname_wr
-
-    # # AEP
-    # Data.definitions.plant_energy.properties.annual_energy_production.description = 'binned and total (default) annual energy production for a wind plant given a layout and binned wind rose'
-    # Data.definitions.plant_energy.properties.annual_energy_production.units = 'MWh'
-    # Data.definitions.plant_energy.properties.annual_energy_production.binned = round(binned_AEP,digits=6)
-    # Data.definitions.plant_energy.properties.annual_energy_production.default = round(sum(binned_AEP),digits=6)
-
-    YAML.write_file(file_name, Data)
-    return Data
-end
-
-function checkBndryConsCs4(turbine_x, turbine_y, turbs_per_region, bndry_x_clsd, bndry_y_clsd, bndry_corner_indcies)
-end
-
-########################################## MAIN ################################
 
 #--- Read in the data ---#
 scaledAEP = 1#e5
@@ -103,23 +43,46 @@ num_speed_bins = wr_data[5]
 min_speed = wr_data[6]
 max_speed = wr_data[7]
 
-# Plot the boundaries
+# For checking boundary constraints
+turbs_per_region =                                                                                                 
+bndry_corner_indcies = [ Int64[] for i in 1:nRegions ]
+
 for cntr in 1:nRegions
-    plot(bndry_x_clsd[cntr], bndry_y_clsd[cntr])
-    num_bndry_bpts = length(bndry_x_clsd[cntr])
-    for i in 1:num_bndry_bpts
-        plt.gcf().gca().add_artist(plt.Circle((bndry_x_clsd[cntr][i],bndry_y_clsd[cntr][i]), rotor_diameter/2.0, fill=true,color="black"))
-        plt.text(bndry_x_clsd[cntr][i]+rotor_diameter,bndry_y_clsd[cntr][i]+rotor_diameter, string(i))
-    end
+    bndry_corner_indcies[cntr] =
+        append!(bndry_corner_indcies[cntr],getCs34VertList(getCs34Name(cntr)))
+    turbs_per_region[cntr] = floor(getCs34NumTurbs(getCs34Name(cntr)))
 end
 
-# Plot the turbines
+bndry_cons = splined_boundary_discreet_regions(turbine_x, turbine_y, bndry_x_clsd, bndry_y_clsd, bndry_corner_indcies, turbs_per_region)
+
+println(bndry_cons)
+# for cntr in 1:nRegions
+#     println(bndry_cons[cntr])
+# end
+
+# Plot the boundaries
+# for cntr in 1:nRegions
+#     plot(bndry_x_clsd[cntr], bndry_y_clsd[cntr])
+#     num_bndry_bpts = length(bndry_x_clsd[cntr])
+#     # for i in 1:num_bndry_bpts
+#     #     plt.gcf().gca().add_artist(plt.Circle((bndry_x_clsd[cntr][i],bndry_y_clsd[cntr][i]), rotor_diameter/2.0, fill=true,color="black"))
+#     #     plt.text(bndry_x_clsd[cntr][i]+rotor_diameter,bndry_y_clsd[cntr][i]+rotor_diameter, string(i))
+#     # end
+#     # for j in 1:length(bndry_corner_indcies[cntr])
+#     #     plt.gcf().gca().add_artist(plt.Circle((bndry_x_clsd[cntr][bndry_corner_indcies[cntr][j]],bndry_y_clsd[cntr][bndry_corner_indcies[cntr][j]]), rotor_diameter/2.0, fill=true,color="red"))
+#     #     plt.text(bndry_x_clsd[cntr][bndry_corner_indcies[cntr][j]]+rotor_diameter,bndry_y_clsd[cntr][bndry_corner_indcies[cntr][j]]+rotor_diameter, string(j))
+#     # end
+# end
+
+# # Plot the turbines
 # for i = 1:length(turbine_x)
 #     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter/2.0, fill=true,color="black"))
+#     plt.text(turbine_x[i]+rotor_diameter,turbine_y[i]+rotor_diameter, string(i))
 # end
-axis("square")
-axis("off")
-plt.show()
+
+# axis("square")
+# axis("off")
+# plt.show()
 
 
 # AEP = calcAEPcs3(turb_coords, wind_dir_freq, wind_speeds, wind_speed_probs, wind_dir, turb_diam, turb_ci, turb_co, rated_ws, rated_pwr)

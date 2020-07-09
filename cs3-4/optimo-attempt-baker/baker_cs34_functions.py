@@ -518,7 +518,7 @@ def getUpDwnYvals(xCoord, splineList, coordsCorners):
             ymax = splineList[2](xCoord)  # Make it the left upper spline
         # If it's to the left of the rightmost point
         elif (xCoord < coordsCorners[0].x):
-            ymax = splineList[3](xCoord)  # Make it the left upper spline
+            ymax = splineList[3](xCoord)  # Make it the right upper spline
         else:
             ymax = coordsCorners[0].y # Give it the y-value of our rightmost point
 

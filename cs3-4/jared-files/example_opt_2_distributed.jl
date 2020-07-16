@@ -6,15 +6,21 @@ import ForwardDiff
 
 const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 
-IN_SLURM && using ClusterManagers
+# IN_SLURM && using ClusterManagers
+
+# if IN_SLURM
+#     pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd(), tunneling=true)
+#     print("\n")
+# else
+#     pids = addprocs()
+# end
+# @sync println(pids)
+
+# using ClusterManagers
 
 if IN_SLURM
-    pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd(), tunneling=true)
-    print("\n")
-else
-    pids = addprocs()
+    addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 end
-@sync println(pids)
 
 # set up boundary constraint wrapper function
 function boundary_wrapper(x, params)
@@ -202,3 +208,8 @@ axis("square")
 xlim(-boundary_radius-200,boundary_radius+200)
 ylim(-boundary_radius-200,boundary_radius+200)
 plt.show()
+# The Slurm resource allocation is released when all the workers have
+# exited
+for i in workers()
+    rmprocs(i)
+end

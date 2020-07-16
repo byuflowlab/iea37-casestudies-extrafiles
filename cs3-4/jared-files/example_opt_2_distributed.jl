@@ -9,7 +9,7 @@ const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 IN_SLURM && using ClusterManagers
 
 if IN_SLURM
-    pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd())
+    pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd(), tunneling=true)
     print("\n")
 else
     pids = addprocs()

@@ -2,8 +2,8 @@ using Distributed
 using ClusterManagers
 
 
-# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-addprocs(0)
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+# addprocs(0)
 # hosts = []
 # pids = []
 # for i in workers()

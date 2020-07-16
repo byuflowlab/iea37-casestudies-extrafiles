@@ -2,7 +2,7 @@
 
 #SBATCH --time=00:01:00   # walltime
 #SBATCH --ntasks=4   # number of processor cores (i.e. tasks)
-#SBATCH --nodes=4   # number of nodes
+#SBATCH --nodes=3   # number of nodes
 #SBATCH --mem-per-cpu=1024M   # memory per CPU core
 #SBATCH -J "test flowfarm distributed "   # job name
 #SBATCH --qos=test

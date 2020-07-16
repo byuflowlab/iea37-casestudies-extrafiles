@@ -174,6 +174,17 @@ println("Finished in : ", clkt, " (s)")
 println("info: ", info)
 println("end objective value: ", aep_wrapper(xopt))
 
+# run and time optimization
+t1 = time()
+xopt, fopt, info = snopt(obj_func, deepcopy(xinit), lb, ub, options)
+t2 = time()
+clkt = t2-t1
+
+# print optimization results
+println("Finished in : ", clkt, " (s)")
+println("info: ", info)
+println("end objective value: ", aep_wrapper(xopt))
+
 # extract final turbine locations
 turbine_x = copy(xopt[1:nturbines])
 turbine_y = copy(xopt[nturbines+1:end])

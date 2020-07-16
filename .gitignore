@@ -1,4 +1,4 @@
-
+*.out
 cs3-4/.DS_Store
 cs3-4/optimo-attempt-baker/.DS_Store
 cs3-4/optimo-attempt-baker/__pycache__/baker_cs34_functions.cpython-36.pyc

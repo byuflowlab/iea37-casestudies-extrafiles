@@ -2,7 +2,7 @@
 #SBATCH --nodes=2
 #SBATCH --ntasks=4
 #SBATCH --mem-per-cpu=1024M   # memory per CPU core
-#SBATCH --time=00:01:00
+#SBATCH --time=00:00:20
 #SBATCH -J "practice distributed "   # job name
 #SBATCH --qos=test
 

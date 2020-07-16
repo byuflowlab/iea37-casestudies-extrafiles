@@ -1,3 +1,4 @@
+using Distributed
 using ClusterManagers
 
 addprocs(SlurmManager(4), t="00:01:00")

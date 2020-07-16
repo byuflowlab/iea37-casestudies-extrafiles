@@ -2,9 +2,10 @@
 #SBATCH --nodes=2
 #SBATCH --ntasks=4
 #SBATCH --ntasks-per-node=2
-#SBATCH --time=00:10:00
-#SBATCH --output=myoutput.log
-#SBATCH --job-name=my-julia-job
+#SBATCH --mem-per-cpu=1024M   # memory per CPU core
+#SBATCH --time=00:01:00
+#SBATCH -J "practice distributed "   # job name
+#SBATCH --qos=test
 
 # source $HOME/julia-v0.6/julia-environment
 # cd working/folder/of/your/choice

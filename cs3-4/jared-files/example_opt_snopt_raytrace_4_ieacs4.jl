@@ -1,4 +1,5 @@
 using Distributed
+using ClusterManagers
 using Snopt
 using DelimitedFiles 
 using PyPlot
@@ -6,6 +7,8 @@ import ForwardDiff
 
 using CSV
 using DataFrames
+
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 # using YAML
 
 #using ClusterManagers
@@ -14,17 +17,17 @@ using DataFrames
 #addprocs_slurm(allocatedcpus)
 #println(allocatedcpus)
 
-const IN_SLURM = "SLURM_JOBID" in keys(ENV)
+# const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 
-IN_SLURM && using ClusterManagers
+# IN_SLURM && using ClusterManagers
 
-if IN_SLURM
-    pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd())
-    print("\n")
-else
-    pids = addprocs()
-end
-@sync println(pids)
+# if IN_SLURM
+#     pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd())
+#     print("\n")
+# else
+#     pids = addprocs()
+# end
+# @sync println(pids)
 # set up boundary constraint wrapper function
 function boundary_wrapper(x, params)
     # include relevant globals
@@ -292,15 +295,15 @@ println("rotor diameter: ", rotor_diameter[1])
 println("starting AEP value (MWh): ", aep_wrapper(x_initial)[1]*1E5)
 
 # run and time optimization
-t1 = time()
-xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
-t2 = time()
-clkt = t2-t2
+# t1 = time()
+# xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+# t2 = time()
+# clkt = t2-t2
 
-# print optimization results
-println("Finished in : ", clkt, " (s)")
-println("info: ", info)
-println("end AEP value (MWh): ", aep_wrapper(xopt)[1]*1E5)
+# # print optimization results
+# println("Finished in : ", clkt, " (s)")
+# println("info: ", info)
+# println("end AEP value (MWh): ", aep_wrapper(xopt)[1]*1E5)
 
 # extract final turbine locations
 turbine_x = copy(xopt[1:nturbines])

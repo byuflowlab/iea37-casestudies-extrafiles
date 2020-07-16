@@ -294,6 +294,7 @@ options["Print file"] = "./snopt_printcs4_2.out"
 
 # print initial objective value
 println("nturbines: ", nturbines)
+println("nstates: ", nstates)
 println("rotor diameter: ", rotor_diameter[1])
 println("starting AEP value (MWh): ", aep_wrapper(x_initial)[1]*1E5)
 # trial = @benchmark aep_wrapper(x_initial)[1]*1E5

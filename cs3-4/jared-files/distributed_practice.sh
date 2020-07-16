@@ -1,7 +1,6 @@
 #!/bin/bash -l
 #SBATCH --nodes=2
 #SBATCH --ntasks=4
-#SBATCH --ntasks-per-node=2
 #SBATCH --mem-per-cpu=1024M   # memory per CPU core
 #SBATCH --time=00:01:00
 #SBATCH -J "practice distributed "   # job name

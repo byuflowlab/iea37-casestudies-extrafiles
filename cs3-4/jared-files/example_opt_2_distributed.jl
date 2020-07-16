@@ -4,6 +4,18 @@ using DelimitedFiles
 using PyPlot
 import ForwardDiff
 
+const IN_SLURM = "SLURM_JOBID" in keys(ENV)
+
+IN_SLURM && using ClusterManagers
+
+if IN_SLURM
+    pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd())
+    print("\n")
+else
+    pids = addprocs()
+end
+@sync println(pids)
+
 # set up boundary constraint wrapper function
 function boundary_wrapper(x, params)
     # include relevant globals

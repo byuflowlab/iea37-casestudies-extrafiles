@@ -9,5 +9,5 @@
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 module load julia
-
-julia example_opt_2_distributed.jl
+MACHINEFILE="nodes.$SLURM_JOB_ID"
+julia --machine-file MACHINEFILE example_opt_2_distributed.jl

@@ -311,7 +311,7 @@ println("starting AEP value (MWh): ", aep_wrapper(x_initial)[1]*1E5)
 t1 = time()
 xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
 t2 = time()
-clkt = t2-t2
+clkt = t2-t1
 
 # # print optimization results
 println("Finished in : ", clkt, " (s)")

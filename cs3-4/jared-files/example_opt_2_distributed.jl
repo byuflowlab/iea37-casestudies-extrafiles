@@ -4,9 +4,10 @@ using Snopt
 using DelimitedFiles 
 using PyPlot
 import ForwardDiff
+using BenchmarkTools
 
-addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-
+# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+addprocs(2)
 # const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 
 # # IN_SLURM && using ClusterManagers
@@ -127,8 +128,8 @@ struct params_struct2{MS, AF, F, I, ACTM, WR, APM}
 end
 
 # import model set with wind farm and related details
-include("./model_sets/model_set_6.jl")
-
+@everywhere include("./model_sets/model_set_6.jl")
+nstates = length(windresource.wind_directions)
 # scale objective to be between 0 and 1
 obj_scale = 1E-11
 
@@ -173,44 +174,57 @@ boundary_wrapper(x) = boundary_wrapper(x, params)
 obj_func(x) = wind_farm_opt(x)
 
 # run and time optimization
-t1 = time()
-xopt, fopt, info = snopt(obj_func, x, lb, ub, options)
-t2 = time()
-clkt = t2-t1
+println("nturbines: ", nturbines)
+println("nstates: ", nstates)
+println("rotor diameter: ", rotor_diameter[1])
+println("starting AEP value (MWh): ", aep_wrapper(xinit)[1]*1E5)
+trial = @benchmark aep_wrapper(xinit)[1]*1E5
 
-# print optimization results
-println("Finished in : ", clkt, " (s)")
-println("info: ", info)
-println("end objective value: ", aep_wrapper(xopt))
+println("min: ", minimum(trial))
+println("max: ", maximum(trial))
+println("mean: ", mean(trial))
+println("median: ", median(trial))
+println("workers: ", nworkers())
 
-# run and time optimization
-t1 = time()
-xopt, fopt, info = snopt(obj_func, deepcopy(xinit), lb, ub, options)
-t2 = time()
-clkt = t2-t1
+# t1 = time()
+# xopt, fopt, info = snopt(obj_func, x, lb, ub, options)
+# t2 = time()
+# clkt = t2-t1
 
-# print optimization results
-println("Finished in : ", clkt, " (s)")
-println("info: ", info)
-println("end objective value: ", aep_wrapper(xopt))
+# # print optimization results
+# println("Finished in : ", clkt, " (s)")
+# println("info: ", info)
+# println("end objective value: ", aep_wrapper(xopt))
 
-# extract final turbine locations
-turbine_x = copy(xopt[1:nturbines])
-turbine_y = copy(xopt[nturbines+1:end])
+# # run and time optimization
+# t1 = time()
+# xopt, fopt, info = snopt(obj_func, deepcopy(xinit), lb, ub, options)
+# t2 = time()
+# clkt = t2-t1
 
-# add final turbine locations to plot
-for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="--")) 
-end
+# # print optimization results
+# println("Finished in : ", clkt, " (s)")
+# println("info: ", info)
+# println("end objective value: ", aep_wrapper(xopt))
 
-# add wind farm boundary to plot
-plt.gcf().gca().add_artist(plt.Circle((boundary_center[1],boundary_center[2]), boundary_radius, fill=false,color="C2"))
+# # extract final turbine locations
+# turbine_x = copy(xopt[1:nturbines])
+# turbine_y = copy(xopt[nturbines+1:end])
 
-# set up and show plot
-axis("square")
-xlim(-boundary_radius-200,boundary_radius+200)
-ylim(-boundary_radius-200,boundary_radius+200)
-plt.show()
+# # add final turbine locations to plot
+# for i = 1:length(turbine_x)
+#     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="--")) 
+# end
+
+# # add wind farm boundary to plot
+# plt.gcf().gca().add_artist(plt.Circle((boundary_center[1],boundary_center[2]), boundary_radius, fill=false,color="C2"))
+
+# # set up and show plot
+# axis("square")
+# xlim(-boundary_radius-200,boundary_radius+200)
+# ylim(-boundary_radius-200,boundary_radius+200)
+# plt.show()
+
 # The Slurm resource allocation is released when all the workers have
 # exited
 for i in workers()

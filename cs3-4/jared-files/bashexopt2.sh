@@ -8,4 +8,6 @@
 #SBATCH --qos=test
 
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+module load julia
+
 julia example_opt_2_distributed.jl

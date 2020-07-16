@@ -1,26 +1,29 @@
 using Distributed
+using ClusterManagers
 using Snopt
 using DelimitedFiles 
 using PyPlot
 import ForwardDiff
 
-const IN_SLURM = "SLURM_JOBID" in keys(ENV)
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 
-# IN_SLURM && using ClusterManagers
+# const IN_SLURM = "SLURM_JOBID" in keys(ENV)
+
+# # IN_SLURM && using ClusterManagers
+
+# # if IN_SLURM
+# #     pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd(), tunneling=true)
+# #     print("\n")
+# # else
+# #     pids = addprocs()
+# # end
+# # @sync println(pids)
+
+# # using ClusterManagers
 
 # if IN_SLURM
-#     pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd(), tunneling=true)
-#     print("\n")
-# else
-#     pids = addprocs()
+#     addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 # end
-# @sync println(pids)
-
-# using ClusterManagers
-
-if IN_SLURM
-    addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-end
 
 # set up boundary constraint wrapper function
 function boundary_wrapper(x, params)

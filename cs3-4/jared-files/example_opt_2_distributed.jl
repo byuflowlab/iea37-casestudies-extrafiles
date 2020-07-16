@@ -7,7 +7,7 @@ import ForwardDiff
 using BenchmarkTools
 
 # addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-addprocs(2)
+# addprocs(2)
 # const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 
 # # IN_SLURM && using ClusterManagers
@@ -178,7 +178,11 @@ println("nturbines: ", nturbines)
 println("nstates: ", nstates)
 println("rotor diameter: ", rotor_diameter[1])
 println("starting AEP value (MWh): ", aep_wrapper(xinit)[1]*1E5)
-trial = @benchmark aep_wrapper(xinit)[1]*1E5
+
+#
+println()
+println("Benchmark Optimization")
+trial = @benchmark snopt(obj_func, deepcopy(xinit), lb, ub, options)
 
 println("min: ", minimum(trial))
 println("max: ", maximum(trial))

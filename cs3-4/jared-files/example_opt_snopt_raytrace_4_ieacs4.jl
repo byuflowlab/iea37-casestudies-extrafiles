@@ -339,7 +339,7 @@ plt.gcf().gca().plot([boundary_vertices_e[:,1];boundary_vertices_e[1,1]],[bounda
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-plt.show()
+# plt.show()
 savefig("snoptresults_turbinelayout.png")
 
 # create obj value history plots

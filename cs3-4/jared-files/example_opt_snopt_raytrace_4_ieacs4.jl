@@ -2,7 +2,7 @@ using Distributed
 using ClusterManagers
 using Snopt
 using DelimitedFiles 
-# using PyPlot
+using PyPlot
 import ForwardDiff
 
 using CSV
@@ -296,100 +296,101 @@ options["Print file"] = "./snopt_printcs4_2.out"
 println("nturbines: ", nturbines)
 println("rotor diameter: ", rotor_diameter[1])
 println("starting AEP value (MWh): ", aep_wrapper(x_initial)[1]*1E5)
-trial = @benchmark aep_wrapper(x_initial)[1]*1E5
+# trial = @benchmark aep_wrapper(x_initial)[1]*1E5
 
-println("min: ", minimum(trial))
-println("max: ", maximum(trial))
-println("mean: ", mean(trial))
-println("median: ", median(trial))
-println("workers: ", nworkers())
+# println("min: ", minimum(trial))
+# println("max: ", maximum(trial))
+# println("mean: ", mean(trial))
+# println("median: ", median(trial))
+# println("workers: ", nworkers())
+
+
+
+# run and time optimization
+t1 = time()
+xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+t2 = time()
+clkt = t2-t2
+
+# # print optimization results
+println("Finished in : ", clkt, " (s)")
+println("info: ", info)
+println("end AEP value (MWh): ", aep_wrapper(xopt)[1]*1E5)
+
+# extract final turbine locations
+turbine_x = copy(xopt[1:nturbines])
+turbine_y = copy(xopt[nturbines+1:end])
+
+# add final turbine locations to plot
+for i = 1:length(turbine_x)
+    plt.gcf().gca().add_artist(plt.Circle((turbine_x_init[i],turbine_y_init[i]), rotor_diameter[1]/2.0, fill=false,color="C2", linestyle="-")) 
+    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="-")) 
+end
+
+# add wind farm boundary to plot
+plt.gcf().gca().plot([boundary_vertices_a[:,1];boundary_vertices_a[1,1]],[boundary_vertices_a[:,2];boundary_vertices_a[1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices_b[:,1];boundary_vertices_b[1,1]],[boundary_vertices_b[:,2];boundary_vertices_b[1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices_c[:,1];boundary_vertices_c[1,1]],[boundary_vertices_c[:,2];boundary_vertices_c[1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices_d[:,1];boundary_vertices_d[1,1]],[boundary_vertices_d[:,2];boundary_vertices_d[1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices_e[:,1];boundary_vertices_e[1,1]],[boundary_vertices_e[:,2];boundary_vertices_e[1,2]], color="C2")
+
+# set up and show turbine layout plot
+axis("square")
+xlim(0, 11000)
+ylim(-500, 13000)
+plt.show()
+savefig("snoptresults_turbinelayout.png")
+
+# create obj value history plots
+plt.clf()
+plt.gcf().gca().plot(1:length(funcalls_AEP), funcalls_AEP)
+title("Objective Value History")
+xlabel("Function Call")
+ylabel("AEP (TWh)")
+savefig("snoptresults_plot_AEP_history_by_funcall.png")
+
+plt.clf()
+plt.gcf().gca().plot(1:length(iter_AEP), iter_AEP)
+title("Objective Value at Each Iteration")
+xlabel("Iteration")
+ylabel("AEP (TWh)")
+savefig("snoptresults_plot_AEP_history_by_iter.png")
+
+# write text file with optimization summary info
+io = open("snoptresults_summary.txt", "a")
+write(io, "number of turbines: ")
+writedlm(io, nturbines)
+write(io, "rotor diameter: ")
+writedlm(io, rotor_diameter[1])
+write(io, "starting AEP value (MWh): ")
+writedlm(io, aep_wrapper(x_initial)[1]*1E5)
+write(io, "Finished in : ")
+writedlm(io, clkt)
+write(io, "end objective value: ")
+writedlm(io, aep_wrapper(xopt)[1]*1E5)
+write(io, "\noptimal turbine coordinates:\n")
+writedlm(io, [turbine_x turbine_y])
+write(io, "\neach function call value\n")
+writedlm(io, funcalls_AEP)
+close(io)
+
+# write results to csv files
+dataforcsv_xopt = DataFrame(xopt = xopt)
+dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
+dataforcsv_funceval_at_iteration = DataFrame(function_value = iter_AEP)
+CSV.write("cs4_xopt.csv", dataforcsv_xopt)
+CSV.write("cs4_functionvalue_log.csv", dataforcsv_funceval)
+CSV.write("cs4_functionvalue_at_iteration_log.csv", dataforcsv_funceval_at_iteration)
+
+# # write results to a YAML file (not complete)
+# dataforyaml = [
+#     "optimal_turbine_coordinates" => [turbine_x turbine_y]
+#     "function_evaluation_log" => funcalls_AEP
+#     "function_evaluation_at_iterations_log" => iter_AEP
+#     ]
+# YAML.write_file("cs4_results.yml", dataforyaml)
 
 
 for i in workers()
 	rmprocs(i)
 end
-
-# # run and time optimization
-# # t1 = time()
-# # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
-# # t2 = time()
-# # clkt = t2-t2
-
-# # # print optimization results
-# # println("Finished in : ", clkt, " (s)")
-# # println("info: ", info)
-# # println("end AEP value (MWh): ", aep_wrapper(xopt)[1]*1E5)
-
-# # extract final turbine locations
-# turbine_x = copy(xopt[1:nturbines])
-# turbine_y = copy(xopt[nturbines+1:end])
-
-# # add final turbine locations to plot
-# for i = 1:length(turbine_x)
-#     plt.gcf().gca().add_artist(plt.Circle((turbine_x_init[i],turbine_y_init[i]), rotor_diameter[1]/2.0, fill=false,color="C2", linestyle="-")) 
-#     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="-")) 
-# end
-
-# # add wind farm boundary to plot
-# plt.gcf().gca().plot([boundary_vertices_a[:,1];boundary_vertices_a[1,1]],[boundary_vertices_a[:,2];boundary_vertices_a[1,2]], color="C2")
-# plt.gcf().gca().plot([boundary_vertices_b[:,1];boundary_vertices_b[1,1]],[boundary_vertices_b[:,2];boundary_vertices_b[1,2]], color="C2")
-# plt.gcf().gca().plot([boundary_vertices_c[:,1];boundary_vertices_c[1,1]],[boundary_vertices_c[:,2];boundary_vertices_c[1,2]], color="C2")
-# plt.gcf().gca().plot([boundary_vertices_d[:,1];boundary_vertices_d[1,1]],[boundary_vertices_d[:,2];boundary_vertices_d[1,2]], color="C2")
-# plt.gcf().gca().plot([boundary_vertices_e[:,1];boundary_vertices_e[1,1]],[boundary_vertices_e[:,2];boundary_vertices_e[1,2]], color="C2")
-
-# # set up and show turbine layout plot
-# axis("square")
-# xlim(0, 11000)
-# ylim(-500, 13000)
-# plt.show()
-# savefig("snoptresults_turbinelayout.png")
-
-# # create obj value history plots
-# plt.clf()
-# plt.gcf().gca().plot(1:length(funcalls_AEP), funcalls_AEP)
-# title("Objective Value History")
-# xlabel("Function Call")
-# ylabel("AEP (TWh)")
-# savefig("snoptresults_plot_AEP_history_by_funcall.png")
-
-# plt.clf()
-# plt.gcf().gca().plot(1:length(iter_AEP), iter_AEP)
-# title("Objective Value at Each Iteration")
-# xlabel("Iteration")
-# ylabel("AEP (TWh)")
-# savefig("snoptresults_plot_AEP_history_by_iter.png")
-
-# # write text file with optimization summary info
-# io = open("snoptresults_summary.txt", "a")
-# write(io, "number of turbines: ")
-# writedlm(io, nturbines)
-# write(io, "rotor diameter: ")
-# writedlm(io, rotor_diameter[1])
-# write(io, "starting AEP value (MWh): ")
-# writedlm(io, aep_wrapper(x_initial)[1]*1E5)
-# write(io, "Finished in : ")
-# writedlm(io, clkt)
-# write(io, "end objective value: ")
-# writedlm(io, aep_wrapper(xopt)[1]*1E5)
-# write(io, "\noptimal turbine coordinates:\n")
-# writedlm(io, [turbine_x turbine_y])
-# write(io, "\neach function call value\n")
-# writedlm(io, funcalls_AEP)
-# close(io)
-
-# # write results to csv files
-# dataforcsv_xopt = DataFrame(xopt = xopt)
-# dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
-# dataforcsv_funceval_at_iteration = DataFrame(function_value = iter_AEP)
-# CSV.write("cs4_xopt.csv", dataforcsv_xopt)
-# CSV.write("cs4_functionvalue_log.csv", dataforcsv_funceval)
-# CSV.write("cs4_functionvalue_at_iteration_log.csv", dataforcsv_funceval_at_iteration)
-
-# # # write results to a YAML file (not complete)
-# # dataforyaml = [
-# #     "optimal_turbine_coordinates" => [turbine_x turbine_y]
-# #     "function_evaluation_log" => funcalls_AEP
-# #     "function_evaluation_at_iterations_log" => iter_AEP
-# #     ]
-# # YAML.write_file("cs4_results.yml", dataforyaml)
-

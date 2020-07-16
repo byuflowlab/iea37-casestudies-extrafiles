@@ -10,4 +10,9 @@
 # LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
 module load julia
 MACHINEFILE="nodes.$SLURM_JOB_ID"
+# Generate Machinefile for mpi such that hosts are in the same
+#  order as if run via srun
+#
+srun -l /bin/hostname | sort -n | awk '{print $2}' > $MACHINEFILE
+
 julia --machine-file MACHINEFILE example_opt_2_distributed.jl

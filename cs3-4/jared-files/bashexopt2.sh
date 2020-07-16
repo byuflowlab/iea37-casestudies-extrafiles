@@ -15,4 +15,4 @@ MACHINEFILE="nodes.$SLURM_JOB_ID"
 #
 srun -l /bin/hostname | sort -n | awk '{print $2}' > $MACHINEFILE
 
-julia --machine-file MACHINEFILE example_opt_2_distributed.jl
+julia --machine-file $MACHINEFILE example_opt_2_distributed.jl

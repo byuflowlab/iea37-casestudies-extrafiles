@@ -25,7 +25,7 @@ function run_the_benchmark(parray)
 
 end
 
-parray = [1]#, 10, 50, 100, 200, 400, 800, 1440]
+parray = [1, 10, 50, 100, 200, 400, 800, 1440]
 
 tarray1, tarray2 = run_the_benchmark(parray)
 

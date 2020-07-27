@@ -2,12 +2,11 @@ using Distributed
 using ClusterManagers
 using Snopt
 using DelimitedFiles 
-using PyPlot
 import ForwardDiff
 using BenchmarkTools
 
 # addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-addprocs(2)
+# addprocs(2)
 # const IN_SLURM = "SLURM_JOBID" in keys(ENV)
 @everywhere import FlowFarm; const ff = FlowFarm
 # # IN_SLURM && using ClusterManagers
@@ -27,7 +26,7 @@ addprocs(2)
 # end
 
 # set up boundary constraint wrapper function
-@everywhere function boundary_wrapper(x, params)
+function boundary_wrapper(x, params)
     # include relevant globals
     params.boundary_center
     params.boundary_radius
@@ -44,7 +43,7 @@ addprocs(2)
 end
 
 # set up spacing constraint wrapper function
-@everywhere function spacing_wrapper(x, params)
+function spacing_wrapper(x, params)
     # include relevant globals
     params.rotor_diameter
 
@@ -145,27 +144,6 @@ params = params_struct2(model_set, rotor_points_y, rotor_points_z, turbine_z,
 
 # initialize design variable array
 x = [copy(turbine_x);copy(turbine_y)]
-xinit = deepcopy(x)
-# report initial objective value
-println("starting objective value: ", aep_wrapper(x, params)[1])
-
-# add initial turbine location to plot
-for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
-end
-
-# set general lower and upper bounds for design variables
-lb = zeros(length(x)) .- boundary_radius
-ub = zeros(length(x)) .+ boundary_radius
-
-# set up options for SNOPT
-options = Dict{String, Any}()
-options["Derivative option"] = 1
-options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-5
-options["Major iteration limit"] = 1e6
-options["Summary file"] = "./snopt-opt2-summary.out"
-options["Print file"] = "./snopt-opt2-print.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -173,64 +151,56 @@ aep_wrapper(x) = aep_wrapper(x, params)
 boundary_wrapper(x) = boundary_wrapper(x, params)
 obj_func(x) = wind_farm_opt(x)
 
+# make sure code for benchmarking has been pre-compiled
+println("pre-compiling functions to be timed")
+c1 = aep_wrapper(x)
+c2 = ForwardDiff.jacobian(aep_wrapper, x)
+# c2 = spacing_wrapper(x)
+# c3 = boundary_wrapper(x)
+
 # run and time optimization
 println("nturbines: ", nturbines)
 println("nstates: ", nstates)
 println("rotor diameter: ", rotor_diameter[1])
-println("starting AEP value (MWh): ", aep_wrapper(xinit)[1]*1E5)
+println("starting AEP value (MWh): ", aep_wrapper(x)[1]*1E5)
 
-#
 println()
-println("Benchmark Optimization")
-trial = @benchmark snopt(obj_func, deepcopy(xinit), lb, ub, options)
+println("Benchmarking aep_wrapper")
+println("using ", nworkers(), " worker(s)")
+println("nturbines: ", nturbines)
+println("nstates: ", nstates)
+println("AEP value (MWh): ", aep_wrapper(x)[1]*1E5)
+t1 = @belapsed aep_wrapper(x) 
+println("aep call time (s): ", t1)
+t2 = @belapsed ForwardDiff.jacobian(aep_wrapper, x)
+println("aep jac call time (s): ", t2)
 
-println("min: ", minimum(trial))
-println("max: ", maximum(trial))
-println("mean: ", mean(trial))
-println("median: ", median(trial))
-println("workers: ", nworkers())
+# println("min: ", minimum(t1))
+# println("max: ", maximum(t1))
+# println("mean: ", mean(t1))
+# println("median: ", median(t1))
+# println("workers: ", nworkers())
 
-# t1 = time()
-# xopt, fopt, info = snopt(obj_func, x, lb, ub, options)
-# t2 = time()
-# clkt = t2-t1
+# println()
+# println("Benchmarking spacing_wrapper")
+# t2 = @elapsed spacing_wrapper(x)
+# # t2 = @time spacing_wrapper(x)
+# println(t2)
+# # # t2 = @benchmark spacing_wrapper(x) samples=1
+# # # println("min: ", minimum(t2))
+# # # println("max: ", maximum(t2))
+# # # println("mean: ", mean(t2))
+# # # println("median: ", median(t2))
+# # # println("workers: ", nworkers())
 
-# # print optimization results
-# println("Finished in : ", clkt, " (s)")
-# println("info: ", info)
-# println("end objective value: ", aep_wrapper(xopt))
-
-# # run and time optimization
-# t1 = time()
-# xopt, fopt, info = snopt(obj_func, deepcopy(xinit), lb, ub, options)
-# t2 = time()
-# clkt = t2-t1
-
-# # print optimization results
-# println("Finished in : ", clkt, " (s)")
-# println("info: ", info)
-# println("end objective value: ", aep_wrapper(xopt))
-
-# # extract final turbine locations
-# turbine_x = copy(xopt[1:nturbines])
-# turbine_y = copy(xopt[nturbines+1:end])
-
-# # add final turbine locations to plot
-# for i = 1:length(turbine_x)
-#     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="--")) 
-# end
-
-# # add wind farm boundary to plot
-# plt.gcf().gca().add_artist(plt.Circle((boundary_center[1],boundary_center[2]), boundary_radius, fill=false,color="C2"))
-
-# # set up and show plot
-# axis("square")
-# xlim(-boundary_radius-200,boundary_radius+200)
-# ylim(-boundary_radius-200,boundary_radius+200)
-# plt.show()
-
-# The Slurm resource allocation is released when all the workers have
-# exited
-for i in workers()
-    rmprocs(i)
-end
+# println()
+# println("Benchmarking boundary_wrapper")
+# t3 = @elapsed boundary_wrapper(x)
+# println(t3)
+# t3 = @time boundary_wrapper(x)
+# # t3 = @benchmark boundary_wrapper(x) samples=1
+# # println("min: ", minimum(t3))
+# # println("max: ", maximum(t3))
+# # println("mean: ", mean(t3))
+# # println("median: ", median(t3))
+# # println("workers: ", nworkers())

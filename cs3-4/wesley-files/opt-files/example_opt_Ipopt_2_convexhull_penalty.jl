@@ -1,12 +1,29 @@
 using Ipopt
 using DelimitedFiles 
 using PyPlot
+using LazySets
 import ForwardDiff
 
 ### uses a Julia interface to the Ipopt nonlinear solver
 
+function nondiscrete_boundary_wrapper(x, params)
+    # include relevant globals
+    params.boundary_hull_vertices
+    params.boundary_hull_normals
+
+    # get number of turbines
+    nturbines = Int(length(x)/2)
+
+    # extract x and y locations of turbines from design variables vector
+    turbine_x = x[1:nturbines]
+    turbine_y = x[nturbines+1:end]
+
+    # get and return boundary distances
+    return ff.ray_trace_boundary(boundary_hull_vertices, boundary_hull_normals, turbine_x, turbine_y)
+end
+
 # set up boundary constraint wrapper function
-function boundary_wrapper(x, params)
+function discrete_boundary_wrapper(x, params)
     # include relevant globals
     params.boundary_vertices
     params.boundary_normals
@@ -57,6 +74,7 @@ function aep_wrapper(x, params)
     params.rotor_points_y
     params.rotor_points_z
     params.obj_scale
+    global μ
 
     # get number of turbines
     nturbines = Int(length(x)/2)
@@ -71,8 +89,11 @@ function aep_wrapper(x, params)
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set,
                 rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z)
     
+    # calculate discrete region penalty
+    penalty = -μ*sum(max.(0, discrete_boundary_wrapper(x, params)).^2)
+
     # return the objective as an array
-    return [AEP]
+    return [AEP + penalty]
 end
 
 # objective function
@@ -85,11 +106,14 @@ function con(x, g)
     # calculate spacing constraint value
     spacing_con = spacing_wrapper(x)
 
-    # calculate boundary constraint
-    boundary_con = boundary_wrapper(x)
+    # calculate non-discrete boundary constraint
+    nondiscrete_boundary_con = nondiscrete_boundary_wrapper(x)
 
-    # combine constaint values and jacobians into overall constaint value and jacobian arrays
-    g[:] = [spacing_con; boundary_con]
+    # calculate discrete boudnary constraint
+    # discrete_boundary_con = discrete_boundary_wrapper(x)
+
+    # combine constraint values and jacobians into overall constaint value and jacobian arrays
+    g[:] = [spacing_con; nondiscrete_boundary_con]#; discrete_boundary_con]
 end
 
 # objective gradient function
@@ -109,13 +133,16 @@ function con_grad(x, mode, rows, cols, values)
         # calculate spacing constraint jacobian
         ds_dx = ForwardDiff.jacobian(spacing_wrapper, x)
 
-        # calculate boundary constraint jacobian
-        db_dx = ForwardDiff.jacobian(boundary_wrapper, x)
+        # calculate nondiscrete boundary constraint jacobian
+        db1_dx = ForwardDiff.jacobian(nondiscrete_boundary_wrapper, x)
+
+        # calculate discrete boundary constraint jacobian
+        db2_dx = ForwardDiff.jacobian(discrete_boundary_wrapper, x)
 
         # combine constaint jacobians into overall constaint jacobian arrays
         for i = 1:prob.m
             for j = 1:prob.n
-                values[(i-1)*prob.n+j] = [ds_dx; db_dx][i, j]
+                values[(i-1)*prob.n+j] = [ds_dx; db1_dx; db2_dx][i, j]
             end
         end
     end
@@ -137,6 +164,22 @@ for i = 1:length(boundary_normals[:,1])
 end
 turbine_x .+= 100.0
 
+# get the convex hull of wind farm boundary
+all_boundary_vertices = boundary_vertices
+nvertices = length(all_boundary_vertices[:,1])
+v = fill(Float64[], nvertices)
+for i = 1:nvertices
+    v[i] = all_boundary_vertices[i,:]
+end
+boundary_hull_vertices_array = convex_hull(v)
+boundary_hull_vertices = zeros(length(boundary_hull_vertices_array), 2)
+for i = 1:length(boundary_hull_vertices_array)
+    boundary_hull_vertices[i,:] = [boundary_hull_vertices_array[i][1] boundary_hull_vertices_array[i][2]]
+end
+include("boundary_normals_calculator.jl")
+boundary_hull_normals = boundary_normals_calculator(boundary_hull_vertices)
+
+
 # set globals for use in wrapper functions
 struct params_struct2{}
     model_set
@@ -147,6 +190,8 @@ struct params_struct2{}
     rotor_diameter
     boundary_vertices
     boundary_normals
+    boundary_hull_vertices
+    boundary_hull_normals
     obj_scale
     hub_height
     turbine_yaw
@@ -160,13 +205,19 @@ struct params_struct2{}
     power_models
 end
 
+global μ
+
 params = params_struct2(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
-    rotor_diameter, boundary_vertices, boundary_normals, obj_scale, hub_height, turbine_yaw, 
+    rotor_diameter, boundary_vertices, boundary_normals, boundary_hull_vertices, boundary_hull_normals, obj_scale, hub_height, turbine_yaw, 
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
     windresource, power_models)
 
 # initialize design variable array
 x = [copy(turbine_x);copy(turbine_y)]
+
+# penalty parameters
+μ = 0.0
+ρ = 5.0
 
 # report initial objective value
 println("starting objective value: ", aep_wrapper(x, params)[1])
@@ -188,8 +239,9 @@ function numberofspacingconstraints(nturb)
     return ncon
 end
 n_spacingconstraints = numberofspacingconstraints(nturbines)
-n_boundaryconstraints = length(boundary_wrapper(x, params))
-n_constraints = n_spacingconstraints + n_boundaryconstraints
+n_nondiscrete_boundaryconstraints = length(nondiscrete_boundary_wrapper(x, params))
+n_discrete_boundaryconstraints = length(discrete_boundary_wrapper(x, params))
+n_constraints = n_spacingconstraints + n_nondiscrete_boundaryconstraints# + n_discrete_boundaryconstraints
 
 # set general lower and upper bounds for design variables
 lb = ones(n_designvariables) * -Inf
@@ -207,21 +259,37 @@ prob.x = x
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
+nondiscrete_boundary_wrapper(x) = nondiscrete_boundary_wrapper(x, params)
+discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
 aep_wrapper(x) = aep_wrapper(x, params)
-boundary_wrapper(x) = boundary_wrapper(x, params)
 
 # run and time optimization
 t1 = time()
-status = solveProblem(prob)
+global iter
+iter = 1
+while in(1,discrete_boundary_wrapper(prob.x) .> 1e-4) && iter < 20
+    global μ
+    global ρ
+    global iter
+    println(prob.x)
+    status = solveProblem(prob)
+    if μ == 0.0
+        μ += 1
+    else
+        μ = μ*ρ
+    end
+    iter += 1
+end
+
 t2 = time()
 clkt = t2-t1
 xopt = prob.x
 fopt = prob.obj_val
-info = Ipopt.ApplicationReturnStatus[status]
+# info = Ipopt.ApplicationReturnStatus[status]
 
 # print optimization results
 println("Finished in : ", clkt, " (s)")
-println("info: ", info)
+# println("info: ", info)
 println("end objective value: ", aep_wrapper(xopt)[1])
 
 # extract final turbine locations
@@ -240,5 +308,5 @@ plt.gcf().gca().plot([boundary_vertices[:,1];boundary_vertices[1,1]],[boundary_v
 axis("square")
 xlim(minimum(boundary_vertices) - (maximum(boundary_vertices)-minimum(boundary_vertices))/5, maximum(boundary_vertices) + (maximum(boundary_vertices)-minimum(boundary_vertices))/5)
 ylim(minimum(boundary_vertices) - (maximum(boundary_vertices)-minimum(boundary_vertices))/5, maximum(boundary_vertices) + (maximum(boundary_vertices)-minimum(boundary_vertices))/5)
-plt.show()
 savefig("opt_plot")
+plt.show()

@@ -217,7 +217,7 @@ x = [copy(turbine_x);copy(turbine_y)]
 
 # penalty parameters
 μ = 0.0
-ρ = 5.0
+ρ = 2.0
 
 # report initial objective value
 println("starting objective value: ", aep_wrapper(x, params)[1])
@@ -265,14 +265,14 @@ aep_wrapper(x) = aep_wrapper(x, params)
 
 # run and time optimization
 t1 = time()
-global iter
+global iter, xopt_intermediate
 iter = 1
+xopt_intermediate = [x[1:nturbines] x[nturbines+1:end]]
 while in(1,discrete_boundary_wrapper(prob.x) .> 1e-4) && iter < 20
-    global μ
-    global ρ
-    global iter
+    global μ, iter, xopt_intermediate
     println(prob.x)
     status = solveProblem(prob)
+    xopt_intermediate = cat(dims=3, xopt_intermediate, [prob.x[1:nturbines] prob.x[nturbines+1:end]])
     if μ == 0.0
         μ += 1
     else
@@ -280,12 +280,12 @@ while in(1,discrete_boundary_wrapper(prob.x) .> 1e-4) && iter < 20
     end
     iter += 1
 end
-
 t2 = time()
 clkt = t2-t1
 xopt = prob.x
 fopt = prob.obj_val
 # info = Ipopt.ApplicationReturnStatus[status]
+# xopt_intermediate[] = xopt_intermediate[:,:,2:end]
 
 # print optimization results
 println("Finished in : ", clkt, " (s)")

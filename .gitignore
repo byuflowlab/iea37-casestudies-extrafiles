@@ -7,3 +7,7 @@ cs3-4/optimo-attempt-baker/__pycache__/iea37_aepcalc.cpython-36.pyc
 cs3-4/optimo-attempt-baker/SNOPT_print.out
 cs3-4/optimo-attempt-baker/SNOPT_summary.out
 cs3-4/optimo-attempt-baker/__pycache__/iea37_aepcalc.cpython-36.pyc
+cs3-4/wesley-files/opt-files/*.png
+cs3-4/wesley-files/opt-files/*.csv
+cs3-4/wesley-files/opt-files/ipoptresults*
+cs3-4/wesley-files/opt-files/slurm*

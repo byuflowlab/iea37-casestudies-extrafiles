@@ -1,5 +1,6 @@
-import FlowFarm; const ff = FlowFarm
+
 using DelimitedFiles 
+@everywhere using FlowFarm; const ff=FlowFarm
 
 # set initial turbine x and y locations
 turbine_x = [-3.0, 0.0, 3.0, 0.0, 0.0, -1.5, 0.0, 1.5, 0.0].*80.0

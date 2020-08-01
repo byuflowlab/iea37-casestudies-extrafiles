@@ -104,8 +104,8 @@ function wind_farm_opt(x)
     ds_dx = ForwardDiff.jacobian(spacing_wrapper, x)
 
     # calculate boundary constraint and jacobian
-    boundary_con = boundary_wrapper(x)
-    db_dx = ForwardDiff.jacobian(boundary_wrapper, x)
+    boundary_con = nondiscrete_boundary_wrapper(x)
+    db_dx = ForwardDiff.jacobian(nondiscrete_boundary_wrapper, x)
 
     # combine constaint values and jacobians into overall constaint value and jacobian arrays
     c = [spacing_con; boundary_con]
@@ -129,6 +129,7 @@ include("./model_sets/model_set_7_ieacs4.jl")
 obj_scale = 1E-11
 
 # set wind farm boundary parameters
+include("boundary_normals_calculator.jl")
 include("../../optimo-attempt-baker/Julia-files/baker_cs34_functions.jl")
 strCase = "cs4"  # Which case study we're doing. 'cs3' or 'cs4'
 bnry_file_name = "../../startup-files/iea37-boundary-" * strCase * ".yaml"
@@ -140,7 +141,6 @@ boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9
     5588.4 3791.3; 4670.7 4680.2; 4176.8 5158.6; 2047.8 7220.7; 1468.5 7781.7; 107.4 9100.0; 3267.1 10100.6; 4524.1 10498.7; 8953.7 11901.5; 7048.3 9531.5;
     6764.9 8399.7; 7274.9 7940.8; 7369.9 7896.2; 7455.1 7784.3; 7606.5 7713.0; 7638.9 7708.4; 8297.1 7398.9; 8450.3 6455.3; 8505.4 6422.3; 9133.0 6127.4; 
     9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
-include("boundary_normals_calculator.jl")
 boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
 
 # set globals for use in wrapper functions
@@ -176,6 +176,11 @@ params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, amb
 # initialize design variable array
 x = [copy(turbine_x);copy(turbine_y)]
 
+# penalty parameters
+global μ
+μ = 0.0
+ρ = 5.0
+
 # report initial objective value
 println("Nturbines: ", nturbines)
 println("Rotor diameter: ", rotor_diameter[1])
@@ -183,10 +188,10 @@ println("Starting AEP value (GWh): ", aep_wrapper(x, params)[1]*1e-9/obj_scale)
 # println("Directional AEP at start: ", dir_aep.*1E-6)
 
 t1 = time()
-for i in 1:10
-    println(i)
-    aep_wrapper(x, params)[1]*1e-9/obj_scale
-end
+# for i in 1:10
+#     println(i)
+#     aep_wrapper(x, params)[1]*1e-9/obj_scale
+# end
 t2 = time()
 at = (t2-t1)/10.0
 act = at/7200.0
@@ -214,24 +219,20 @@ options["Print file"] = "print.out"
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
 aep_wrapper(x) = aep_wrapper(x, params)
-boundary_wrapper(x) = nondiscrete_boundary_wrapper(x, params)
-
-# penalty parameters
-global μ
-μ = 0.0
-ρ = 5.0
+nondiscrete_boundary_wrapper(x) = nondiscrete_boundary_wrapper(x, params)
+discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
 
 # run and time optimization
 println
 t1 = time()
-global iter
 iter = 1
 xopt_intermediate = zeros(nturbines, 2)
-while in(1,discrete_boundary_wrapper(prob.x) .> 1e-4) && iter < 20
-    xopt, fopt, info = snopt(obj_func, x, lb, ub, options)
+while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
+    global x, μ, iter, xopt_intermediate, xopt
+    # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    xopt = x .+ 1
     x = xopt
-    xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]])
-    global μ, iter 
+    xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]]) 
     if μ == 0.0
         μ += 1
     else
@@ -244,7 +245,7 @@ clkt = t2-t1
 
 # print optimization results
 println("Finished in : ", clkt, " (s)")
-println("info: ", info)
+# println("info: ", info)
 println("end objective value: ", aep_wrapper(xopt))
 
 # extract final turbine locations
@@ -257,7 +258,11 @@ for i = 1:length(turbine_x)
 end
 
 # add wind farm boundary to plot
-plt.gcf().gca().add_artist(plt.Circle((boundary_center[1],boundary_center[2]), boundary_radius, fill=false,color="C2"))
+plt.gcf().gca().plot([boundary_vertices[1][:,1];boundary_vertices[1][1,1]],[boundary_vertices[1][:,2];boundary_vertices[1][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[2][:,1];boundary_vertices[2][1,1]],[boundary_vertices[2][:,2];boundary_vertices[2][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[3][:,1];boundary_vertices[3][1,1]],[boundary_vertices[3][:,2];boundary_vertices[3][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[4][:,1];boundary_vertices[4][1,1]],[boundary_vertices[4][:,2];boundary_vertices[4][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boundary_vertices[5][:,2];boundary_vertices[5][1,2]], color="C2")
 
 # set up and show plot
 axis("square")

@@ -1,3 +1,5 @@
+using Distributed
+using ClusterManagers
 using Snopt
 using DelimitedFiles 
 using PyPlot
@@ -5,8 +7,32 @@ import ForwardDiff
 
 using CSV
 using DataFrames
-# using YAML
 
+using BenchmarkTools
+
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+
+# addprocs(2)
+# using YAML
+@everywhere import FlowFarm; const ff = FlowFarm
+
+#using ClusterManagers
+
+#allocatedcpus = run("echo $SLURM_JOB_NODELIST")
+#addprocs_slurm(allocatedcpus)
+#println(allocatedcpus)
+
+# const IN_SLURM = "SLURM_JOBID" in keys(ENV)
+
+# IN_SLURM && using ClusterManagers
+
+# if IN_SLURM
+#     pids = addprocs_slurm(parse(Int, ENV["SLURM_NTASKS"]),dir=pwd())
+#     print("\n")
+# else
+#     pids = addprocs()
+# end
+# @sync println(pids)
 # set up boundary constraint wrapper function
 function boundary_wrapper(x, params)
     # include relevant globals
@@ -61,13 +87,13 @@ function spacing_wrapper(x, params)
 end
 
 # set up objective wrapper function
-function aep_wrapper(x, params)
+@everywhere function aep_wrapper(x, params)
     # include relevant globals
     turbine_z = params.turbine_z
     rotor_diameter = params.rotor_diameter
     hub_height = params.hub_height
     turbine_yaw = params.turbine_yaw
-    ct_model = params.ct_model
+    ct_models = params.ct_models
     generator_efficiency = params.generator_efficiency
     cut_in_speed = params.cut_in_speed
     cut_out_speed = params.cut_out_speed
@@ -89,7 +115,7 @@ function aep_wrapper(x, params)
 
     # calculate AEP
     AEP = obj_scale*ff.calculate_aep(turbine_x, turbine_y, turbine_z, rotor_diameter,
-                hub_height, turbine_yaw, ct_model, generator_efficiency, cut_in_speed,
+                hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set,
                 rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z, hours_per_year=365.0*24.0)
 
@@ -140,7 +166,7 @@ iter_AEP = zeros(Float64, 10000)
 funcalls_AEP = zeros(Float64, 10000)
 
 # import model set with wind farm and related details
-include("./model_sets/model_set_7_ieacs4.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-12
@@ -165,61 +191,84 @@ boundary_vertices_e = [8953.7 11901.5; 7048.3 9531.5; 6127.7 9962.7; 4578.1 1046
 boundary_normals_e = [0.7793586677376737 -0.6265780613955122; -0.4241667101838764 -0.9055841219742026; -0.30829751674447764 -0.9512899879475178; -0.5305632140423848 -0.847645371546978; -0.3019099610801309 0.9533364439695956]
 
 # set globals for use in wrapper functions
-struct params_struct{}
-    model_set
-    rotor_points_y
-    rotor_points_z
-    turbine_z
-    ambient_ti
-    rotor_diameter
-    boundary_vertices_a
-    boundary_normals_a
-    boundary_vertices_b
-    boundary_normals_b
-    boundary_vertices_c
-    boundary_normals_c
-    boundary_vertices_d
-    boundary_normals_d
-    boundary_vertices_e
-    boundary_normals_e
-    obj_scale
-    hub_height
-    turbine_yaw
-    ct_model
-    generator_efficiency
-    cut_in_speed
-    cut_out_speed
-    rated_speed
-    rated_power
-    windresource
-    power_models
-    iter_AEP
-    funcalls_AEP
-    it
+struct params_struct{MS, AF, F, ACTM, WR, APM, AF2, AI}
+    model_set::MS
+    rotor_points_y::AF
+    rotor_points_z::AF
+    turbine_z::AF
+    rotor_diameter::AF
+    obj_scale::F
+    hub_height::AF
+    turbine_yaw::AF
+    ct_models::ACTM
+    generator_efficiency::AF
+    cut_in_speed::AF
+    cut_out_speed::AF
+    rated_speed::AF
+    rated_power::AF
+    windresource::WR
+    power_models::APM
+
+    boundary_vertices_a::AF2
+    boundary_normals_a::AF2
+    boundary_vertices_b::AF2
+    boundary_normals_b::AF2
+    boundary_vertices_c::AF2
+    boundary_normals_c::AF2
+    boundary_vertices_d::AF2
+    boundary_normals_d::AF2
+    boundary_vertices_e::AF2
+    boundary_normals_e::AF2
+    iter_AEP::AF
+    funcalls_AEP::AF
+    it::AI
 end
 
-params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
-    rotor_diameter, boundary_vertices_a, boundary_normals_a, boundary_vertices_b, boundary_normals_b,
+paramemeters = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, 
+    rotor_diameter, obj_scale, hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed, 
+    cut_out_speed, rated_speed, rated_power, windresource, power_models, boundary_vertices_a, boundary_normals_a, boundary_vertices_b, boundary_normals_b,
     boundary_vertices_c, boundary_normals_c, boundary_vertices_d, boundary_normals_d, boundary_vertices_e,
-    boundary_normals_e, obj_scale, hub_height, turbine_yaw, ct_model, generator_efficiency, cut_in_speed, 
-    cut_out_speed, rated_speed, rated_power, windresource, power_models, iter_AEP, funcalls_AEP, [0])
+    boundary_normals_e, iter_AEP, funcalls_AEP, [0])
 
 # initialize design variable array
 x_initial = [copy(turbine_x);copy(turbine_y)]
+turbine_x_init = deepcopy(turbine_x)
+turbine_y_init = deepcopy(turbine_y)
 x = [copy(turbine_x);copy(turbine_y)]
 
-# add initial turbine location to plot
-plt.clf()
-for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
-end
+# add boundary to plot
+# plt.clf()
+# plot(boundary_vertices_a[:,1],boundary_vertices_a[:,2], "b")
+# plot([boundary_vertices_a[1,1],boundary_vertices_a[end,1]],[boundary_vertices_a[1,2],boundary_vertices_a[end,2]], "b")
+# plot(boundary_vertices_b[:,1],boundary_vertices_b[:,2], "b")
+# plot([boundary_vertices_b[1,1],boundary_vertices_b[end,1]],[boundary_vertices_b[1,2],boundary_vertices_b[end,2]], "b")
+# plot(boundary_vertices_c[:,1],boundary_vertices_c[:,2], "b")
+# plot([boundary_vertices_c[1,1],boundary_vertices_c[end,1]],[boundary_vertices_c[1,2],boundary_vertices_c[end,2]], "b")
+# plot(boundary_vertices_d[:,1],boundary_vertices_d[:,2], "b")
+# plot([boundary_vertices_d[1,1],boundary_vertices_d[end,1]],[boundary_vertices_d[1,2],boundary_vertices_d[end,2]], "b")
+# plot(boundary_vertices_e[:,1],boundary_vertices_e[:,2], "b")
+# plot([boundary_vertices_e[1,1],boundary_vertices_e[end,1]],[boundary_vertices_e[1,2],boundary_vertices_e[end,2]], "b")
 
+
+# for i = 1:length(boundary_vertices_a)
+#     vx1 = boundary_vertices_a[i][1]
+#     vy1 = boundary_vertices_a[i][2]
+#     vx2 = boundary_vertices_a[i+1][1]
+#     vy2 = boundary_vertices_a[i+1][2]
+#     plot([vx1, ])
+# end
+
+# add initial turbine location to plot
+# for i = 1:length(turbine_x)
+#     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
+# end
+# plt.show()
 # get number of design variables
 n_designvariables = length(x_initial)
 
 # get number of constraints
-n_spacingconstraints = length(spacing_wrapper(x_initial, params))
-n_boundaryconstraints = length(boundary_wrapper(x_initial, params))
+n_spacingconstraints = length(spacing_wrapper(x_initial, paramemeters))
+n_boundaryconstraints = length(boundary_wrapper(x_initial, paramemeters))
 n_constraints = n_spacingconstraints + n_boundaryconstraints
 
 # set general lower and upper bounds for design variables
@@ -231,10 +280,10 @@ lb_g = ones(n_constraints) * -Inf
 ub_g = zeros(n_constraints)
 
 # generate wrapper function surrogates
-spacing_wrapper(x) = spacing_wrapper(x, params)
-aep_wrapper(x) = aep_wrapper(x, params)
-boundary_wrapper(x) = boundary_wrapper(x, params)
-wind_farm_opt(x) = wind_farm_opt(x, params)
+spacing_wrapper(x) = spacing_wrapper(x, paramemeters)
+aep_wrapper(x) = aep_wrapper(x, paramemeters)
+boundary_wrapper(x) = boundary_wrapper(x, paramemeters)
+wind_farm_opt(x) = wind_farm_opt(x, paramemeters)
 
 # set up options for SNOPT
 options = Dict{String, Any}()
@@ -242,21 +291,31 @@ options["Derivative option"] = 1
 options["Verify level"] = 0
 options["Major optimality tolerance"] = 1e-6
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "./snopt_summarycs4.out"
-options["Print file"] = "./snopt_printcs4.out"
+options["Summary file"] = "./snopt_summarycs4_2.out"
+options["Print file"] = "./snopt_printcs4_2.out"
 
 # print initial objective value
 println("nturbines: ", nturbines)
+println("nstates: ", nstates)
 println("rotor diameter: ", rotor_diameter[1])
 println("starting AEP value (MWh): ", aep_wrapper(x_initial)[1]*1E5)
+# trial = @benchmark aep_wrapper(x_initial)[1]*1E5
+
+# println("min: ", minimum(trial))
+# println("max: ", maximum(trial))
+# println("mean: ", mean(trial))
+# println("median: ", median(trial))
+# println("workers: ", nworkers())
+
+
 
 # run and time optimization
 t1 = time()
 xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
 t2 = time()
-clkt = t2-t2
+clkt = t2-t1
 
-# print optimization results
+# # print optimization results
 println("Finished in : ", clkt, " (s)")
 println("info: ", info)
 println("end AEP value (MWh): ", aep_wrapper(xopt)[1]*1E5)
@@ -267,7 +326,8 @@ turbine_y = copy(xopt[nturbines+1:end])
 
 # add final turbine locations to plot
 for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="--")) 
+    plt.gcf().gca().add_artist(plt.Circle((turbine_x_init[i],turbine_y_init[i]), rotor_diameter[1]/2.0, fill=false,color="C2", linestyle="-")) 
+    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C1", linestyle="-")) 
 end
 
 # add wind farm boundary to plot
@@ -281,7 +341,7 @@ plt.gcf().gca().plot([boundary_vertices_e[:,1];boundary_vertices_e[1,1]],[bounda
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-plt.show()
+# plt.show()
 savefig("snoptresults_turbinelayout.png")
 
 # create obj value history plots
@@ -332,3 +392,8 @@ CSV.write("cs4_functionvalue_at_iteration_log.csv", dataforcsv_funceval_at_itera
 #     "function_evaluation_at_iterations_log" => iter_AEP
 #     ]
 # YAML.write_file("cs4_results.yml", dataforyaml)
+
+
+for i in workers()
+	rmprocs(i)
+end

@@ -1,3 +1,5 @@
+import FlowFarm; const ff = FlowFarm
+
 # based on IEA case study 3
 
 # set initial turbine x and y locations

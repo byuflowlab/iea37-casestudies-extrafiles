@@ -188,10 +188,10 @@ println("Starting AEP value (GWh): ", aep_wrapper(x, params)[1]*1e-9/obj_scale)
 # println("Directional AEP at start: ", dir_aep.*1E-6)
 
 t1 = time()
-# for i in 1:10
-#     println(i)
-#     aep_wrapper(x, params)[1]*1e-9/obj_scale
-# end
+for i in 1:10
+    println(i)
+    aep_wrapper(x, params)[1]*1e-9/obj_scale
+end
 t2 = time()
 at = (t2-t1)/10.0
 act = at/7200.0
@@ -266,7 +266,7 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 
 # set up and show plot
 axis("square")
-xlim(-boundary_radius-200,boundary_radius+200)
-ylim(-boundary_radius-200,boundary_radius+200)
+xlim(0, 11000)
+ylim(-500, 13000)
 plt.show()
 savefig("opt_plot")

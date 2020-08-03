@@ -6,6 +6,12 @@ import ForwardDiff
 using CSV
 using DataFrames
 
+using BenchmarkTools
+
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+@everywhere import FlowFarm; const ff = FlowFarm
+
+
 function nondiscrete_boundary_wrapper(x, params)
     # include relevant globals
     params.boundary_vertices_nondiscrete
@@ -56,7 +62,7 @@ function spacing_wrapper(x, params)
 end
 
 # set up objective wrapper function
-function aep_wrapper(x, params)
+@everywhere function aep_wrapper(x, params)
     # include relevant globals
     params.turbine_z
     params.rotor_diameter
@@ -100,7 +106,8 @@ function aep_wrapper(x, params)
 end
 
 # set up optimization problem wrapper function
-function wind_farm_opt(x)
+function wind_farm_opt(x, params)
+    it = params.it
 
     # calculate spacing constraint value and jacobian
     spacing_con = spacing_wrapper(x)
@@ -117,8 +124,12 @@ function wind_farm_opt(x)
     # calculate the objective function and jacobian (negative sign in order to maximize AEP)
     AEP = -aep_wrapper(x)[1]
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
-    global funcalls_AEP
-    append!(funcalls_AEP, -AEP)
+    # global funcalls_AEP
+    # append!(funcalls_AEP, -AEP)
+
+    it[1] += 1
+    params.funcalls_AEP[it[1]] = it[1]
+    params.iter_AEP[it[1]] = -AEP
 
     # set fail flag to false
     fail = false
@@ -128,7 +139,7 @@ function wind_farm_opt(x)
 end
 
 # import model set with wind farm and related details
-include("./model_sets/model_set_7_ieacs4.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-11
@@ -174,15 +185,22 @@ struct params_struct{}
     rated_power
     windresource
     power_models
+    iter_AEP::AF
+    funcalls_AEP::AF
+    it::AI
 end
 
 params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
     rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, boundary_normals_nondiscrete, obj_scale, hub_height, turbine_yaw, 
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
-    windresource, power_models)
+    windresource, power_models, iter_AEP, funcalls_AEP, [0])
 
 # initialize design variable array
 x = [copy(turbine_x);copy(turbine_y)]
+
+# set globals for iteration history
+iter_AEP = zeros(Float64, 10000)
+funcalls_AEP = zeros(Float64, 10000)
 
 # penalty parameters
 global μ
@@ -229,6 +247,7 @@ spacing_wrapper(x) = spacing_wrapper(x, params)
 aep_wrapper(x) = aep_wrapper(x, params)
 nondiscrete_boundary_wrapper(x) = nondiscrete_boundary_wrapper(x, params)
 discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
+wind_farm_opt(x) = wind_farm_opt(x, params)
 
 # run and time optimization
 println
@@ -237,7 +256,8 @@ iter = 1
 xopt_intermediate = zeros(nturbines, 2)
 while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
     global x, μ, iter, xopt_intermediate, xopt
-    xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    xopt = x .+ 1.0
     x = xopt
     xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]]) 
     if μ == 0.0

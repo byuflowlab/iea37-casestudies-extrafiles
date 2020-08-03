@@ -75,7 +75,6 @@ function aep_wrapper(x, params)
     params.rotor_points_z
     params.obj_scale
     global μ
-    global funcalls_AEP
 
     # get number of turbines
     nturbines = Int(length(x)/2)
@@ -89,8 +88,6 @@ function aep_wrapper(x, params)
                 hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set,
                 rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z)
-    append!(funcalls_AEP, -AEP)
-
     
     # calculate discrete region penalty
     penalty = -μ*sum(max.(0, discrete_boundary_wrapper(x, params)).^2)
@@ -120,6 +117,8 @@ function wind_farm_opt(x)
     # calculate the objective function and jacobian (negative sign in order to maximize AEP)
     AEP = -aep_wrapper(x)[1]
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
+    global funcalls_AEP
+    append!(funcalls_AEP, -AEP)
 
     # set fail flag to false
     fail = false

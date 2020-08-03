@@ -161,10 +161,11 @@ boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9
     9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
 boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
 
-# set globals for use in wrapper functions
-funcalls_AEP = zeros(Float64, 0)
-global funcalls_AEP
+# set globals for iteration history
+iter_AEP = zeros(Float64, 10000)
+funcalls_AEP = zeros(Float64, 10000)
 
+# set globals for use in wrapper functions
 struct params_struct{}
     model_set
     rotor_points_y
@@ -199,10 +200,6 @@ params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, amb
 
 # initialize design variable array
 x = [copy(turbine_x);copy(turbine_y)]
-
-# set globals for iteration history
-iter_AEP = zeros(Float64, 10000)
-funcalls_AEP = zeros(Float64, 10000)
 
 # penalty parameters
 global μ

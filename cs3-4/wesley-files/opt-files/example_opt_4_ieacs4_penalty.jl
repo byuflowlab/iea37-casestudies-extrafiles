@@ -241,8 +241,8 @@ options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-2 #1e-5
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary.out"
-options["Print file"] = "print.out"
+options["Summary file"] = "summary-ieacs4-dist.out"
+options["Print file"] = "print-ieacs4-dist.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -258,8 +258,8 @@ iter = 1
 xopt_intermediate = zeros(nturbines, 2)
 while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
     global x, μ, iter, xopt_intermediate, xopt
-    # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
-    xopt = x .+ 1.0
+    xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    # xopt = x .+ 1.0
     x = xopt
     xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]]) 
     if μ == 0.0

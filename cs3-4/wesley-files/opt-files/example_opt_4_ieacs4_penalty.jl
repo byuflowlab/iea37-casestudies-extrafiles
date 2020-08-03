@@ -187,9 +187,9 @@ struct params_struct{}
     rated_power
     windresource
     power_models
-    iter_AEP::AF
-    funcalls_AEP::AF
-    it::AI
+    iter_AEP
+    funcalls_AEP
+    it
 end
 
 params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 

@@ -1,3 +1,5 @@
+using Distributed
+using ClusterManagers
 using Snopt
 using DelimitedFiles 
 using PyPlot

@@ -254,6 +254,7 @@ t1 = time()
 iter = 1
 xopt_intermediate = zeros(nturbines, 2)
 while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
+    println(iter)
     global x, μ, iter, xopt_intermediate, xopt
     xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
     # xopt = x .+ 1.0

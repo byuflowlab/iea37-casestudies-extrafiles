@@ -238,8 +238,7 @@ iter = 1
 xopt_intermediate = zeros(nturbines, 2)
 while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
     global x, μ, iter, xopt_intermediate, xopt
-    # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
-    xopt = x .+ 1.0
+    xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
     x = xopt
     xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]]) 
     if μ == 0.0

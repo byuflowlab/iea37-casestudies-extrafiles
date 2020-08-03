@@ -3,6 +3,9 @@ using DelimitedFiles
 using PyPlot
 import ForwardDiff
 
+using CSV
+using DataFrames
+
 function nondiscrete_boundary_wrapper(x, params)
     # include relevant globals
     params.boundary_vertices_nondiscrete
@@ -72,6 +75,7 @@ function aep_wrapper(x, params)
     params.rotor_points_z
     params.obj_scale
     global μ
+    global funcalls_AEP
 
     # get number of turbines
     nturbines = Int(length(x)/2)
@@ -85,6 +89,8 @@ function aep_wrapper(x, params)
                 hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set,
                 rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z)
+    append!(funcalls_AEP, -AEP)
+
     
     # calculate discrete region penalty
     penalty = -μ*sum(max.(0, discrete_boundary_wrapper(x, params)).^2)
@@ -144,6 +150,9 @@ boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9
 boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
 
 # set globals for use in wrapper functions
+funcalls_AEP = zeros(Float64, 0)
+global funcalls_AEP
+
 struct params_struct{}
     model_set
     rotor_points_y
@@ -229,7 +238,8 @@ iter = 1
 xopt_intermediate = zeros(nturbines, 2)
 while in(1,discrete_boundary_wrapper(x) .> 1e-4) && iter < 20
     global x, μ, iter, xopt_intermediate, xopt
-    xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    # xopt, fopt, info = snopt(wind_farm_opt, x, lb, ub, options)
+    xopt = x .+ 1.0
     x = xopt
     xopt_intermediate = cat(dims=3, xopt_intermediate, [xopt[1:nturbines] xopt[nturbines+1:end]]) 
     if μ == 0.0
@@ -269,3 +279,9 @@ xlim(0, 11000)
 ylim(-500, 13000)
 plt.show()
 savefig("opt_plot")
+
+# write results to csv files
+dataforcsv_xopt = DataFrame(xopt = xopt)
+dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
+CSV.write("cs4_functionvalue_log.csv", dataforcsv_funceval)
+CSV.write("cs4_xopt.csv", dataforcsv_xopt)

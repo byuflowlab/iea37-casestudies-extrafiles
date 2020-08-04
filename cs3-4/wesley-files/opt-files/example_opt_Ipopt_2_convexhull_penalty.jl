@@ -36,7 +36,7 @@ function discrete_boundary_wrapper(x, params)
     turbine_y = x[nturbines+1:end]
 
     # get and return boundary distances
-    return ff.ray_trace_boundary(boundary_vertices, boundary_normals, turbine_x, turbine_y)
+    return ff.ray_trace_boundary(boundary_vertices, boundary_normals, turbine_x, turbine_y, discrete=true)
 end
 
 # set up spacing constraint wrapper function
@@ -155,21 +155,25 @@ include("./model_sets/model_set_6.jl")
 obj_scale = 1E-11
 
 # set wind farm boundary parameters
-# boundary_vertices = ([0 0; 1 0; 1 .75; .75 .75; .75 1; 0 1] .- .5).*500 # Utah-shape boundary
-# boundary_normals = [0 1.0; -1 0; 0 -1; -1 0; 0 -1; 1 0]
-boundary_vertices = ([0 1.5; .25 1.25; .75 1.25; .75 .875; 1.125 .5; .5 0; 1.75 0; 1.25 .25; 1.5 .5; 1 .75; 1.25 1; 1 1.5] .-.75).*350
-boundary_normals = [1.0 1.0; 0 1; 1 0; 1 1; 4 -5; 0 1; -1 -2; -1 1; -1 -2; -1 1; -2 -1; 0 -1]
-for i = 1:length(boundary_normals[:,1])
-    boundary_normals[i,:] = boundary_normals[i,:] ./ sqrt(sum(boundary_normals[i,:].^2))
+boundary_vertices_utah = ([0 0; 1 0; 1 .75; .75 .75; .75 1; 0 1] .+ [-1.25 -.5]) .* 350
+boundary_normals_utah = [0 1.0; -1 0; 0 -1; -1 0; 0 -1; 1 0]
+boundary_vertices_zigzag = ([0 1.5; .25 1.25; .75 1.25; .75 .875; 1.125 .5; .5 0; 1.75 0; 1.25 .25; 1.5 .5; 1 .75; 1.25 1; 1 1.5] .+ [.25 -.5]) .* 250
+boundary_normals_zigzag = [0.7071067811865475 0.7071067811865475; 0.0 1.0; 1.0 0.0; 0.7071067811865475 0.7071067811865475; 0.6246950475544243 -0.7808688094430304; 0.0 1.0; -0.4472135954999579 -0.8944271909999159; -0.7071067811865475 0.7071067811865475; -0.4472135954999579 -0.8944271909999159; -0.7071067811865475 0.7071067811865475; -0.8944271909999159 -0.4472135954999579; 0.0 -1.0]
+boundary_vertices = [boundary_vertices_utah, boundary_vertices_zigzag]
+boundary_normals = [boundary_normals_utah, boundary_normals_zigzag]
+global combined_boundary_vertices
+combined_boundary_vertices = zeros(0,2)
+for m = 1:length(boundary_vertices)
+    global combined_boundary_vertices
+    combined_boundary_vertices = [combined_boundary_vertices; boundary_vertices[:][m]]
 end
-turbine_x .+= 100.0
+turbine_x .+= -250.0
 
 # get the convex hull of wind farm boundary
-all_boundary_vertices = boundary_vertices
-nvertices = length(all_boundary_vertices[:,1])
+nvertices = length(combined_boundary_vertices[:,1])
 v = fill(Float64[], nvertices)
 for i = 1:nvertices
-    v[i] = all_boundary_vertices[i,:]
+    v[i] = combined_boundary_vertices[i,:]
 end
 boundary_hull_vertices_array = convex_hull(v)
 boundary_hull_vertices = zeros(length(boundary_hull_vertices_array), 2)
@@ -302,11 +306,14 @@ for i = 1:length(turbine_x)
 end
 
 # add wind farm boundary to plot
-plt.gcf().gca().plot([boundary_vertices[:,1];boundary_vertices[1,1]],[boundary_vertices[:,2];boundary_vertices[1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[1][:,1];boundary_vertices[1][1,1]],[boundary_vertices[1][:,2];boundary_vertices[1][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[2][:,1];boundary_vertices[2][1,1]],[boundary_vertices[2][:,2];boundary_vertices[2][1,2]], color="C2")
 
 # set up and show plot
 axis("square")
-xlim(minimum(boundary_vertices) - (maximum(boundary_vertices)-minimum(boundary_vertices))/5, maximum(boundary_vertices) + (maximum(boundary_vertices)-minimum(boundary_vertices))/5)
-ylim(minimum(boundary_vertices) - (maximum(boundary_vertices)-minimum(boundary_vertices))/5, maximum(boundary_vertices) + (maximum(boundary_vertices)-minimum(boundary_vertices))/5)
+# xlim(minimum(combined_boundary_vertices) - (maximum(combined_boundary_vertices)-minimum(combined_boundary_vertices))/5, maximum(combined_boundary_vertices) + (maximum(combined_boundary_vertices)-minimum(combined_boundary_vertices))/5)
+# ylim(minimum(combined_boundary_vertices) - (maximum(combined_boundary_vertices)-minimum(combined_boundary_vertices))/5, maximum(combined_boundary_vertices) + (maximum(combined_boundary_vertices)-minimum(combined_boundary_vertices))/5)
+xlim(-600, 600)
+ylim(-400, 400)
 savefig("opt_plot")
 plt.show()

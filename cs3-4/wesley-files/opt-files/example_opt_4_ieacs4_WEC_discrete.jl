@@ -16,8 +16,8 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 # set up nondiscrete boundary constraint wrapper function
 function nondiscrete_boundary_wrapper(x, params)
     # include relevant globals
-    params.boundary_hull_vertices
-    params.boundary_hull_normals
+    params.boundary_vertices_nondiscrete
+    params.boundary_normals_nondiscrete
 
     # get number of turbines
     nturbines = Int(length(x)/2)
@@ -27,7 +27,7 @@ function nondiscrete_boundary_wrapper(x, params)
     turbine_y = x[nturbines+1:end]
 
     # get and return boundary distances
-    return ff.convex_boundary(boundary_hull_vertices, boundary_hull_normals, turbine_x, turbine_y)
+    return ff.convex_boundary(boundary_vertices_nondiscrete, boundary_normals_nondiscrete, turbine_x, turbine_y)
 end
 
 # # set up boundary constraint wrapper function

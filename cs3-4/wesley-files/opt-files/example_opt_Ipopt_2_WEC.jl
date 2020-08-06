@@ -5,6 +5,8 @@ using LazySets
 import ForwardDiff
 using Distributed
 using ClusterManagers
+using CSV
+using DataFrames
 
 ### uses a Julia interface to the Ipopt nonlinear solver
 
@@ -278,7 +280,7 @@ xlim(-600, 600)
 ylim(-400, 400)
 
 # save current figure
-savefig("opt_plot1")
+savefig("../results/opt_plot1")
 
 # get number of design variables
 n_designvariables = length(x)
@@ -340,6 +342,7 @@ println("end objective value (nondiscrete): ", aep_wrapper(xopt_nondiscrete)[1])
 println("locations ", x[1:5])
 println("locations opt (nondiscrete) ", xopt_nondiscrete[1:5])
 
+
 # add turbine locations after nondiscrete optimization to plot
 clf()
 for i = 1:length(turbine_x)
@@ -357,7 +360,7 @@ xlim(-600, 600)
 ylim(-400, 400)
 
 # save current figure
-savefig("opt_plot2")
+savefig("../results/opt_plot2")
 
 # find the nearest boundary for each turbine
 nearest_region = zeros(Int64, nturbines)
@@ -472,7 +475,7 @@ xlim(-600, 600)
 ylim(-400, 400)
 
 # save current figure
-savefig("opt_plot3")
+savefig("../results/opt_plot3")
 
 # start time again for WEC optimization
 t5t = time()
@@ -509,7 +512,7 @@ t6t = time()
 clkt = (t2t - t1t) + (t4t - t3t) + (t6t - t5t)
 
 # print optimization results
-println("Finished in : ", clk, " (s)")
+println("Finished in : ", clkt, " (s)")
 println("info: ", info)
 println("end objective value: ", aep_wrapper(xopt)[1])
 
@@ -534,4 +537,10 @@ xlim(-600, 600)
 ylim(-400, 400)
 
 # save current figure
-savefig("opt_plot4")
+savefig("../results/opt_plot4")
+
+# write results to csv files
+dataforcsv_xopt = DataFrame(xopt = xopt)
+dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
+CSV.write("ex2_functionvalue_log.csv", dataforcsv_funceval)
+CSV.write("ex2_xopt.csv", dataforcsv_xopt)

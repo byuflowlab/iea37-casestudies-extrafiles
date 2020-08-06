@@ -326,6 +326,7 @@ function discrete_boundary_wrapper(x, params)
     params.boundary_vertices
     params.boundary_normals
     global nearest_region
+    
 
     # get number of turbines
     nturbines = Int(length(x)/2)
@@ -345,11 +346,31 @@ function discrete_boundary_wrapper(x, params)
     turbine_x_region_5 = turbine_x[nearest_region.==5]
     turbine_y_region_5 = turbine_y[nearest_region.==5]
 
-    boundcon_region_1 = ff.ray_trace_boundary(boundary_vertices[1], boundary_normals[1], turbine_x_region_1, turbine_y_region_1)
-    boundcon_region_2 = ff.ray_trace_boundary(boundary_vertices[2], boundary_normals[2], turbine_x_region_2, turbine_y_region_2)
-    boundcon_region_3 = ff.ray_trace_boundary(boundary_vertices[3], boundary_normals[3], turbine_x_region_3, turbine_y_region_3)
-    boundcon_region_4 = ff.ray_trace_boundary(boundary_vertices[4], boundary_normals[4], turbine_x_region_4, turbine_y_region_4)
-    boundcon_region_5 = ff.ray_trace_boundary(boundary_vertices[5], boundary_normals[5], turbine_x_region_5, turbine_y_region_5)
+    if in(1,nearest_region)
+        boundcon_region_1 = ff.ray_trace_boundary(boundary_vertices[1], boundary_normals[1], turbine_x_region_1, turbine_y_region_1)
+    else
+        boundcon_region_1 = []
+    end
+    if in(2,nearest_region)
+        boundcon_region_2 = ff.ray_trace_boundary(boundary_vertices[2], boundary_normals[2], turbine_x_region_2, turbine_y_region_2)
+    else
+        boundcon_region_2 = []
+    end
+    if in(3,nearest_region)
+        boundcon_region_3 = ff.ray_trace_boundary(boundary_vertices[3], boundary_normals[3], turbine_x_region_3, turbine_y_region_3)
+    else
+        boundcon_region_3 = []
+    end
+    if in(4,nearest_region)
+        boundcon_region_4 = ff.ray_trace_boundary(boundary_vertices[4], boundary_normals[4], turbine_x_region_4, turbine_y_region_4)
+    else
+        boundcon_region_4 = []
+    end
+    if in(5,nearest_region)
+        boundcon_region_5 = ff.ray_trace_boundary(boundary_vertices[5], boundary_normals[5], turbine_x_region_5, turbine_y_region_5)
+    else
+        boundcon_region_5 = []
+    end
 
     # get and return boundary distances
     return [boundcon_region_1; boundcon_region_2; boundcon_region_3; boundcon_region_4; boundcon_region_5]

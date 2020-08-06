@@ -457,7 +457,7 @@ xopt_discrete = prob_discrete.x
 fopt_discrete = prob_discrete.obj_val
 info_discrete = Ipopt.ApplicationReturnStatus[status_discrete]
 
-# time after discrete boundaries optimization
+# stop time after discrete boundaries optimization
 t4t = time()
 
 # add turbine locations after discrete optimization to plot
@@ -510,7 +510,7 @@ end
 # stop time for WEC optimization
 t6t = time()
 
-# stop time
+# calculate total time
 clkt = (t2t - t1t) + (t4t - t3t) + (t6t - t5t)
 
 # print optimization results

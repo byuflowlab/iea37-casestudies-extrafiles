@@ -184,7 +184,7 @@ function con_grad_discrete(x, mode, rows, cols, values)
 end
 
 # import model set with wind farm and related details
-include("./model_sets/model_set_6.jl")
+@everywhere include("./model_sets/model_set_6.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-11

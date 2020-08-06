@@ -364,6 +364,7 @@ savefig("../results/opt_plot2")
 
 # find the nearest boundary for each turbine
 nearest_region = zeros(Int64, nturbines)
+size(boundary_hull_vertices)
 closed_boundary_vertices = copy(boundary_vertices)
 for k = 1:length(boundary_vertices)
     closed_boundary_vertices[k] = [closed_boundary_vertices[k]; closed_boundary_vertices[k][1,1] closed_boundary_vertices[k][1,2]]
@@ -402,6 +403,7 @@ for i = 1:nturbines
         end
     end
 end
+println(size_boundary_vertices)
 
 # set up discrete boundary constraint wrapper function
 function discrete_boundary_wrapper(x, params)
@@ -541,6 +543,6 @@ savefig("../results/opt_plot4")
 
 # write results to csv files
 dataforcsv_xopt = DataFrame(xopt = xopt)
-dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
-CSV.write("ex2_functionvalue_log.csv", dataforcsv_funceval)
+# dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
+# CSV.write("ex2_functionvalue_log.csv", dataforcsv_funceval)
 CSV.write("ex2_xopt.csv", dataforcsv_xopt)

@@ -10,7 +10,6 @@ using ClusterManagers
 # using BenchmarkTools
 
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-@everywhere import FlowFarm; const ff = FlowFarm
 
 # set up objective wrapper function
 @everywhere function aep_wrapper(x, params)

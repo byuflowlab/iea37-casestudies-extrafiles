@@ -11,7 +11,7 @@ using DataFrames
 using BenchmarkTools
 
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-# @everywhere import FlowFarm; const ff = FlowFarm
+@everywhere import FlowFarm; const ff = FlowFarm
 
 # set up nondiscrete boundary constraint wrapper function
 function nondiscrete_boundary_wrapper(x, params)

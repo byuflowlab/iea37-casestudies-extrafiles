@@ -449,6 +449,8 @@ t5t = time()
 for i in 1:length(wec_values)
     global x
     global xopt
+    global fopt
+    global info
     println("Running with WEC = ", wec_values[i])
     params.model_set.wake_deficit_model.wec_factor[1] = wec_values[i]
     
@@ -500,7 +502,7 @@ x = xopt
 t7t = time()
 
 # run full wind rose optimization
-xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+# xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
 
 # stop full wind rose optimization timer
 t8t= time()

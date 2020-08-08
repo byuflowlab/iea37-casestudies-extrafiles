@@ -223,7 +223,7 @@ options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-2 #1e-5
-options["Major iteration limit"] = 1e2
+options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
 
@@ -279,6 +279,8 @@ ylim(-500, 13000)
 # save current figure
 savefig("../results/opt_plot2")
 
+
+
 t3t = 0
 t4t = 0
 t5t = 0
@@ -288,6 +290,8 @@ t8t = 0
 xopt = xopt_nondiscrete
 fopt = fopt_nondiscrete
 info = info_nondiscrete
+
+
 
 # calculate total time
 clkt = (t2t - t1t) + (t4t - t3t) + (t6t - t5t) + (t8t - t7t)

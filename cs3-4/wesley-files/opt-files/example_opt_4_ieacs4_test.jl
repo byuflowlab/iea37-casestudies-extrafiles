@@ -58,6 +58,7 @@ boundary_vertices_nondiscrete = 0
 boundary_normals_nondiscrete = 0
 iter_AEP = 0
 funcalls_AEP = 0
+obj_scale = 1e-11
 
 # set globals for use in wrapper functions
 struct params_struct{}

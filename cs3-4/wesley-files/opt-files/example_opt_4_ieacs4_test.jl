@@ -52,6 +52,13 @@ end
 # import model set with wind farm and related details
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
+boundary_vertices = 0
+boundary_normals = 0
+boundary_vertices_nondiscrete = 0
+boundary_normals_nondiscrete = 0
+iter_AEP = 0
+funcalls_AEP = 0
+
 # set globals for use in wrapper functions
 struct params_struct{}
     model_set

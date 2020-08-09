@@ -309,7 +309,7 @@ for i = 1:nturbines
     nearest_region_distance = 1.0e30
     for k = 1:length(boundary_vertices)
         # get vector from turbine to the first vertex in first face
-        turbine_to_first_facepoint = closed_boundary_vertices[k][1, :] - [xopt_nondiscrete[1]; xopt_nondiscrete[nturbines+1]]
+        turbine_to_first_facepoint = closed_boundary_vertices[k][1, :] - [xopt_nondiscrete[i]; xopt_nondiscrete[nturbines+i]]
         for j = 1:length(boundary_vertices[k][:,1])
             # define the vector from the turbine to the second point of the face
             turbine_to_second_facepoint = closed_boundary_vertices[k][j+1, :] - [xopt_nondiscrete[i]; xopt_nondiscrete[nturbines+i]]

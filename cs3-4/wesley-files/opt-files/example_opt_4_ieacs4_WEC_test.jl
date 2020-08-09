@@ -227,7 +227,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot1")
+savefig("../results/opt_plot1_test")
 
 # set general lower and upper bounds for design variables
 lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
@@ -239,8 +239,8 @@ options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-5
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
-options["Print file"] = "print-ieacs4-WEC-discrete.out"
+options["Summary file"] = "summary-ieacs4-WEC-discrete_test.out"
+options["Print file"] = "print-ieacs4-WEC-discrete_test.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -261,8 +261,9 @@ t1t = time()
 
 # first, run optimization with nondiscrete boundaries and WEC=3
 params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
-xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
-x = xopt_nondiscrete
+# xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
+# x = xopt_nondiscrete
+x = convert(Matrix,DataFrame!(CSV.File("xopt_ieacs4_WEC_discrete.csv")))
 
 # time after nondiscrete boundaries optimization
 t2t = time()
@@ -292,19 +293,184 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot2")
+savefig("../results/opt_plot2_test")
+
+# find the nearest boundary for each turbine
+nearest_region = zeros(Int64, nturbines)
+closed_boundary_vertices = copy(boundary_vertices)
+for k = 1:length(boundary_vertices)
+    closed_boundary_vertices[k] = [closed_boundary_vertices[k]; closed_boundary_vertices[k][1,1] closed_boundary_vertices[k][1,2]]
+end
+global nearest_region, closed_boundary_vertices
+for i = 1:nturbines
+    global nearest_region, closed_boundary_vertices, boundary_vertices
+    nearest_region_distance = 1.0e30
+    for k = 1:length(boundary_vertices)
+        # get vector from turbine to the first vertex in first face
+        turbine_to_first_facepoint = closed_boundary_vertices[k][1, :] - [xopt_nondiscrete[1]; xopt_nondiscrete[nturbines+1]]
+        for j = 1:length(boundary_vertices[k][:,1])
+            # define the vector from the turbine to the second point of the face
+            turbine_to_second_facepoint = closed_boundary_vertices[k][j+1, :] - [xopt_nondiscrete[i]; xopt_nondiscrete[nturbines+i]]
+            # find perpendicular distance from turbine to current face (vector projection)
+            boundary_vector = closed_boundary_vertices[k][j+1, :] - closed_boundary_vertices[k][j, :]
+            # check if perpendicular distance is the shortest
+            if sum(boundary_vector .* -turbine_to_first_facepoint) > 0 && sum(boundary_vector .* turbine_to_second_facepoint) > 0
+                # perpendicular distance from turbine to face
+                turbine_to_face_distance = abs(sum(turbine_to_first_facepoint .* boundary_normals[k][j,:]))
+            # check if distance to first facepoint is shortest
+            elseif sum(boundary_vector .* -turbine_to_first_facepoint) <= 0
+                # distance from turbine to first facepoint
+                turbine_to_face_distance = sqrt(sum(turbine_to_first_facepoint.^2))
+            # distance to second facepoint is shortest
+            else
+                # distance from turbine to second facepoint
+                turbine_to_face_distance = sqrt(sum(turbine_to_second_facepoint.^2))
+            end
+            if turbine_to_face_distance < nearest_region_distance
+                nearest_region_distance = turbine_to_face_distance
+                nearest_region[i] = k
+            end
+            # reset for next face iteration
+            turbine_to_first_facepoint = turbine_to_second_facepoint        # (for efficiency, so we don't have to recalculate for the same vertex twice)
+        end
+    end
+end
+
+println()
+println("closest regions: ", nearest_region)
+println()
+
+# set up discrete boundary constraint wrapper function
+function discrete_boundary_wrapper(x, params)
+    # include relevant globals
+    params.boundary_vertices
+    params.boundary_normals
+    global nearest_region
+
+
+    # get number of turbines
+    nturbines = Int(length(x)/2)
+    
+    # extract x and y locations of turbines from design variables vector
+    turbine_x = x[1:nturbines]
+    turbine_y = x[nturbines+1:end]
+
+    turbine_x_region_1 = turbine_x[nearest_region.==1]
+    turbine_y_region_1 = turbine_y[nearest_region.==1]
+    turbine_x_region_2 = turbine_x[nearest_region.==2]
+    turbine_y_region_2 = turbine_y[nearest_region.==2]
+    turbine_x_region_3 = turbine_x[nearest_region.==3]
+    turbine_y_region_3 = turbine_y[nearest_region.==3]
+    turbine_x_region_4 = turbine_x[nearest_region.==4]
+    turbine_y_region_4 = turbine_y[nearest_region.==4]
+    turbine_x_region_5 = turbine_x[nearest_region.==5]
+    turbine_y_region_5 = turbine_y[nearest_region.==5]
+
+    if in(1,nearest_region)
+        boundcon_region_1 = ff.ray_trace_boundary(boundary_vertices[1], boundary_normals[1], turbine_x_region_1, turbine_y_region_1)
+    else
+        boundcon_region_1 = []
+    end
+    if in(2,nearest_region)
+        boundcon_region_2 = ff.ray_trace_boundary(boundary_vertices[2], boundary_normals[2], turbine_x_region_2, turbine_y_region_2)
+    else
+        boundcon_region_2 = []
+    end
+    if in(3,nearest_region)
+        boundcon_region_3 = ff.ray_trace_boundary(boundary_vertices[3], boundary_normals[3], turbine_x_region_3, turbine_y_region_3)
+    else
+        boundcon_region_3 = []
+    end
+    if in(4,nearest_region)
+        boundcon_region_4 = ff.ray_trace_boundary(boundary_vertices[4], boundary_normals[4], turbine_x_region_4, turbine_y_region_4)
+    else
+        boundcon_region_4 = []
+    end
+    if in(5,nearest_region)
+        boundcon_region_5 = ff.ray_trace_boundary(boundary_vertices[5], boundary_normals[5], turbine_x_region_5, turbine_y_region_5)
+    else
+        boundcon_region_5 = []
+    end
+
+    # get and return boundary distances
+    return [boundcon_region_1; boundcon_region_2; boundcon_region_3; boundcon_region_4; boundcon_region_5]
+end
+
+# set up optimization problem wrapper function
+function wind_farm_opt_discrete(x, params)
+    it = params.it
+
+    # calculate spacing constraint value and jacobian
+    spacing_con = spacing_wrapper(x)
+    ds_dx = ForwardDiff.jacobian(spacing_wrapper, x)
+
+    # calculate boundary constraint and jacobian
+    boundary_con = discrete_boundary_wrapper(x)
+    db_dx = ForwardDiff.jacobian(discrete_boundary_wrapper, x)
+
+    # combine constaint values and jacobians into overall constaint value and jacobian arrays
+    c = [spacing_con; boundary_con]
+    dcdx = [ds_dx; db_dx]
+
+    # calculate the objective function and jacobian (negative sign in order to maximize AEP)
+    AEP = -aep_wrapper(x)[1]
+    dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
+
+    it[1] += 1
+    params.funcalls_AEP[it[1]] = it[1]
+    params.iter_AEP[it[1]] = -AEP
+
+    # set fail flag to false
+    fail = false
+
+    # return objective, constraint, and jacobian values
+    return AEP, c, dAEP_dx, dcdx, fail
+end
+
+# set up function wrapper surrogates for discrete boundary problem
+discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
+wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
+
+# start time again for discrete boundary optimization
+t3t = time()
+
+# run optimization with discrete regions and WEC=3
+xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+x = xopt_discrete
+
+# stop time after discrete boundaries optimization
+t4t = time()
+
+# add turbine locations after discrete optimization to plot
+clf()
+for i = 1:length(turbine_x)
+    plt.gcf().gca().add_artist(plt.Circle((xopt_discrete[i],xopt_discrete[nturbines+i]), rotor_diameter[1]/2.0, fill=false,color="C4", linestyle="--")) 
+end
+
+# add wind farm boundary to plot
+plt.gcf().gca().plot([boundary_vertices[1][:,1];boundary_vertices[1][1,1]],[boundary_vertices[1][:,2];boundary_vertices[1][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[2][:,1];boundary_vertices[2][1,1]],[boundary_vertices[2][:,2];boundary_vertices[2][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[3][:,1];boundary_vertices[3][1,1]],[boundary_vertices[3][:,2];boundary_vertices[3][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[4][:,1];boundary_vertices[4][1,1]],[boundary_vertices[4][:,2];boundary_vertices[4][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boundary_vertices[5][:,2];boundary_vertices[5][1,2]], color="C2")
+
+# set up plot window
+axis("square")
+xlim(0, 11000)
+ylim(-500, 13000)
+
+# save current figure
+savefig("../results/opt_plot3_test")
 
 
 
-t3t = 0
-t4t = 0
 t5t = 0
 t6t = 0
 t7t = 0
 t8t = 0
-xopt = xopt_nondiscrete
-fopt = fopt_nondiscrete
-info = info_nondiscrete
+xopt = xopt_discrete
+fopt = fopt_discrete
+info = info_discrete
 
 
 
@@ -337,10 +503,10 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-savefig("../results/opt_plot5")
+savefig("../results/opt_plot5_test")
 
 # write results to csv files
 dataforcsv_xopt = DataFrame(xopt = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
-CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
-CSV.write("xopt_ieacs4_WEC_discrete.csv", dataforcsv_xopt)
+CSV.write("functionvalue_log_ieacs4_WEC_discrete_test.csv", dataforcsv_funceval)
+CSV.write("xopt_ieacs4_WEC_discrete_test.csv", dataforcsv_xopt)

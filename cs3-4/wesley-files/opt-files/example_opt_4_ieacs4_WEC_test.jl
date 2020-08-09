@@ -437,6 +437,7 @@ wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 t3t = time()
 
 # run optimization with discrete regions and WEC=3
+println("input x to discrete optimization: ", x)
 xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, x, lb, ub, options)
 x = xopt_discrete
 

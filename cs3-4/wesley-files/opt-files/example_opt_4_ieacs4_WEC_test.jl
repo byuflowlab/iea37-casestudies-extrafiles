@@ -262,8 +262,8 @@ t1t = time()
 # first, run optimization with nondiscrete boundaries and WEC=3
 params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
 # xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
-# x = xopt_nondiscrete
-x = convert(Matrix,DataFrame!(CSV.File("xopt_ieacs4_WEC_discrete.csv")))
+xopt_nondiscrete = convert(Matrix,DataFrame!(CSV.File("xopt_ieacs4_WEC_discrete.csv")))
+x = xopt_nondiscrete
 
 # time after nondiscrete boundaries optimization
 t2t = time()

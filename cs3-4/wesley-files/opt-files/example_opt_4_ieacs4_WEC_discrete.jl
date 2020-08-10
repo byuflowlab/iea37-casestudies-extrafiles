@@ -340,6 +340,9 @@ for i = 1:nturbines
     end
 end
 
+# write out csv file with nearest_region
+dataforcsv_nearest_region = DataFrame(nearest_region = nearest_region)
+CSV.write("nearest_region_ieacs4.csv", dataforcsv_nearest_region)
 println("closest regions: ", nearest_region)
 
 # set up discrete boundary constraint wrapper function

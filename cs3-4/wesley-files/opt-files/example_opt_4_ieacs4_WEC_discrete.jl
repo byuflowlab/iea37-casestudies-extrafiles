@@ -196,7 +196,7 @@ x = [copy(turbine_x);copy(turbine_y)]
 println("Nturbines: ", nturbines)
 println("Rotor diameter: ", rotor_diameter[1])
 println("Starting AEP value (GWh): ", aep_wrapper(x, params)[1]*1e-9/obj_scale)
-# println("Directional AEP at start: ", dir_aep.*1E-6)
+println()
 
 t1 = time()
 for i in 1:10
@@ -205,9 +205,10 @@ for i in 1:10
 end
 t2 = time()
 at = (t2-t1)/10.0
-act = at/7200.0
+act = at/360.0
 println("average time: ", at)
 println("fcal time: ", act)
+println()
 
 # add initial turbine location to plot
 for i = 1:length(turbine_x)
@@ -273,6 +274,7 @@ println("info: ", info_nondiscrete)
 println("end objective value (nondiscrete): ", aep_wrapper(xopt_nondiscrete)[1])
 println("locations ", x[1:5])
 println("locations opt (nondiscrete) ", xopt_nondiscrete[1:5])
+println()
 
 # add turbine locations after nondiscrete optimization to plot
 clf()
@@ -440,9 +442,11 @@ wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 t3t = time()
 
 # run optimization with discrete regions and WEC=3
+println()
 println("x input into snopt: ", x)
 xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, x, lb, ub, options)
 println("xopt output after snopt: ", xopt_discrete)
+println()
 x = xopt_discrete
 
 # stop time after discrete boundaries optimization
@@ -485,17 +489,22 @@ for i in 1:length(wec_values)
     println("Running with WEC = ", wec_values[i])
     params.model_set.wake_deficit_model.wec_factor[1] = wec_values[i]
     
+    println()
+    println("x input into snopt: ", x)
     t1 = time()
     xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
     t2 = time()
+    println("xopt output after snopt: ", xopt)
+    println()
     clk = t2-t1
     
     # print optimization results
     println("Finished in : ", clk, " (s)")
     println("info: ", info)
     println("end objective value: ", -fopt)
-    println("locations ", x[1:5])
-    println("locations opt ", xopt[1:5])
+    println("locations ", x[1:10])
+    println("locations opt ", xopt[1:10])
+    println()
 
     # reset initial x for next optimization
     x = xopt

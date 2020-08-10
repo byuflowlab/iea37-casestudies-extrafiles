@@ -288,7 +288,7 @@ xopt, fopt, info = snopt(wind_farm_opt_discrete, x_initial, lb, ub, options)
 t2t= time()
 
 # calculate total time
-clkt = t1t - t2t
+clkt = t2t - t1t
 
 # print optimization results
 println("Finished in : ", clkt, " (s)")

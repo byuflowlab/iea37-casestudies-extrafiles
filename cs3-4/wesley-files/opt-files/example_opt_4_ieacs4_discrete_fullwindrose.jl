@@ -174,7 +174,7 @@ options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-5
-options["Major iteration limit"] = 1e1 #1e6
+options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
 

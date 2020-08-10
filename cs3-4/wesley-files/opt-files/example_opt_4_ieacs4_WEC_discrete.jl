@@ -135,7 +135,7 @@ end
 @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
 
 # scale objective to be between 0 and 1
-obj_scale = 1E-11
+obj_scale = 1E-12
 
 # set wind farm boundary parameters
 include("boundary_normals_calculator.jl")
@@ -237,7 +237,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-2 #1e-5
+options["Major optimality tolerance"] = 1e-5
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
@@ -261,6 +261,7 @@ t1t = time()
 
 # first, run optimization with nondiscrete boundaries and WEC=3
 params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
+println("x input into snopt: ", x)
 xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
 x = xopt_nondiscrete
 
@@ -296,7 +297,7 @@ savefig("../results/opt_plot2")
 
 # write out csv file with xopt_nondiscrete
 dataforcsv_xopt_nondiscrete = DataFrame(xopt_nondiscrete = xopt_nondiscrete)
-CSV.write("xopt_nondiscrete2_ieacs4_WEC_discrete.csv", dataforcsv_xopt_nondiscrete)
+CSV.write("xopt2_nondiscrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_nondiscrete)
 
 # find the nearest boundary for each turbine
 nearest_region = zeros(Int64, nturbines)
@@ -436,7 +437,9 @@ wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 t3t = time()
 
 # run optimization with discrete regions and WEC=3
+println("x input into snopt: ", x)
 xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+println("xopt output after snopt: ", xopt_discrete)
 x = xopt_discrete
 
 # stop time after discrete boundaries optimization
@@ -465,7 +468,7 @@ savefig("../results/opt_plot3")
 
 # write out csv file with xopt_nondiscrete
 dataforcsv_xopt_discrete = DataFrame(xopt_discrete3 = xopt_discrete)
-CSV.write("xopt_discrete3_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
+CSV.write("xopt3_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
 
 # start time again for WEC optimization
 t5t = time()
@@ -521,7 +524,7 @@ savefig("../results/opt_plot4")
 
 # write out csv file with xopt_nondiscrete
 dataforcsv_xopt_discrete = DataFrame(xopt_discrete4 = xopt_discrete)
-CSV.write("xopt_discrete4_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
+CSV.write("xopt4_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
 
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
@@ -542,7 +545,9 @@ clkt = (t2t - t1t) + (t4t - t3t) + (t6t - t5t) + (t8t - t7t)
 # print optimization results
 println("Finished in : ", clkt, " (s)")
 println("info: ", info)
-println("end objective value: ", aep_wrapper(xopt))
+fopt_postcalc = aep_wrapper(xopt)[1]
+println("end objective value: ", fopt_postcalc)
+println("Ending AEP value (GWh): ", fopt_postcalc*1e-9/obj_scale)
 
 # extract final turbine locations
 turbine_x = copy(xopt[1:nturbines])
@@ -571,4 +576,4 @@ savefig("../results/opt_plot5")
 dataforcsv_xopt = DataFrame(xopt_discrete5 = xopt_discrete)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
-CSV.write("xopt_discrete5_ieacs4_WEC_discrete.csv", dataforcsv_xopt)
+CSV.write("xopt5_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt)

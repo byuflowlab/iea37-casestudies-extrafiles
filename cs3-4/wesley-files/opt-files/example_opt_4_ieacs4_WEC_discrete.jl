@@ -214,6 +214,21 @@ for i = 1:length(turbine_x)
     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
 end
 
+# add wind farm boundary to plot
+plt.gcf().gca().plot([boundary_vertices[1][:,1];boundary_vertices[1][1,1]],[boundary_vertices[1][:,2];boundary_vertices[1][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[2][:,1];boundary_vertices[2][1,1]],[boundary_vertices[2][:,2];boundary_vertices[2][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[3][:,1];boundary_vertices[3][1,1]],[boundary_vertices[3][:,2];boundary_vertices[3][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[4][:,1];boundary_vertices[4][1,1]],[boundary_vertices[4][:,2];boundary_vertices[4][1,2]], color="C2")
+plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boundary_vertices[5][:,2];boundary_vertices[5][1,2]], color="C2")
+
+# set up plot window
+axis("square")
+xlim(0, 11000)
+ylim(-500, 13000)
+
+# save current figure
+savefig("../results/opt_plot1")
+
 # set general lower and upper bounds for design variables
 lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
 ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
@@ -222,8 +237,8 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-2 #1e-5
-options["Major iteration limit"] = 1e2
+options["Major optimality tolerance"] = 1e-5
+options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
 
@@ -291,7 +306,7 @@ for i = 1:nturbines
     nearest_region_distance = 1.0e30
     for k = 1:length(boundary_vertices)
         # get vector from turbine to the first vertex in first face
-        turbine_to_first_facepoint = closed_boundary_vertices[k][1, :] - [xopt_nondiscrete[1]; xopt_nondiscrete[nturbines+1]]
+        turbine_to_first_facepoint = closed_boundary_vertices[k][1, :] - [xopt_nondiscrete[i]; xopt_nondiscrete[nturbines+i]]
         for j = 1:length(boundary_vertices[k][:,1])
             # define the vector from the turbine to the second point of the face
             turbine_to_second_facepoint = closed_boundary_vertices[k][j+1, :] - [xopt_nondiscrete[i]; xopt_nondiscrete[nturbines+i]]
@@ -319,6 +334,8 @@ for i = 1:nturbines
         end
     end
 end
+
+println("closest regions: ", nearest_region)
 
 # set up discrete boundary constraint wrapper function
 function discrete_boundary_wrapper(x, params)

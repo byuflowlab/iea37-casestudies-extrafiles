@@ -27,7 +27,7 @@ function nondiscrete_boundary_wrapper(x, params)
     turbine_y = x[nturbines+1:end]
 
     # get and return boundary distances
-    return ff.convex_boundary(boundary_vertices_nondiscrete, boundary_normals_nondiscrete, turbine_x, turbine_y)
+    return ff.ray_trace_boundary(boundary_vertices_nondiscrete, boundary_normals_nondiscrete, turbine_x, turbine_y)
 end
 
 # # set up boundary constraint wrapper function

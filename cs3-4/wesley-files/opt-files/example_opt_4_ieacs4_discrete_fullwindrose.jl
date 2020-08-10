@@ -276,7 +276,7 @@ discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
 wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 
 # import turbine locations from previous optimization
-x_initial = convert(Matrix,DataFrame!(CSV.File("xopt_discrete5_ieacs4_WEC_discrete.csv")))[:,1]
+x_initial = convert(Matrix,DataFrame!(CSV.File("xopt5_discrete_ieacs4_WEC_discrete.csv")))[:,1]
 
 # start time again for full wind rose optimization
 t1t = time()

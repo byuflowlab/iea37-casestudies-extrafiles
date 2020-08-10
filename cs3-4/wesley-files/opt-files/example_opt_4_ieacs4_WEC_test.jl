@@ -297,6 +297,10 @@ ylim(-500, 13000)
 # save current figure
 savefig("../results/opt_plot2_test")
 
+# write out csv file with xopt_nondiscrete
+dataforcsv_xopt_nondiscrete = DataFrame(xopt_nondiscrete2 = xopt_nondiscrete)
+CSV.write("xopt_nondiscrete2_ieacs4_WEC_discrete_test.csv", dataforcsv_xopt_nondiscrete)
+
 # find the nearest boundary for each turbine
 nearest_region = zeros(Int64, nturbines)
 closed_boundary_vertices = copy(boundary_vertices)
@@ -419,7 +423,7 @@ function wind_farm_opt_discrete(x, params)
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = it[1]
+    params.funcalls_AEP[it[1]] = -AEP
     params.iter_AEP[it[1]] = -AEP
 
     # set fail flag to false
@@ -465,6 +469,9 @@ ylim(-500, 13000)
 # save current figure
 savefig("../results/opt_plot3_test")
 
+# write out csv file with xopt_nondiscrete
+dataforcsv_xopt_discrete = DataFrame(xopt_discrete3 = xopt_discrete)
+CSV.write("xopt_discrete3_ieacs4_WEC_discrete_test.csv", dataforcsv_xopt_discrete)
 
 
 t5t = 0

@@ -121,7 +121,7 @@ function wind_farm_opt_nondiscrete(x, params)
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = it[1]
+    params.funcalls_AEP[it[1]] = -AEP
     params.iter_AEP[it[1]] = -AEP
 
     # set fail flag to false
@@ -237,7 +237,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-5
+options["Major optimality tolerance"] = 1e-2 #1e-5
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
@@ -293,6 +293,10 @@ ylim(-500, 13000)
 
 # save current figure
 savefig("../results/opt_plot2")
+
+# write out csv file with xopt_nondiscrete
+dataforcsv_xopt_nondiscrete = DataFrame(xopt_nondiscrete = xopt_nondiscrete)
+CSV.write("xopt_nondiscrete2_ieacs4_WEC_discrete.csv", dataforcsv_xopt_nondiscrete)
 
 # find the nearest boundary for each turbine
 nearest_region = zeros(Int64, nturbines)
@@ -414,7 +418,7 @@ function wind_farm_opt_discrete(x, params)
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = it[1]
+    params.funcalls_AEP[it[1]] = -AEP
     params.iter_AEP[it[1]] = -AEP
 
     # set fail flag to false
@@ -458,6 +462,10 @@ ylim(-500, 13000)
 
 # save current figure
 savefig("../results/opt_plot3")
+
+# write out csv file with xopt_nondiscrete
+dataforcsv_xopt_discrete = DataFrame(xopt_discrete3 = xopt_discrete)
+CSV.write("xopt_discrete3_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
 
 # start time again for WEC optimization
 t5t = time()
@@ -511,6 +519,10 @@ ylim(-500, 13000)
 # save current figure
 savefig("../results/opt_plot4")
 
+# write out csv file with xopt_nondiscrete
+dataforcsv_xopt_discrete = DataFrame(xopt_discrete4 = xopt_discrete)
+CSV.write("xopt_discrete4_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
+
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
 x = xopt
@@ -556,7 +568,7 @@ ylim(-500, 13000)
 savefig("../results/opt_plot5")
 
 # write results to csv files
-dataforcsv_xopt = DataFrame(xopt = xopt)
+dataforcsv_xopt = DataFrame(xopt_discrete5 = xopt_discrete)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
-CSV.write("xopt_ieacs4_WEC_discrete.csv", dataforcsv_xopt)
+CSV.write("xopt_discrete5_ieacs4_WEC_discrete.csv", dataforcsv_xopt)

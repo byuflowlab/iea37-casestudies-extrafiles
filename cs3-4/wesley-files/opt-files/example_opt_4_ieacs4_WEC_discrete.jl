@@ -190,7 +190,7 @@ params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, amb
     windresource, power_models, iter_AEP, funcalls_AEP, [0])
 
 # initialize design variable array
-x = [copy(turbine_x);copy(turbine_y)]
+x = [deepcopy(turbine_x);deepcopy(turbine_y)]
 
 # report initial objective value
 println("Nturbines: ", nturbines)
@@ -507,7 +507,7 @@ for i in 1:length(wec_values)
     println()
 
     # reset initial x for next optimization
-    x = xopt
+    x = deepcopy(xopt)
 end
 
 # stop time for WEC optimization

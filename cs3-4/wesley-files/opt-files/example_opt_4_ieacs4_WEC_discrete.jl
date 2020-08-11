@@ -257,6 +257,10 @@ wec_values = collect(LinRange(wec_max, wec_end, wec_steps))
 println(wec_values)
 info = fill("",wec_steps)
 
+# initialize xopt array
+xopt_all = zeros(nturbines,length(wec_steps)+4)
+xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
+
 # start optimization timer
 t1t = time()
 
@@ -265,6 +269,7 @@ params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
 println("x input into snopt: ", x)
 xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
 x = deepcopy(xopt_nondiscrete)
+xopt_all[:,2] = deepcopy(xopt_nondiscrete)
 
 # time after nondiscrete boundaries optimization
 t2t = time()
@@ -448,6 +453,7 @@ xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, x, l
 println("xopt output after snopt: ", xopt_discrete)
 println()
 x = xopt_discrete
+xopt_all[:,3] = deepcopy(xopt_discrete)
 
 # stop time after discrete boundaries optimization
 t4t = time()
@@ -482,6 +488,7 @@ t5t = time()
 
 # optimization with decreasing WEC values
 for i in 1:length(wec_values)
+    global xopt_all
     global x
     global fopt
     global info
@@ -493,7 +500,8 @@ for i in 1:length(wec_values)
     println("x input into snopt: ", x)
     t1 = time()
     x_initial = deepcopy(x)
-    xopt, fopt, info = snopt(wind_farm_opt_discrete, x_initial, lb, ub, options)
+    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,2+i], lb, ub, options)
+    xopt_all[:,3+i] = deepcopy(xopt)
     t2 = time()
     println("xopt output after snopt: ", xopt)
     println()
@@ -594,3 +602,7 @@ dataforcsv_xopt = DataFrame(xopt_discrete5 = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
 CSV.write("xopt5_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt)
+println(xopt_all)
+display(xopt_all)
+dataforcsv_xopt_all = DataFrame(xopt_all = xopt_all)
+CSV.write("xopt_all_ieacs4_WEC_discrete.csv", dataforcsv_xopt_all)

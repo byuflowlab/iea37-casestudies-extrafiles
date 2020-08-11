@@ -489,6 +489,7 @@ for i in 1:length(wec_values)
     params.model_set.wake_deficit_model.wec_factor[1] = wec_values[i]
     println(params.model_set.wake_deficit_model.wec_factor[1])
 
+    x = x .+ 100.0  # just for testing
     println()
     println("x input into snopt: ", x)
     t1 = time()

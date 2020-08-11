@@ -516,7 +516,7 @@ t6t = time()
 # add turbine locations after discrete optimization to plot
 clf()
 for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((xopt_discrete[i],xopt_discrete[nturbines+i]), rotor_diameter[1]/2.0, fill=false,color="C4", linestyle="--")) 
+    plt.gcf().gca().add_artist(plt.Circle((xopt_discrete[i],xopt_discrete[nturbines+i]), rotor_diameter[1]/2.0, fill=false,color="C5", linestyle="--")) 
 end
 
 # add wind farm boundary to plot

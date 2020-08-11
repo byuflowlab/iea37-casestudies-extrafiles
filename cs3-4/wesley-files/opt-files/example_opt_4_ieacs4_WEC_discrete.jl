@@ -238,7 +238,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-6
+options["Major optimality tolerance"] = 1e-5
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
@@ -492,7 +492,8 @@ for i in 1:length(wec_values)
     println()
     println("x input into snopt: ", x)
     t1 = time()
-    xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+    x_initial = deepcopy(x)
+    xopt, fopt, info = snopt(wind_farm_opt_discrete, x_initial, lb, ub, options)
     t2 = time()
     println("xopt output after snopt: ", xopt)
     println()
@@ -502,7 +503,7 @@ for i in 1:length(wec_values)
     println("Finished in : ", clk, " (s)")
     println("info: ", info)
     println("end objective value: ", -fopt)
-    println("locations ", x[1:10])
+    println("locations ", x_initial[1:10])
     println("locations opt ", xopt[1:10])
     println()
 

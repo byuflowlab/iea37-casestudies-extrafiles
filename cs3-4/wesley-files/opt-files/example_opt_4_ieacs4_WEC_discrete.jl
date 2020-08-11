@@ -535,6 +535,7 @@ ylim(-500, 13000)
 savefig("../results/opt_plot4")
 
 # write out csv file with xopt_nondiscrete
+xopt = deepcopy(x)
 dataforcsv_xopt_discrete = DataFrame(xopt_discrete4 = xopt)
 CSV.write("xopt4_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
 
@@ -544,7 +545,6 @@ options["Print file"] = "print-ieacs4-WEC-discrete-final.out"
 
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
-xopt = deepcopy(x)
 
 # start time again for full wind rose optimization
 t7t = time()

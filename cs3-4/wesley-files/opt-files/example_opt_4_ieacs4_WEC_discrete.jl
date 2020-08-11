@@ -258,7 +258,7 @@ println(wec_values)
 info = fill("",wec_steps)
 
 # initialize xopt array
-xopt_all = zeros(nturbines,length(wec_steps)+4)
+xopt_all = zeros(2*nturbines,length(wec_steps)+4)
 xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
 
 # start optimization timer

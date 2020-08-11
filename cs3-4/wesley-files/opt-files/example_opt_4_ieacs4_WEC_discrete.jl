@@ -238,7 +238,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-5
+options["Major optimality tolerance"] = 1e-6
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
 options["Print file"] = "print-ieacs4-WEC-discrete.out"
@@ -264,7 +264,7 @@ t1t = time()
 params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
 println("x input into snopt: ", x)
 xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, x, lb, ub, options)
-x = xopt_nondiscrete
+x = deepcopy(xopt_nondiscrete)
 
 # time after nondiscrete boundaries optimization
 t2t = time()
@@ -489,7 +489,6 @@ for i in 1:length(wec_values)
     params.model_set.wake_deficit_model.wec_factor[1] = wec_values[i]
     println(params.model_set.wake_deficit_model.wec_factor[1])
 
-    x = x .+ 100.0  # just for testing
     println()
     println("x input into snopt: ", x)
     t1 = time()
@@ -545,7 +544,7 @@ options["Print file"] = "print-ieacs4-WEC-discrete-final.out"
 
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
-x = xopt
+xopt = deepcopy(x)
 
 # start time again for full wind rose optimization
 t7t = time()
@@ -590,7 +589,7 @@ ylim(-500, 13000)
 savefig("../results/opt_plot5")
 
 # write results to csv files
-dataforcsv_xopt = DataFrame(xopt_discrete5 = xopt_discrete)
+dataforcsv_xopt = DataFrame(xopt_discrete5 = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
 CSV.write("xopt5_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt)

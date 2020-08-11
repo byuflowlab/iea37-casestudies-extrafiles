@@ -483,12 +483,12 @@ t5t = time()
 # optimization with decreasing WEC values
 for i in 1:length(wec_values)
     global x
-    global xopt
     global fopt
     global info
     println("Running with WEC = ", wec_values[i])
     params.model_set.wake_deficit_model.wec_factor[1] = wec_values[i]
-    
+    println(params.model_set.wake_deficit_model.wec_factor[1])
+
     println()
     println("x input into snopt: ", x)
     t1 = time()
@@ -535,8 +535,12 @@ ylim(-500, 13000)
 savefig("../results/opt_plot4")
 
 # write out csv file with xopt_nondiscrete
-dataforcsv_xopt_discrete = DataFrame(xopt_discrete4 = xopt_discrete)
+dataforcsv_xopt_discrete = DataFrame(xopt_discrete4 = xopt)
 CSV.write("xopt4_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
+
+# rename output files
+options["Summary file"] = "summary-ieacs4-WEC-discrete-final.out"
+options["Print file"] = "print-ieacs4-WEC-discrete-final.out"
 
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")

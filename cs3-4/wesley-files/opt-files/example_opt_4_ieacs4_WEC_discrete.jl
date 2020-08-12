@@ -152,9 +152,23 @@ boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9
     9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
 boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
 
+# set up for WEC optimization
+wec_steps = 6
+wec_max = 3.0
+wec_end = 1.0
+wec_values = collect(LinRange(wec_max, wec_end, wec_steps))
+println(wec_values)
+info = fill("",wec_steps)
+
+# initialize xopt array
+noptimizations = wec_steps + 4
+xopt_all = zeros(2*nturbines,noptimizations)
+xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
+x = [deepcopy(turbine_x);deepcopy(turbine_y)]
+
 # set globals for iteration history
-iter_AEP = zeros(Float64, 10000)
-funcalls_AEP = zeros(Float64, 10000)
+iter_AEP = zeros(Float64, 100000*noptimizations)
+funcalls_AEP = zeros(Float64, 100000*noptimizations)
 
 # set globals for use in wrapper functions
 struct params_struct{}
@@ -188,20 +202,6 @@ params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, amb
     rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, boundary_normals_nondiscrete, obj_scale, hub_height, turbine_yaw, 
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
     windresource, power_models, iter_AEP, funcalls_AEP, [0])
-
-# set up for WEC optimization
-wec_steps = 6
-wec_max = 3.0
-wec_end = 1.0
-wec_values = collect(LinRange(wec_max, wec_end, wec_steps))
-println(wec_values)
-info = fill("",wec_steps)
-
-# initialize xopt array
-noptimizations = wec_steps + 4
-xopt_all = zeros(2*nturbines,noptimizations)
-xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
-x = [deepcopy(turbine_x);deepcopy(turbine_y)]
 
 # report initial objective value
 println("Nturbines: ", nturbines)

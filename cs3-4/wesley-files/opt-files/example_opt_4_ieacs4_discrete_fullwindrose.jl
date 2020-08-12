@@ -285,10 +285,10 @@ wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 t1t = time()
 
 # run full wind rose optimization
-# xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
-xopt = deepcopy(x)
-fopt = 50.0
-info = []
+xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+# xopt = deepcopy(x)
+# fopt = 50.0
+# info = []
 
 # stop full wind rose optimization timer
 t2t= time()

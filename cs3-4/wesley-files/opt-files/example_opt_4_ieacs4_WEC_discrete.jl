@@ -198,7 +198,7 @@ println(wec_values)
 info = fill("",wec_steps)
 
 # initialize xopt array
-noptimizations = length(wec_steps)+4
+noptimizations = wec_steps + 4
 xopt_all = zeros(2*nturbines,noptimizations)
 xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
 x = [deepcopy(turbine_x);deepcopy(turbine_y)]
@@ -517,11 +517,11 @@ for i in 1:length(wec_values)
     println()
     println("x input into snopt: ", xopt_all[:,i+2])
     t1 = time()
-    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,2+i], lb, ub, options)
+    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+2], lb, ub, options)
     t2 = time()
     println("xopt output after snopt: ", xopt)
     println()
-    xopt_all[:,3+i] = deepcopy(xopt)
+    xopt_all[:,i+3] = deepcopy(xopt)
     clk = t2-t1
     
     # print optimization results

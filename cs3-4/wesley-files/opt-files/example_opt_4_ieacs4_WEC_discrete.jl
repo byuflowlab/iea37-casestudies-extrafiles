@@ -249,7 +249,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-5
+options["Major optimality tolerance"] = 4e-6
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-discrete2.out"
@@ -529,7 +529,7 @@ for i in 1:length(wec_values)
     println("info: ", info)
     println("end objective value: ", -fopt)
     println("initial locations ", xopt_all[1:10,i+2])
-    println("optimal locations (WEC = " * "$(wec_values[i])" * ") ", xopt_all[1:10,i+3])
+    println("optimal locations (WEC = " * "$(round(wec_values[i],digits=2))" * ") ", xopt_all[1:10,i+3])
     println()
 
 end
@@ -584,8 +584,8 @@ clkt = (t2t - t1t) + (t4t - t3t) + (t6t - t5t) + (t8t - t7t)
 
 # print optimization results
 println("Finished in : ", clkt, " (s)")
-println("info: ", info)
-fopt_postcalc = aep_wrapper(xopt)[1]
+# println("info: ", info)
+fopt_postcalc = aep_wrapper(xopt_all[:,end])[1]
 println("end objective value: ", fopt_postcalc)
 println("Ending AEP value (GWh): ", fopt_postcalc*1e-9/obj_scale)
 

@@ -460,6 +460,9 @@ xopt_all[:,3] = deepcopy(xopt_discrete)
 # stop time after discrete boundaries optimization
 t4t = time()
 
+# calculate time
+clk = t4t-t3t
+
 # print optimization results
 println("Finished in : ", clk, " (s)")
 println("info: ", info_discrete)

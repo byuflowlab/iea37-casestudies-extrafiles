@@ -88,6 +88,14 @@ boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9
     9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
 boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
 
+# initialize xopt array
+noptimizations = 2
+xopt_all = zeros(2*nturbines,noptimizations)
+
+# import turbine locations from previous optimization
+xopt_all[:,1] = convert(Matrix,DataFrame!(CSV.File("xopt5_discrete_ieacs4_WEC_discrete.csv")))[:,1]
+x = deepcopy(xopt_all[:,1])
+
 # set globals for iteration history
 iter_AEP = zeros(Float64, 10000)
 funcalls_AEP = zeros(Float64, 10000)
@@ -125,14 +133,11 @@ params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, amb
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
     windresource, power_models, iter_AEP, funcalls_AEP, [0])
 
-# initialize design variable array
-x = [copy(turbine_x);copy(turbine_y)]
-
 # report initial objective value
 println("Nturbines: ", nturbines)
 println("Rotor diameter: ", rotor_diameter[1])
 println("Starting AEP value (GWh): ", aep_wrapper(x, params)[1]*1e-9/obj_scale)
-# println("Directional AEP at start: ", dir_aep.*1E-6)
+println()
 
 t1 = time()
 for i in 1:10
@@ -144,6 +149,7 @@ at = (t2-t1)/10.0
 act = at/7200.0
 println("average time: ", at)
 println("fcal time: ", act)
+println()
 
 # add initial turbine location to plot
 for i = 1:length(turbine_x)
@@ -163,7 +169,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot_fullwindrose5")
+savefig("../results/opt_plot5_fullwindrose")
 
 # set general lower and upper bounds for design variables
 lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
@@ -175,8 +181,8 @@ options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-5
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary-ieacs4-WEC-discrete.out"
-options["Print file"] = "print-ieacs4-WEC-discrete.out"
+options["Summary file"] = "summary-ieacs4-WEC-discrete10_fullwindrose.out"
+options["Print file"] = "print-ieacs4-WEC-discrete10_fullwindrose.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -275,14 +281,14 @@ end
 discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
 wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 
-# import turbine locations from previous optimization
-x_initial = convert(Matrix,DataFrame!(CSV.File("xopt5_discrete_ieacs4_WEC_discrete.csv")))[:,1]
-
 # start time again for full wind rose optimization
 t1t = time()
 
 # run full wind rose optimization
-xopt, fopt, info = snopt(wind_farm_opt_discrete, x_initial, lb, ub, options)
+# xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+xopt = deepcopy(x)
+fopt = 50.0
+info = []
 
 # stop full wind rose optimization timer
 t2t= time()
@@ -318,10 +324,10 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-savefig("../results/opt_plot_fullwindrose6")
+savefig("../results/opt_plot_6_fullwindrose")
 
 # write results to csv files
-dataforcsv_xopt = DataFrame(xopt = xopt)
+dataforcsv_xopt = DataFrame(xopt_all_fullwindrose = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_funceval)
-CSV.write("xopt6_fullwindrose_ieacs4_WEC_discrete.csv", dataforcsv_xopt)
+CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_xopt)

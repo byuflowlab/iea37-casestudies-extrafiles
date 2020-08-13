@@ -93,7 +93,8 @@ noptimizations = 2
 xopt_all = zeros(2*nturbines,noptimizations)
 
 # import turbine locations from previous optimization
-xopt_all[:,1] = convert(Matrix,DataFrame!(CSV.File("xopt5_discrete_ieacs4_WEC_discrete.csv")))[:,1]
+xopt_all_imported = convert(Matrix,DataFrame!(CSV.File("xopt_discrete_ieacs4_WEC_discrete.csv")))
+xopt_all[:,1] = xopt_all_imported[:,end]
 x = deepcopy(xopt_all[:,1])
 
 # set globals for iteration history
@@ -331,3 +332,9 @@ dataforcsv_xopt = DataFrame(xopt_all_fullwindrose = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_funceval)
 CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_xopt)
+
+# write results to yaml file
+ff.write_turb_loc_YAML("iea37-byu-opt4.yaml",turbine_x,turbine_y,
+    title="IEA Wind Task 37 case study 4, BYU's optimal layout",
+    titledescription="BYU's optimal layout for the 81 turbine wind plant model for IEA Task 37 case study 4",
+    baseyaml="../../startup-files/iea37-ex-opt4.yaml")

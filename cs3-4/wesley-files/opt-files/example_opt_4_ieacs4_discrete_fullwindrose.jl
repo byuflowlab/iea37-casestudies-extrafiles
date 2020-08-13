@@ -180,7 +180,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 4e-6
+options["Major optimality tolerance"] = 3.5e-6
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete10_fullwindrose.out"
 options["Print file"] = "print-ieacs4-WEC-discrete10_fullwindrose.out"
@@ -325,7 +325,7 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-savefig("../results/opt_plot_6_fullwindrose")
+savefig("../results/opt_plot6_fullwindrose")
 
 # write results to csv files
 dataforcsv_xopt = DataFrame(xopt_all_fullwindrose = xopt)
@@ -334,7 +334,14 @@ CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_f
 CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_xopt)
 
 # write results to yaml file
-ff.write_turb_loc_YAML("iea37-byu-opt4.yaml",turbine_x,turbine_y,
+ff.write_turb_loc_YAML("../results/iea37-byu-opt4.yaml",turbine_x,turbine_y,
     title="IEA Wind Task 37 case study 4, BYU's optimal layout",
     titledescription="BYU's optimal layout for the 81 turbine wind plant model for IEA Task 37 case study 4",
+    turbinefile="../../startup-files/iea37-10mw.yaml",
+    locunits="m",
+    wakemodelused="",
+    windresourcefile="../../startup-files/iea37-windrose-cs3.yaml",
+    aeptotal=[fopt_postcalc],
+    aepdirs=[],
+    aepunits="GWh",
     baseyaml="../../startup-files/iea37-ex-opt4.yaml")

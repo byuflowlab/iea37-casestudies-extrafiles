@@ -161,7 +161,7 @@ println(wec_values)
 info = fill("",wec_steps)
 
 # initialize xopt array
-noptimizations = wec_steps + 4
+noptimizations = wec_steps + 3
 xopt_all = zeros(2*nturbines,noptimizations)
 xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
 x = [deepcopy(turbine_x);deepcopy(turbine_y)]
@@ -249,7 +249,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 4e-6
+options["Major optimality tolerance"] = 1e-6
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-discrete2.out"
@@ -615,7 +615,6 @@ savefig("../results/opt_plot5")
 # write results to csv files
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete.csv", dataforcsv_funceval)
-println(xopt_all)
 display(xopt_all)
-dataforcsv_xopt_all = DataFrame(xopt_all = xopt_all)
+dataforcsv_xopt_all = DataFrame(xopt_all)
 CSV.write("xopt_all_ieacs4_WEC_discrete.csv", dataforcsv_xopt_all)

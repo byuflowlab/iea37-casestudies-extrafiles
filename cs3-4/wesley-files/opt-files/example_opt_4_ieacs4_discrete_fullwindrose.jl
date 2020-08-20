@@ -1,4 +1,4 @@
-using Snopt
+# using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,8 +10,8 @@ using DataFrames
 
 using BenchmarkTools
 
-addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-@everywhere import FlowFarm; const ff = FlowFarm
+# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+# @everywhere import FlowFarm; const ff = FlowFarm
 
 # set up spacing constraint wrapper function
 function spacing_wrapper(x, params)
@@ -30,7 +30,8 @@ function spacing_wrapper(x, params)
 end
 
 # set up objective wrapper function
-@everywhere function aep_wrapper(x, params)
+# @everywhere function aep_wrapper(x, params)
+function aep_wrapper(x, params)
     # include relevant globals
     params.turbine_z
     params.rotor_diameter
@@ -67,11 +68,14 @@ end
 end
 
 
+layout_number = 1
+
 # import model set with wind farm and related details
-@everywhere include("./model_sets/model_set_7_ieacs4.jl")
+# @everywhere include("./model_sets/model_set_7_ieacs4.jl")
+include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
-obj_scale = 1E-12
+obj_scale = 1E-7
 
 # set wind farm boundary parameters
 include("boundary_normals_calculator.jl")
@@ -93,9 +97,15 @@ noptimizations = 2
 xopt_all = zeros(2*nturbines,noptimizations)
 
 # import turbine locations from previous optimization
-xopt_all_imported = convert(Matrix,DataFrame!(CSV.File("xopt_discrete_ieacs4_WEC_discrete.csv")))
-xopt_all[:,1] = xopt_all_imported[:,end]
-x = deepcopy(xopt_all[:,1])
+# xopt_all_imported = convert(Matrix,DataFrame!(CSV.File("xopt_discrete_ieacs4_WEC_discrete.csv")))
+# xopt_all[:,1] = xopt_all_imported[:,end]
+# x = deepcopy(xopt_all[:,1])
+intermediate_yaml = YAML.load(open("../results/iea37-byu-opt4-intermediate-$layout_number.yaml"))
+nturbines = length(intermediate_yaml["definitions"]["position"]["items"])
+x = zeros(nturbines*2)
+for i = 1:2, j = 1:nturbines
+    x[(i-1)*nturbines+j] = intermediate_yaml["definitions"]["position"]["items"][j][i]
+end
 
 # set globals for iteration history
 iter_AEP = zeros(Float64, 10000)
@@ -140,19 +150,20 @@ println("Rotor diameter: ", rotor_diameter[1])
 println("Starting AEP value (GWh): ", aep_wrapper(x, params)[1]*1e-9/obj_scale)
 println()
 
-t1 = time()
-for i in 1:10
-    println(i)
-    aep_wrapper(x, params)[1]*1e-9/obj_scale
-end
-t2 = time()
-at = (t2-t1)/10.0
-act = at/7200.0
-println("average time: ", at)
-println("fcal time: ", act)
-println()
+# t1 = time()
+# for i in 1:10
+#     println(i)
+#     aep_wrapper(x, params)[1]*1e-9/obj_scale
+# end
+# t2 = time()
+# at = (t2-t1)/10.0
+# act = at/7200.0
+# println("average time: ", at)
+# println("fcal time: ", act)
+# println()
 
 # add initial turbine location to plot
+clf()
 for i = 1:length(turbine_x)
     plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
 end
@@ -170,7 +181,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot5_fullwindrose")
+# savefig("../results/opt_plot5_fullwindrose")
 
 # set general lower and upper bounds for design variables
 lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
@@ -180,16 +191,16 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 3.5e-6
+options["Major optimality tolerance"] = 1e-3
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary-ieacs4-WEC-discrete10_fullwindrose.out"
-options["Print file"] = "print-ieacs4-WEC-discrete10_fullwindrose.out"
+options["Summary file"] = "summary-ieacs4-WEC-discrete10_fullwindrose-$layout_number.out"
+options["Print file"] = "print-ieacs4-WEC-discrete10_fullwindrose-$layout_number.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
 aep_wrapper(x) = aep_wrapper(x, params)
 
-nearest_region = convert(Matrix,DataFrame!(CSV.File("nearest_region_ieacs4.csv")))[:,1]
+nearest_region = convert(Matrix,DataFrame!(CSV.File("nearest_region_ieacs4-$layout_number.csv")))[:,1]
 global nearest_region
 
 # set up discrete boundary constraint wrapper function
@@ -286,10 +297,10 @@ wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 t1t = time()
 
 # run full wind rose optimization
-xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
-# xopt = deepcopy(x)
-# fopt = 50.0
-# info = []
+# xopt, fopt, info = snopt(wind_farm_opt_discrete, x, lb, ub, options)
+xopt = deepcopy(x).+100
+fopt = 50.0
+info = []
 
 # stop full wind rose optimization timer
 t2t= time()
@@ -300,13 +311,26 @@ clkt = t2t - t1t
 # print optimization results
 println("Finished in : ", clkt, " (s)")
 println("info: ", info)
-fopt_postcalc = aep_wrapper(xopt)[1]
-println("end objective value: ", fopt_postcalc)
-println("Ending AEP value (GWh): ", fopt_postcalc*1e-9/obj_scale)
+final_objective = aep_wrapper(xopt)[1]
+final_AEP = final_objective*1e-9/obj_scale
+println("end objective value: ", final_objective)
+println("Ending AEP value (GWh): ", final_AEP)
 
 # extract final turbine locations
 turbine_x = copy(xopt[1:nturbines])
 turbine_y = copy(xopt[nturbines+1:end])
+
+# calculate state and directional AEPs
+state_aeps = ff.calculate_state_aeps(turbine_x, turbine_y, turbine_z, rotor_diameter,
+                hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
+                cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set;
+                rotor_sample_points_y=[0.0], rotor_sample_points_z=[0.0], hours_per_year=365.0*24.0)
+dir_aep = zeros(360)
+for i in 1:360
+    for j in 1:20
+        dir_aep[i] += state_aeps[(i-1)*20 + j]
+    end
+end
 
 # add final turbine locations to plot
 clf()
@@ -325,23 +349,24 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-savefig("../results/opt_plot6_fullwindrose")
+savefig("../results/opt_plot5_fullwindrose-$layout_number")
 
 # write results to csv files
 dataforcsv_xopt = DataFrame(xopt_all_fullwindrose = xopt)
 dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
-CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_funceval)
-CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose.csv", dataforcsv_xopt)
+CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose-$layout_number.csv", dataforcsv_funceval)
+CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose-$layout_number.csv", dataforcsv_xopt)
 
 # write results to yaml file
-ff.write_turb_loc_YAML("../results/iea37-byu-opt4.yaml",turbine_x,turbine_y,
+ff.write_turb_loc_YAML("../results/iea37-byu-opt4-$layout_number.yaml",turbine_x,turbine_y,
     title="IEA Wind Task 37 case study 4, BYU's optimal layout",
     titledescription="BYU's optimal layout for the 81 turbine wind plant model for IEA Task 37 case study 4",
-    turbinefile="../../startup-files/iea37-10mw.yaml",
+    turbinefile="iea37-10mw.yaml",
     locunits="m",
-    wakemodelused="",
-    windresourcefile="../../startup-files/iea37-windrose-cs3.yaml",
-    aeptotal=[fopt_postcalc],
-    aepdirs=[],
-    aepunits="GWh",
-    baseyaml="../../startup-files/iea37-ex-opt4.yaml")
+    wakemodelused="iea37-aepcalc.py",
+    windresourcefile="iea37-windrose-cs3.yaml",
+    aeptotal=final_AEP,
+    aepdirs=dir_aep,
+    aepunits="MWh",
+    baseyaml="default_cs4.yaml")
+

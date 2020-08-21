@@ -1,4 +1,4 @@
-# using Snopt
+using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,8 +10,8 @@ using DataFrames
 
 using BenchmarkTools
 
-# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-# @everywhere import FlowFarm; const ff = FlowFarm
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+@everywhere import FlowFarm; const ff = FlowFarm
 
 # set up nondiscrete boundary constraint wrapper function
 function nondiscrete_boundary_wrapper(x, params)
@@ -64,8 +64,7 @@ function spacing_wrapper(x, params)
 end
 
 # set up objective wrapper function
-# @everywhere function aep_wrapper(x, params)
-function aep_wrapper(x, params)
+@everywhere function aep_wrapper(x, params)
     # include relevant globals
     params.turbine_z
     params.rotor_diameter
@@ -120,10 +119,14 @@ function wind_farm_opt_nondiscrete(x, params)
     # calculate the objective function and jacobian (negative sign in order to maximize AEP)
     AEP = -aep_wrapper(x)[1]
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
+    wec_value = params.model_set.wake_deficit_model.wec_factor[1]
+    params.model_set.wake_deficit_model.wec_factor[1] = 1.0
+    AEP_no_WEC = -aep_wrapper(x)[1]
+    params.model_set.wake_deficit_model.wec_factor[1] = wec_value
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = -AEP
-    params.iter_AEP[it[1]] = -AEP
+    params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
+    params.funcalls_AEP_no_WEC[it[1]] = -AEP_no_WEC*1e-6/obj_scale
 
     # set fail flag to false
     fail = false
@@ -133,11 +136,11 @@ function wind_farm_opt_nondiscrete(x, params)
 end
 
 
+# for layout_number = 1:10
 layout_number = 1
 
 # import model set with wind farm and related details
-# @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
-include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-7
@@ -168,12 +171,19 @@ info = fill("",wec_steps)
 # initialize xopt array
 noptimizations = wec_steps + 3
 xopt_all = zeros(2*nturbines,noptimizations)
-xopt_all[:,1] = [deepcopy(turbine_x);deepcopy(turbine_y)]
-x = [deepcopy(turbine_x);deepcopy(turbine_y)]
+
+# get initial turbine layout
+initial_yaml = YAML.load(open("../initial-layouts/ieacs4_initial_layout-$layout_number.yaml"))
+nturbines = length(initial_yaml["definitions"]["position"]["items"])
+x = zeros(nturbines*2)
+for i = 1:2, j = 1:nturbines
+    x[(i-1)*nturbines+j] = initial_yaml["definitions"]["position"]["items"][j][i]
+end
+xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
 
 # set globals for iteration history
-iter_AEP = zeros(Float64, 100000*noptimizations)
-funcalls_AEP = zeros(Float64, 100000*noptimizations)
+funcalls_AEP_WEC = zeros(Float64, 100000*noptimizations)
+funcalls_AEP_no_WEC = zeros(Float64, 100000*noptimizations)
 
 # set globals for use in wrapper functions
 struct params_struct{}
@@ -198,15 +208,15 @@ struct params_struct{}
     rated_power
     windresource
     power_models
-    iter_AEP
-    funcalls_AEP
+    funcalls_AEP_WEC
+    funcalls_AEP_no_WEC
     it
 end
 
 params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
     rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, boundary_normals_nondiscrete, obj_scale, hub_height, turbine_yaw, 
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
-    windresource, power_models, iter_AEP, funcalls_AEP, [0])
+    windresource, power_models, funcalls_AEP_WEC, funcalls_AEP_no_WEC, [0])
 
 # report initial objective value
 println("Nturbines: ", nturbines)
@@ -229,7 +239,7 @@ println()
 # add initial turbine location to plot
 clf()
 for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((turbine_x[i],turbine_y[i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
+    plt.gcf().gca().add_artist(plt.Circle((xopt_all[:,1][i],xopt_all[:,1][nturbines+i]), rotor_diameter[1]/2.0, fill=false,color="C0"))
 end
 
 # add wind farm boundary to plot
@@ -245,7 +255,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot1-$layout_number")
+savefig("../results/opt_plot-$layout_number-1")
 
 # set general lower and upper bounds for design variables
 lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
@@ -257,8 +267,8 @@ options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-3
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary-ieacs4-WEC-discrete2-$layout_number.out"
-options["Print file"] = "print-ieacs4-WEC-discrete2-$layout_number.out"
+options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
+options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -308,7 +318,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot2-$layout_number")
+savefig("../results/opt_plot-$layout_number-2")
 
 # # write out csv file with xopt_nondiscrete
 # dataforcsv_xopt_nondiscrete = DataFrame(xopt_nondiscrete = xopt_nondiscrete)
@@ -435,10 +445,14 @@ function wind_farm_opt_discrete(x, params)
     # calculate the objective function and jacobian (negative sign in order to maximize AEP)
     AEP = -aep_wrapper(x)[1]
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
+    wec_value = params.model_set.wake_deficit_model.wec_factor[1]
+    params.model_set.wake_deficit_model.wec_factor[1] = 1.0
+    AEP_no_WEC = -aep_wrapper(x)[1]
+    params.model_set.wake_deficit_model.wec_factor[1] = wec_value
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = -AEP
-    params.iter_AEP[it[1]] = -AEP
+    params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
+    params.funcalls_AEP_no_WEC[it[1]] = -AEP_no_WEC*1e-6/obj_scale
 
     # set fail flag to false
     fail = false
@@ -452,8 +466,8 @@ discrete_boundary_wrapper(x) = discrete_boundary_wrapper(x, params)
 wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, params)
 
 # change output file names
-options["Summary file"] = "summary-ieacs4-WEC-discrete3-$layout_number.out"
-options["Print file"] = "print-ieacs4-WEC-discrete3-$layout_number.out"
+options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete3.out"
+options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete3.out"
 
 # start time again for discrete boundary optimization
 t3t = time()
@@ -502,7 +516,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot3-$layout_number")
+savefig("../results/opt_plot-$layout_number-3")
 
 # # write out csv file with xopt_nondiscrete
 # dataforcsv_xopt_discrete = DataFrame(xopt_discrete3 = xopt_discrete)
@@ -522,8 +536,8 @@ for i in 1:length(wec_values)
     println("Running with WEC = ", params.model_set.wake_deficit_model.wec_factor[1])
 
     # change output file names
-    options["Summary file"] = "summary-ieacs4-WEC-discrete" * "$(i+3)" * "-$layout_number.out"
-    options["Print file"] = "print-ieacs4-WEC-discrete" * "$(i+3)" * "-$layout_number.out"
+    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$(i+3)" * ".out"
+    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$(i+3)" * ".out"
 
     # run optimization
     println()
@@ -571,7 +585,7 @@ xlim(0, 11000)
 ylim(-500, 13000)
 
 # save current figure
-savefig("../results/opt_plot4-$layout_number")
+savefig("../results/opt_plot-$layout_number-4")
 
 # # write out csv file with xopt_nondiscrete
 # xopt = deepcopy(x)
@@ -579,8 +593,8 @@ savefig("../results/opt_plot4-$layout_number")
 # CSV.write("xopt4_discrete_ieacs4_WEC_discrete.csv", dataforcsv_xopt_discrete)
 
 # rename output files
-options["Summary file"] = "summary-ieacs4-WEC-discrete" * "$noptimizations" * "-final-$layout_number.out"
-options["Print file"] = "print-ieacs4-WEC-discrete" * "$noptimizations" * "-final-$layout_number.out"
+options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
+options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
 
 # set up for optimization with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
@@ -629,8 +643,10 @@ turbine_y = copy(xopt_all[:,noptimizations][nturbines+1:end])
 # savefig("../results/opt_plot5")
 
 # write results to csv files
-dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
-CSV.write("functionvalue_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval)
+dataforcsv_funceval_WEC = DataFrame(function_value = funcalls_AEP_WEC)
+CSV.write("functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
+dataforcsv_funceval_no_WEC = DataFrame(function_value = funcalls_AEP_no_WEC)
+CSV.write("functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
 display(xopt_all)
 dataforcsv_xopt_all = DataFrame(xopt_all)
 CSV.write("xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)

@@ -1,4 +1,4 @@
-# using Snopt
+using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,8 +10,8 @@ using DataFrames
 
 using BenchmarkTools
 
-# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
-# @everywhere import FlowFarm; const ff = FlowFarm
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+@everywhere import FlowFarm; const ff = FlowFarm
 
 # set up spacing constraint wrapper function
 function spacing_wrapper(x, params)
@@ -30,8 +30,7 @@ function spacing_wrapper(x, params)
 end
 
 # set up objective wrapper function
-# @everywhere function aep_wrapper(x, params)
-function aep_wrapper(x, params)
+@everywhere function aep_wrapper(x, params)
     # include relevant globals
     params.turbine_z
     params.rotor_diameter
@@ -71,8 +70,7 @@ end
 layout_number = 1
 
 # import model set with wind farm and related details
-# @everywhere include("./model_sets/model_set_7_ieacs4.jl")
-include("./model_sets/model_set_7_ieacs4.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-7
@@ -108,8 +106,8 @@ for i = 1:2, j = 1:nturbines
 end
 
 # set globals for iteration history
-iter_AEP = zeros(Float64, 10000)
-funcalls_AEP = zeros(Float64, 10000)
+funcalls_AEP_WEC = zeros(Float64, 100000*noptimizations)
+funcalls_AEP_no_WEC = zeros(Float64, 100000*noptimizations)
 
 # set globals for use in wrapper functions
 struct params_struct{}
@@ -134,15 +132,15 @@ struct params_struct{}
     rated_power
     windresource
     power_models
-    iter_AEP
-    funcalls_AEP
+    funcalls_AEP_WEC
+    funcalls_AEP_no_WEC
     it
 end
 
 params = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
     rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, boundary_normals_nondiscrete, obj_scale, hub_height, turbine_yaw, 
     ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
-    windresource, power_models, iter_AEP, funcalls_AEP, [0])
+    windresource, power_models, funcalls_AEP_WEC, funcalls_AEP_no_WEC, [0])
 
 # report initial objective value
 println("Nturbines: ", nturbines)
@@ -193,8 +191,8 @@ options["Derivative option"] = 1
 options["Verify level"] = 3
 options["Major optimality tolerance"] = 1e-3
 options["Major iteration limit"] = 1e6
-options["Summary file"] = "summary-ieacs4-WEC-discrete10_fullwindrose-$layout_number.out"
-options["Print file"] = "print-ieacs4-WEC-discrete10_fullwindrose-$layout_number.out"
+options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete9_fullwindrose.out"
+options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete9_fullwindrose.out"
 
 # generate wrapper function surrogates
 spacing_wrapper(x) = spacing_wrapper(x, params)
@@ -279,8 +277,8 @@ function wind_farm_opt_discrete(x, params)
     dAEP_dx = -ForwardDiff.jacobian(aep_wrapper,x)
 
     it[1] += 1
-    params.funcalls_AEP[it[1]] = -AEP
-    params.iter_AEP[it[1]] = -AEP
+    params.funcalls_AEP_WEC[it[1]] = -AEP
+    params.funcalls_AE_no_WEC[it[1]] = -AEP
 
     # set fail flag to false
     fail = false
@@ -349,11 +347,11 @@ plt.gcf().gca().plot([boundary_vertices[5][:,1];boundary_vertices[5][1,1]],[boun
 axis("square")
 xlim(0, 11000)
 ylim(-500, 13000)
-savefig("../results/opt_plot5_fullwindrose-$layout_number")
+savefig("../results/opt_plot-$layout_number-5-fullwindrose")
 
 # write results to csv files
 dataforcsv_xopt = DataFrame(xopt_all_fullwindrose = xopt)
-dataforcsv_funceval = DataFrame(function_value = funcalls_AEP)
+dataforcsv_funceval = DataFrame(function_value = funcalls_AEP_WEC)
 CSV.write("functionvalue_log_ieacs4_WEC_discrete_fullwindrose-$layout_number.csv", dataforcsv_funceval)
 CSV.write("xopt_all_ieacs4_WEC_discrete_fullwindrose-$layout_number.csv", dataforcsv_xopt)
 

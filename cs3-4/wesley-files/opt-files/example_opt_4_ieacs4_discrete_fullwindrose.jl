@@ -278,7 +278,7 @@ function wind_farm_opt_discrete(x, params)
 
     it[1] += 1
     params.funcalls_AEP_WEC[it[1]] = -AEP
-    params.funcalls_AE_no_WEC[it[1]] = -AEP
+    params.funcalls_AEP_no_WEC[it[1]] = -AEP
 
     # set fail flag to false
     fail = false

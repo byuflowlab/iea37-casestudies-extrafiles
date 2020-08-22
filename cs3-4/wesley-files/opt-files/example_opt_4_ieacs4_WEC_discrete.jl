@@ -140,7 +140,8 @@ end
 layout_number = 1
 
 # import model set with wind farm and related details
-@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+# @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-7
@@ -182,8 +183,8 @@ end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
 
 # set globals for iteration history
-funcalls_AEP_WEC = zeros(Float64, 100000*noptimizations)
-funcalls_AEP_no_WEC = zeros(Float64, 100000*noptimizations)
+funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)
+funcalls_AEP_no_WEC = zeros(Float64, 50000*noptimizations)
 
 # set globals for use in wrapper functions
 struct params_struct{}
@@ -265,7 +266,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1e-3
+options["Major optimality tolerance"] = 2.0e-1
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
@@ -526,7 +527,7 @@ savefig("../results/opt_plot-$layout_number-3")
 t5t = time()
 
 # optimization with decreasing WEC values
-for i in 1:length(wec_values)
+for i in 2:length(wec_values)
     global xopt_all
     global fopt
     global info
@@ -536,29 +537,29 @@ for i in 1:length(wec_values)
     println("Running with WEC = ", params.model_set.wake_deficit_model.wec_factor[1])
 
     # change output file names
-    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$(i+3)" * ".out"
-    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$(i+3)" * ".out"
+    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
+    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
 
     # run optimization
     println()
-    println("x input into snopt: ", xopt_all[:,i+2])
+    println("x input into snopt: ", xopt_all[:,i+1])
     t1 = time()
-    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+2], lb, ub, options)
-            # xopt = deepcopy(xopt_all[:,i+2]).+100
+    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+1], lb, ub, options)
+            # xopt = deepcopy(xopt_all[:,i+1]).+100
             # fopt = 50.0
             # info = []
     t2 = time()
     println("xopt output after snopt: ", xopt)
     println()
-    xopt_all[:,i+3] = deepcopy(xopt)
+    xopt_all[:,i+2] = deepcopy(xopt)
     clk = t2-t1
     
     # print optimization results
     println("Finished in : ", clk, " (s)")
     println("info: ", info)
     println("end objective value: ", -fopt)
-    println("initial locations ", xopt_all[1:10,i+2])
-    println("optimal locations (WEC = " * "$(round(wec_values[i],digits=2))" * ") ", xopt_all[1:10,i+3])
+    println("initial locations ", xopt_all[1:10,i+1])
+    println("optimal locations (WEC = " * "$(round(wec_values[i],digits=2))" * ") ", xopt_all[1:10,i+2])
     println()
 
 end
@@ -644,12 +645,12 @@ turbine_y = copy(xopt_all[:,noptimizations][nturbines+1:end])
 
 # write results to csv files
 dataforcsv_funceval_WEC = DataFrame(function_value = funcalls_AEP_WEC)
-CSV.write("functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
+CSV.write("../results/functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
 dataforcsv_funceval_no_WEC = DataFrame(function_value = funcalls_AEP_no_WEC)
-CSV.write("functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
+CSV.write("../results/functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
 display(xopt_all)
 dataforcsv_xopt_all = DataFrame(xopt_all)
-CSV.write("xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)
+CSV.write("../results/xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)
 
 # write results to yaml files
 ff.write_turb_loc_YAML("../results/iea37-byu-opt4-intermediate-$layout_number.yaml",turbine_x,turbine_y,

@@ -137,7 +137,7 @@ end
 
 
 # for layout_number = 1:10
-layout_number = 1
+layout_number = 2
 
 # import model set with wind farm and related details
 # @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")

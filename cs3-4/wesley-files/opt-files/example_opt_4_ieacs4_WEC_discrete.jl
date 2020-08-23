@@ -170,7 +170,7 @@ println(wec_values)
 info = fill("",wec_steps)
 
 # initialize xopt array
-noptimizations = wec_steps + 3
+noptimizations = wec_steps + 2
 xopt_all = zeros(2*nturbines,noptimizations)
 
 # get initial turbine layout

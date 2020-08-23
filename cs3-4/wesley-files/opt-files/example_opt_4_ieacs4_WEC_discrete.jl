@@ -266,7 +266,7 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1.5e-1
+options["Major optimality tolerance"] = 2.5e-1
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
@@ -570,7 +570,7 @@ t6t = time()
 # add turbine locations after discrete optimization to plot
 clf()
 for i = 1:length(turbine_x)
-    plt.gcf().gca().add_artist(plt.Circle((xopt_all[i,length(wec_values)+3],xopt_all[nturbines+i,length(wec_values)+3]), rotor_diameter[1]/2.0, fill=false,color="C5", linestyle="--")) 
+    plt.gcf().gca().add_artist(plt.Circle((xopt_all[i,length(wec_values)+2],xopt_all[nturbines+i,length(wec_values)+2]), rotor_diameter[1]/2.0, fill=false,color="C5", linestyle="--")) 
 end
 
 # add wind farm boundary to plot

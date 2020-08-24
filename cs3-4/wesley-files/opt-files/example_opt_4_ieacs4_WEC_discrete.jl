@@ -1,4 +1,4 @@
-using Snopt
+# using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,7 +10,7 @@ using DataFrames
 
 using BenchmarkTools
 
-addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm
 
 # set up nondiscrete boundary constraint wrapper function
@@ -137,11 +137,11 @@ end
 
 
 # for layout_number = 1:10
-layout_number = 4
+layout_number = 1
 
 # import model set with wind farm and related details
-# @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
-@everywhere include("./model_sets/model_set_7_ieacs4.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+# @everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-7
@@ -181,7 +181,8 @@ for i = 1:2, j = 1:nturbines
     x[(i-1)*nturbines+j] = initial_yaml["definitions"]["position"]["items"][j][i]
 end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
-layout_number = 3.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
+tol = 3.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
+layout_number = 300
 
 # set globals for iteration history
 funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)
@@ -268,7 +269,7 @@ options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
 # options["Major optimality tolerance"] = 1.5e-1
-options["Major optimality tolerance"] = layout_number
+options["Major optimality tolerance"] = tol
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
@@ -285,10 +286,10 @@ t1t = time()
 # first, run optimization with nondiscrete boundaries and WEC=3
 params.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
 println("x input into snopt: ", xopt_all[:,1])
-xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, xopt_all[:,1], lb, ub, options)
-        # xopt_nondiscrete = deepcopy(xopt_all[:,1]).+100
-        # fopt_nondiscrete = 50.0
-        # info_nondiscrete = []
+# xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, xopt_all[:,1], lb, ub, options)
+        xopt_nondiscrete = deepcopy(xopt_all[:,1]).+100
+        fopt_nondiscrete = 50.0
+        info_nondiscrete = []
 println("xopt output after snopt: ", xopt_nondiscrete)
 xopt_all[:,2] = deepcopy(xopt_nondiscrete)
 
@@ -478,10 +479,10 @@ t3t = time()
 # run optimization with discrete regions and WEC=3
 println()
 println("x input into snopt: ", xopt_all[:,2])
-xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, xopt_all[:,2], lb, ub, options)
-        # xopt_discrete = deepcopy(xopt_all[:,2]).+100
-        # fopt_discrete = 50.0
-        # info_discrete = []
+# xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, xopt_all[:,2], lb, ub, options)
+        xopt_discrete = deepcopy(xopt_all[:,2]).+100
+        fopt_discrete = 50.0
+        info_discrete = []
 println("xopt output after snopt: ", xopt_discrete)
 println()
 xopt_all[:,3] = deepcopy(xopt_discrete)
@@ -546,10 +547,10 @@ for i in 2:length(wec_values)
     println()
     println("x input into snopt: ", xopt_all[:,i+1])
     t1 = time()
-    xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+1], lb, ub, options)
-            # xopt = deepcopy(xopt_all[:,i+1]).+100
-            # fopt = 50.0
-            # info = []
+    # xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+1], lb, ub, options)
+            xopt = deepcopy(xopt_all[:,i+1]).+100
+            fopt = 50.0
+            info = []
     t2 = time()
     println("xopt output after snopt: ", xopt)
     println()

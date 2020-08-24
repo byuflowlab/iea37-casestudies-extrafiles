@@ -140,8 +140,8 @@ end
 layout_number = 1
 
 # import model set with wind farm and related details
-@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
-# @everywhere include("./model_sets/model_set_7_ieacs4.jl")
+# @everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # scale objective to be between 0 and 1
 obj_scale = 1E-7
@@ -181,8 +181,8 @@ for i = 1:2, j = 1:nturbines
     x[(i-1)*nturbines+j] = initial_yaml["definitions"]["position"]["items"][j][i]
 end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
-tol = 1.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
-layout_number = 100
+tol = 3.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
+layout_number = 301
 
 # set globals for iteration history
 funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)

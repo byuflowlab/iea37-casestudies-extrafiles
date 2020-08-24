@@ -181,6 +181,7 @@ for i = 1:2, j = 1:nturbines
     x[(i-1)*nturbines+j] = initial_yaml["definitions"]["position"]["items"][j][i]
 end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
+layout_number = 1.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
 
 # set globals for iteration history
 funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)
@@ -266,7 +267,8 @@ ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 3
-options["Major optimality tolerance"] = 1.5e-1
+# options["Major optimality tolerance"] = 1.5e-1
+options["Major optimality tolerance"] = layout_number
 options["Major iteration limit"] = 1e6
 options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
 options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
@@ -624,6 +626,18 @@ println("Ending AEP value (GWh): ", intermediate_AEP)
 turbine_x = copy(xopt_all[:,noptimizations][1:nturbines])
 turbine_y = copy(xopt_all[:,noptimizations][nturbines+1:end])
 
+# calculate state and directional AEPs
+state_aeps = ff.calculate_state_aeps(turbine_x, turbine_y, turbine_z, rotor_diameter,
+                hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
+                cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set;
+                rotor_sample_points_y=[0.0], rotor_sample_points_z=[0.0], hours_per_year=365.0*24.0)
+dir_aep = zeros(360)
+for i in 1:360
+    for j in 1:20
+        dir_aep[i] += state_aeps[(i-1)*20 + j]
+    end
+end
+
 # # add final turbine locations to plot
 # clf()
 # for i = 1:length(turbine_x)
@@ -661,6 +675,6 @@ ff.write_turb_loc_YAML("../results/iea37-byu-opt4-intermediate-$layout_number.ya
     wakemodelused="iea37-aepcalc.py",
     windresourcefile="iea37-windrose-cs3.yaml",
     aeptotal=intermediate_AEP*1e3,
-    aepdirs=[],
+    aepdirs=dir_aep,
     aepunits="MWh",
     baseyaml="default_cs4.yaml")

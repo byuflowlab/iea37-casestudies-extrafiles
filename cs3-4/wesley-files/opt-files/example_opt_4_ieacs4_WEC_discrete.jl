@@ -182,7 +182,7 @@ for i = 1:2, j = 1:nturbines
 end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
 tol = 3.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
-layout_number = 300
+layout_number = 301
 
 # set globals for iteration history
 funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)

@@ -181,8 +181,8 @@ for i = 1:2, j = 1:nturbines
     x[(i-1)*nturbines+j] = initial_yaml["definitions"]["position"]["items"][j][i]
 end
 xopt_all[:,1] = [deepcopy(x[1:nturbines]);deepcopy(x[nturbines+1:end])]
-tol = 2.5e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
-layout_number = 251
+tol = 2.0e-1 # 1.5e-1 2.0e-1 2.5e-1 3.0e-1
+layout_number = 201
 
 # set globals for iteration history
 funcalls_AEP_WEC = zeros(Float64, 50000*noptimizations)

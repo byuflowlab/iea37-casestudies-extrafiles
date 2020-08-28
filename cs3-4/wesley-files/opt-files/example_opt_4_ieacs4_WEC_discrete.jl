@@ -1,4 +1,4 @@
-# using Snopt
+using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,7 +10,7 @@ using DataFrames
 
 using BenchmarkTools
 
-# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm
 
 @everywhere function run_opt(layout_number,wec_values,params_reduced,params_full)
@@ -168,7 +168,7 @@ using BenchmarkTools
 
         it[1] += 1
         params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
-        open("../../../../../results-ieacs4/x_history-$layout_number.txt", "a") do io
+        open("../results/x_history-$layout_number.txt", "a") do io
             writedlm(io, x)
         end
 
@@ -205,7 +205,7 @@ using BenchmarkTools
 
         it[1] += 1
         params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
-        open("../../../../../results-ieacs4/x_history-$layout_number.txt", "a") do io
+        open("../results/x_history-$layout_number.txt", "a") do io
             writedlm(io, x)
         end
 
@@ -269,7 +269,7 @@ using BenchmarkTools
     ylim(-500, 13000)
     
     # save current figure
-    savefig("../../../../../results-ieacs4/opt_plot-$layout_number-1")
+    savefig("../results/opt_plot-$layout_number-1")
     
     # set general lower and upper bounds for design variables
     lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
@@ -335,7 +335,7 @@ using BenchmarkTools
     ylim(-500, 13000)
     
     # save current figure
-    savefig("../../../../../results-ieacs4/opt_plot-$layout_number-2")
+    savefig("../results/opt_plot-$layout_number-2")
         
     # find the nearest boundary for each turbine
     closed_boundary_vertices = copy(boundary_vertices)
@@ -439,7 +439,7 @@ using BenchmarkTools
     ylim(-500, 13000)
     
     # save current figure
-    savefig("../../../../../results-ieacs4/opt_plot-$layout_number-3")
+    savefig("../results/opt_plot-$layout_number-3")
         
     # start time again for WEC optimization
     t5t = time()
@@ -501,7 +501,7 @@ using BenchmarkTools
     ylim(-500, 13000)
     
     # save current figure
-    savefig("../../../../results-ieacs4/opt_plot-$layout_number-4")
+    savefig("../results/opt_plot-$layout_number-4")
     
     # rename output files
     options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
@@ -539,15 +539,15 @@ using BenchmarkTools
     
     # write results to csv files
     dataforcsv_funceval_WEC = DataFrame(function_value = funcalls_AEP_WEC)
-    CSV.write("../../../../../results-ieacs4/functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
+    CSV.write("../results/functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
     dataforcsv_funceval_no_WEC = DataFrame(function_value = funcalls_AEP_no_WEC)
-    CSV.write("../../../../../results-ieacs4/functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
+    CSV.write("../results/functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
     display(xopt_all)
     dataforcsv_xopt_all = DataFrame(xopt_all)
-    CSV.write("../../../../../results-ieacs4/xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)
+    CSV.write("../results/xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)
     
     # write results to yaml files
-    ff.write_turb_loc_YAML("../../../../../results-ieacs4/iea37-byu-opt4-intermediate-$layout_number.yaml",turbine_x,turbine_y,
+    ff.write_turb_loc_YAML("../results/iea37-byu-opt4-intermediate-$layout_number.yaml",turbine_x,turbine_y,
         title="IEA Wind Task 37 case study 4, BYU's intermediate optimal layout",
         titledescription="BYU's optimal layout for the 81 turbine wind plant model for IEA Task 37 case study 4",
         turbinefile="iea37-10mw.yaml",

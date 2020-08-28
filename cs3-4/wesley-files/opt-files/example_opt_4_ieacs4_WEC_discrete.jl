@@ -13,8 +13,6 @@ using BenchmarkTools
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm
 
-@everywhere function run_opt(layout_number,wec_values,params_reduced,params_full)
-
     # set up nondiscrete boundary constraint wrapper function
     function nondiscrete_boundary_wrapper(x, params)
         # include relevant globals
@@ -104,8 +102,8 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
     end
 
     # set up objective wrapper function
-    # @everywhere function aep_wrapper(x, params)
-    function aep_wrapper(x, params)    
+    @everywhere function aep_wrapper(x, params)
+    # function aep_wrapper(x, params)    
         # include relevant globals
         params.turbine_z
         params.rotor_diameter
@@ -216,7 +214,84 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
         return AEP, c, dAEP_dx, dcdx, fail
     end
 
-# function run_opt(layout_number,wec_values,params_reduced,params_full)
+# get slurm variables
+layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
+println("Initial layout number: ", layout_number)
+
+# import model set with full wind rose
+@everywhere include("./model_sets/model_set_7_ieacs4.jl")
+
+# set boundary global parameters
+include("boundary_normals_calculator.jl")
+include("../../optimo-attempt-baker/Julia-files/baker_cs34_functions.jl")
+strCase = "cs4"  # Which case study we're doing. 'cs3' or 'cs4'
+bnry_file_name = "../../startup-files/iea37-boundary-" * strCase * ".yaml"
+bndry_x, bndry_y = getBndryCs4YAML(bnry_file_name)
+boundary_vertices = [[bndry_x[1][:] bndry_y[1][:]], [bndry_x[2][:] bndry_y[2][:]], [bndry_x[3][:] bndry_y[3][:]], [bndry_x[4][:] bndry_y[4][:]], [bndry_x[5][:] bndry_y[5][:]]]
+boundary_normals = [boundary_normals_calculator(boundary_vertices[1]), boundary_normals_calculator(boundary_vertices[2]), boundary_normals_calculator(boundary_vertices[3]), boundary_normals_calculator(boundary_vertices[4]), boundary_normals_calculator(boundary_vertices[5])]
+boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9365.1 625.5; 9360.8 360.2; 9361.5 126.9; 9361.3 137.1; 7997.6 1457.9; 6098.3 3297.5; 
+    5588.4 3791.3; 4670.7 4680.2; 4176.8 5158.6; 2047.8 7220.7; 1468.5 7781.7; 107.4 9100.0; 3267.1 10100.6; 4524.1 10498.7; 8953.7 11901.5; 7048.3 9531.5;
+    6764.9 8399.7; 7274.9 7940.8; 7369.9 7896.2; 7455.1 7784.3; 7606.5 7713.0; 7638.9 7708.4; 8297.1 7398.9; 8450.3 6455.3; 8505.4 6422.3; 9133.0 6127.4; 
+    9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
+boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
+
+# set up for WEC optimization
+wec_steps = 6
+wec_max = 3.0
+wec_end = 1.0
+wec_values = collect(LinRange(wec_max, wec_end, wec_steps))
+println(wec_values)
+noptimizations = length(wec_values) + 2
+
+# set other globals for iteration history
+nearest_region = zeros(Int64, nturbines)
+obj_scale = 1E-7
+funcalls_AEP_WEC = zeros(Float64, 50000*8)
+
+# set globals for use in wrapper functions
+struct params_struct{}
+    model_set
+    rotor_points_y
+    rotor_points_z
+    turbine_z
+    ambient_ti
+    rotor_diameter
+    boundary_vertices
+    boundary_normals
+    boundary_vertices_nondiscrete
+    boundary_normals_nondiscrete
+    nturbines
+    nearest_region
+    obj_scale
+    hub_height
+    turbine_yaw
+    ct_models
+    generator_efficiency
+    cut_in_speed
+    cut_out_speed
+    rated_speed
+    rated_power
+    windresource
+    power_models
+    funcalls_AEP_WEC
+    it
+
+end
+
+params_full = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
+    rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, 
+    boundary_normals_nondiscrete, nturbines, nearest_region, obj_scale, hub_height, turbine_yaw, 
+    ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
+    windresource, power_models, funcalls_AEP_WEC, [0])
+
+# import model set with reduced wind rose
+@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
+
+params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
+    rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, 
+    boundary_normals_nondiscrete, nturbines, nearest_region, obj_scale, hub_height, turbine_yaw, 
+    ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
+    windresource, power_models, funcalls_AEP_WEC, [0])
 
     # initialize xopt array
     nturbines = params_reduced.nturbines
@@ -558,87 +633,6 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
         aepdirs=dir_aep,
         aepunits="MWh",
         baseyaml="default_cs4.yaml")
-        
-end
-
-# import model set with full wind rose
-@everywhere include("./model_sets/model_set_7_ieacs4.jl")
-
-# set boundary global parameters
-include("boundary_normals_calculator.jl")
-include("../../optimo-attempt-baker/Julia-files/baker_cs34_functions.jl")
-strCase = "cs4"  # Which case study we're doing. 'cs3' or 'cs4'
-bnry_file_name = "../../startup-files/iea37-boundary-" * strCase * ".yaml"
-bndry_x, bndry_y = getBndryCs4YAML(bnry_file_name)
-boundary_vertices = [[bndry_x[1][:] bndry_y[1][:]], [bndry_x[2][:] bndry_y[2][:]], [bndry_x[3][:] bndry_y[3][:]], [bndry_x[4][:] bndry_y[4][:]], [bndry_x[5][:] bndry_y[5][:]]]
-boundary_normals = [boundary_normals_calculator(boundary_vertices[1]), boundary_normals_calculator(boundary_vertices[2]), boundary_normals_calculator(boundary_vertices[3]), boundary_normals_calculator(boundary_vertices[4]), boundary_normals_calculator(boundary_vertices[5])]
-boundary_vertices_nondiscrete = [10363.8 6490.3; 9449.7 1602.2; 9387.0 1056.6; 9365.1 625.5; 9360.8 360.2; 9361.5 126.9; 9361.3 137.1; 7997.6 1457.9; 6098.3 3297.5; 
-    5588.4 3791.3; 4670.7 4680.2; 4176.8 5158.6; 2047.8 7220.7; 1468.5 7781.7; 107.4 9100.0; 3267.1 10100.6; 4524.1 10498.7; 8953.7 11901.5; 7048.3 9531.5;
-    6764.9 8399.7; 7274.9 7940.8; 7369.9 7896.2; 7455.1 7784.3; 7606.5 7713.0; 7638.9 7708.4; 8297.1 7398.9; 8450.3 6455.3; 8505.4 6422.3; 9133.0 6127.4; 
-    9332.8 6072.6; 9544.2 6087.1; 9739.0 6171.2; 9894.9 6316.9; 10071.8 6552.5; 10106.9 6611.1]
-boundary_normals_nondiscrete = boundary_normals_calculator(boundary_vertices_nondiscrete)
-
-# set up for WEC optimization
-wec_steps = 6
-wec_max = 3.0
-wec_end = 1.0
-wec_values = collect(LinRange(wec_max, wec_end, wec_steps))
-println(wec_values)
-noptimizations = length(wec_values) + 2
-
-# set other globals for iteration history
-nearest_region = zeros(Int64, nturbines)
-obj_scale = 1E-7
-funcalls_AEP_WEC = zeros(Float64, 50000*8)
-
-# set globals for use in wrapper functions
-struct params_struct{}
-    model_set
-    rotor_points_y
-    rotor_points_z
-    turbine_z
-    ambient_ti
-    rotor_diameter
-    boundary_vertices
-    boundary_normals
-    boundary_vertices_nondiscrete
-    boundary_normals_nondiscrete
-    nturbines
-    nearest_region
-    obj_scale
-    hub_height
-    turbine_yaw
-    ct_models
-    generator_efficiency
-    cut_in_speed
-    cut_out_speed
-    rated_speed
-    rated_power
-    windresource
-    power_models
-    funcalls_AEP_WEC
-    it
-
-end
-
-params_full = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
-    rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, 
-    boundary_normals_nondiscrete, nturbines, nearest_region, obj_scale, hub_height, turbine_yaw, 
-    ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
-    windresource, power_models, funcalls_AEP_WEC, [0])
-
-# import model set with reduced wind rose
-@everywhere include("./model_sets/model_set_7_ieacs4_reduced_wind_rose.jl")
-
-params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
-    rotor_diameter, boundary_vertices, boundary_normals, boundary_vertices_nondiscrete, 
-    boundary_normals_nondiscrete, nturbines, nearest_region, obj_scale, hub_height, turbine_yaw, 
-    ct_models, generator_efficiency, cut_in_speed, cut_out_speed, rated_speed, rated_power, 
-    windresource, power_models, funcalls_AEP_WEC, [0])
-
-for layout_number = 1:2
-    run_opt(layout_number,wec_values,params_reduced,params_full)
-end
 
 
 # open("x_history.txt", "a") do io

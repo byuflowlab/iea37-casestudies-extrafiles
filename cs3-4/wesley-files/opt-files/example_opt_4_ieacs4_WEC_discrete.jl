@@ -167,7 +167,7 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
         it[1] += 1
         params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
         open("../results/x_history-$layout_number.txt", "a") do io
-            writedlm(io, x)
+            writedlm(io, [x[1:nturbines] x[nturbines+1:end]])
         end
 
         # set fail flag to false
@@ -204,7 +204,7 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
         it[1] += 1
         params.funcalls_AEP_WEC[it[1]] = -AEP*1e-6/obj_scale
         open("../results/x_history-$layout_number.txt", "a") do io
-            writedlm(io, x)
+            writedlm(io, [x[1:nturbines] x[nturbines+1:end]])
         end
 
         # set fail flag to false
@@ -615,8 +615,8 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     # write results to csv files
     dataforcsv_funceval_WEC = DataFrame(function_value = funcalls_AEP_WEC)
     CSV.write("../results/functionvalue_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_WEC)
-    dataforcsv_funceval_no_WEC = DataFrame(function_value = funcalls_AEP_no_WEC)
-    CSV.write("../results/functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
+    # dataforcsv_funceval_no_WEC = DataFrame(function_value = funcalls_AEP_no_WEC)
+    # CSV.write("../results/functionvalue_no_WEC_log_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_funceval_no_WEC)
     display(xopt_all)
     dataforcsv_xopt_all = DataFrame(xopt_all)
     CSV.write("../results/xopt_all_ieacs4_WEC_discrete-$layout_number.csv", dataforcsv_xopt_all)

@@ -1,4 +1,4 @@
-using Snopt
+# using Snopt
 using DelimitedFiles 
 using PyPlot
 using LazySets
@@ -10,10 +10,10 @@ using DataFrames
 
 using BenchmarkTools
 
-addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm
 
-function run_opt(layout_number,wec_values,params_reduced,params_full)
+@everywhere function run_opt(layout_number,wec_values,params_reduced,params_full)
 
     # set up nondiscrete boundary constraint wrapper function
     function nondiscrete_boundary_wrapper(x, params)
@@ -104,8 +104,8 @@ function run_opt(layout_number,wec_values,params_reduced,params_full)
     end
 
     # set up objective wrapper function
-    @everywhere function aep_wrapper(x, params)
-    # function aep_wrapper(x, params)    
+    # @everywhere function aep_wrapper(x, params)
+    function aep_wrapper(x, params)    
         # include relevant globals
         params.turbine_z
         params.rotor_diameter
@@ -215,6 +215,8 @@ function run_opt(layout_number,wec_values,params_reduced,params_full)
         # return objective, constraint, and jacobian values
         return AEP, c, dAEP_dx, dcdx, fail
     end
+
+# function run_opt(layout_number,wec_values,params_reduced,params_full)
 
     # initialize xopt array
     nturbines = params_reduced.nturbines

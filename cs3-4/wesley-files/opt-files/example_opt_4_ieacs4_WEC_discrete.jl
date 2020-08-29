@@ -245,7 +245,7 @@ noptimizations = length(wec_values) + 2
 
 # set other globals for iteration history
 nearest_region = zeros(Int64, nturbines)
-obj_scale = 1E-7
+obj_scale = 1E-8
 funcalls_AEP_WEC = zeros(Float64, 50000*8)
 
 # set globals for use in wrapper functions
@@ -275,7 +275,6 @@ struct params_struct{}
     power_models
     funcalls_AEP_WEC
     it
-
 end
 
 params_full = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z, ambient_ti, 
@@ -351,7 +350,7 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
     
     # set up options for SNOPT
-    tol = 1.5e-1
+    tol = 1.5e-2
     options = Dict{String, Any}()
     options["Derivative option"] = 1
     options["Verify level"] = 3

@@ -351,10 +351,10 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
     
     # set up options for SNOPT
-    tol = 4e-6
+    tol = 3.8e-6
     options = Dict{String, Any}()
     options["Derivative option"] = 1
-    options["Verify level"] = 3
+    options["Verify level"] = 1
     options["Major optimality tolerance"] = tol
     options["Major iteration limit"] = 1e6
     options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"

@@ -216,7 +216,7 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 
 # get slurm variables
 # layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
-layout_number = Base.parse(Int, ENV["LAYOUT_NUMBER"])
+layout_number = 2
 println("Initial layout number: ", layout_number)
 
 # import model set with full wind rose

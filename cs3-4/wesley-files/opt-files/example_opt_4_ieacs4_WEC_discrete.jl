@@ -374,10 +374,10 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     # first, run optimization with nondiscrete boundaries and WEC=3
     params_reduced.model_set.wake_deficit_model.wec_factor[1] = wec_values[1]
     println("x input into snopt: ", xopt_all[1:10,1])
-    # xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, xopt_all[:,1], lb, ub, options)
-            xopt_nondiscrete = deepcopy(xopt_all[:,1]).+100
-            fopt_nondiscrete = 50.0
-            info_nondiscrete = []
+    xopt_nondiscrete, fopt_nondiscrete, info_nondiscrete = snopt(wind_farm_opt_nondiscrete, xopt_all[:,1], lb, ub, options)
+            # xopt_nondiscrete = deepcopy(xopt_all[:,1]).+100
+            # fopt_nondiscrete = 50.0
+            # info_nondiscrete = []
     println("xopt output after snopt: ", xopt_nondiscrete)
     xopt_all[:,2] = deepcopy(xopt_nondiscrete)
     
@@ -473,10 +473,10 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     # run optimization with discrete regions and WEC=3
     println()
     println("x input into snopt: ", xopt_all[1:10,2])
-    # xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, xopt_all[:,2], lb, ub, options)
-            xopt_discrete = deepcopy(xopt_all[:,2]).+100
-            fopt_discrete = 50.0
-            info_discrete = []
+    xopt_discrete, fopt_discrete, info_discrete = snopt(wind_farm_opt_discrete, xopt_all[:,2], lb, ub, options)
+            # xopt_discrete = deepcopy(xopt_all[:,2]).+100
+            # fopt_discrete = 50.0
+            # info_discrete = []
     println("xopt output after snopt: ", xopt_discrete)
     println()
     xopt_all[:,3] = deepcopy(xopt_discrete)
@@ -534,10 +534,10 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
         println()
         println("x input into snopt: ", xopt_all[1:10,i+1])
         t1 = time()
-        # xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+1], lb, ub, options)
-                xopt = deepcopy(xopt_all[:,i+1]).+100
-                fopt = 50.0
-                info = []
+        xopt, fopt, info = snopt(wind_farm_opt_discrete, xopt_all[:,i+1], lb, ub, options)
+                # xopt = deepcopy(xopt_all[:,i+1]).+100
+                # fopt = 50.0
+                # info = []
         t2 = time()
         println("xopt output after snopt: ", xopt)
         println()

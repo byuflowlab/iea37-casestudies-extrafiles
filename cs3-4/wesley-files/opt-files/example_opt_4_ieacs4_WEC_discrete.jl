@@ -215,7 +215,8 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
     end
 
 # get slurm variables
-layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
+# layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
+layout_number = 1
 println("Initial layout number: ", layout_number)
 
 # import model set with full wind rose
@@ -245,7 +246,7 @@ noptimizations = length(wec_values) + 2
 
 # set other globals for iteration history
 nearest_region = zeros(Int64, nturbines)
-obj_scale = 1E-8
+obj_scale = 1E-12
 funcalls_AEP_WEC = zeros(Float64, 50000*8)
 
 # set globals for use in wrapper functions
@@ -350,7 +351,7 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
     
     # set up options for SNOPT
-    tol = 1.5e-2
+    tol = 4e-6
     options = Dict{String, Any}()
     options["Derivative option"] = 1
     options["Verify level"] = 3

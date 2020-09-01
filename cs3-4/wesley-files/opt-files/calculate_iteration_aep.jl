@@ -1,4 +1,4 @@
-using Distributed, DelimitedFiles, YAML
+using Distributed, DelimitedFiles, YAML, ClusterManagers
 
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm

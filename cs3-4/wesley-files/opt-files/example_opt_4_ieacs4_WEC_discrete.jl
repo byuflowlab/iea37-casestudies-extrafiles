@@ -216,7 +216,7 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 
 # get slurm variables
 # layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
-layout_number = 11
+layout_number = 12
 println("Initial layout number: ", layout_number)
 
 # import model set with full wind rose
@@ -351,7 +351,7 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
     
     # set up options for SNOPT
-    tol = 3.8e-6
+    tol = 2.5e-6
     options = Dict{String, Any}()
     options["Derivative option"] = 1
     options["Verify level"] = 1

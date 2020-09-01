@@ -78,7 +78,7 @@ for i = 1:n_iterations
 end
 
 include("write_opt_log_YAML.jl")
-filename = "iea37-byu-log4-$layout_number.yaml"
+filename = "../results/iea37-byu-log4-$layout_number.yaml"
 write_opt_log_YAML(filename, aep_history; baseyaml=string(@__DIR__, "/default_cs4_log.yaml"), title="", titledescription="", 
 gradient_based=true, algorithm_name="", program_language="Julia", total_optimizations=1, total_wall_time=[], 
 units="s", aepunits="MWh")

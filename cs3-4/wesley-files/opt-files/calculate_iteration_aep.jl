@@ -39,7 +39,7 @@ println("Initial layout number: ", layout_number)
 # open("x_history-$layout_number.txt", "a") do io
 #     writedlm(io, [rand(81)*10000 rand(81)*10000])
 # end
-x_history = readdlm("x_history-$layout_number.txt", '\t', Float64, '\n')
+x_history = readdlm("../results/x_history-$layout_number.txt", '\t', Float64, '\n')
 
 # check if there are the correct number of turbine coordinates
 if mod(length(x_history[:,1]),nturbines)!==0

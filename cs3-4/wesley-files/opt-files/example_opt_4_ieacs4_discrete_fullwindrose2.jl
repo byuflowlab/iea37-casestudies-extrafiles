@@ -263,7 +263,7 @@ params_full = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z
     ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
     
     # set up options for SNOPT
-    tol = 3.8e-6
+    tol = 2.0e-6
     options = Dict{String, Any}()
     options["Derivative option"] = 1
     options["Verify level"] = 1

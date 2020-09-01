@@ -38,14 +38,14 @@ function write_opt_log_YAML(filename, funcalls; baseyaml=string(@__DIR__, "/defa
     base["optimization_summary"]["program_language"] = program_language
 
     # save function call history
-    base["optimization_summary"]["optimization_log_1"]["function_calls"] = length(funcalls[1])
-    base["optimization_summary"]["optimization_log_2"]["function_calls"] = length(funcalls[2])
-    base["optimization_summary"]["optimization_log_3"]["function_calls"] = length(funcalls[3])
+    base["optimization_summary"]["optimization_log_1"]["function_calls"] = length(funcalls)
+    # base["optimization_summary"]["optimization_log_2"]["function_calls"] = length(funcalls[2])
+    # base["optimization_summary"]["optimization_log_3"]["function_calls"] = length(funcalls[3])
 
     # save function call history
-    base["optimization_summary"]["optimization_log_1"]["annual_energy_production"] = funcalls[1]
-    base["optimization_summary"]["optimization_log_2"]["annual_energy_production"] = funcalls[2]
-    base["optimization_summary"]["optimization_log_3"]["annual_energy_production"] = funcalls[3]
+    base["optimization_summary"]["optimization_log_1"]["annual_energy_production"] = funcalls
+    # base["optimization_summary"]["optimization_log_2"]["annual_energy_production"] = funcalls[2]
+    # base["optimization_summary"]["optimization_log_3"]["annual_energy_production"] = funcalls[3]
 
     # write results to YAML file
     YAML.write_file(filename, base)

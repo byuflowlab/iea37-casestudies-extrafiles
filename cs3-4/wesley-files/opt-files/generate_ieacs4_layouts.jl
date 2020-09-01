@@ -64,8 +64,8 @@ ieacs4_boundary_normals_discrete = [boundary_normals_calculator(ieacs4_boundary_
 nturbines = 81
 rotor_diameter = 198.0
 
-start_layout_number = 1
-end_layout_number = 3
+start_layout_number = 2
+end_layout_number = 10
 
 for layout_number = start_layout_number:end_layout_number
 

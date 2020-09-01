@@ -269,8 +269,8 @@ params_full = params_struct(model_set, rotor_points_y, rotor_points_z, turbine_z
     options["Verify level"] = 1
     options["Major optimality tolerance"] = tol
     options["Major iteration limit"] = 1e6
-    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete-fullwindrose.out"
-    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete-fullwindrose.out"
+    options["Summary file"] = "snopt-output/summary-ieacs4-WEC-$layout_number-discrete-fullwindrose.out"
+    options["Print file"] = "snopt-output/print-ieacs4-WEC-$layout_number-discrete-fullwindrose.out"
     println()
     println("Objective scaling factor: ", params_full.obj_scale)
     println("Major optimality tolerance: ", tol)

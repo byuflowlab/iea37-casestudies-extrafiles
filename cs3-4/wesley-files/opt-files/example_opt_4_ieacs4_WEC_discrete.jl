@@ -357,8 +357,8 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     options["Verify level"] = 1
     options["Major optimality tolerance"] = tol
     options["Major iteration limit"] = 1e6
-    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete2.out"
-    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete2.out"
+    options["Summary file"] = "snopt-output/summary-ieacs4-WEC-$layout_number-discrete2.out"
+    options["Print file"] = "snopt-output/print-ieacs4-WEC-$layout_number-discrete2.out"
     println("Objective scaling factor: ", params_reduced.obj_scale)
     println("Major optimality tolerance: ", tol)
     
@@ -464,8 +464,8 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     wind_farm_opt_discrete(x) = wind_farm_opt_discrete(x, layout_number, params_reduced)
     
     # change output file names
-    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete3.out"
-    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete3.out"
+    options["Summary file"] = "snopt-output/summary-ieacs4-WEC-$layout_number-discrete3.out"
+    options["Print file"] = "snopt-output/print-ieacs4-WEC-$layout_number-discrete3.out"
     
     # start time again for discrete boundary optimization
     t3t = time()
@@ -527,8 +527,8 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
         println("Running with WEC = ", params_reduced.model_set.wake_deficit_model.wec_factor[1])
     
         # change output file names
-        options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
-        options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
+        options["Summary file"] = "snopt-output/summary-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
+        options["Print file"] = "snopt-output/print-ieacs4-WEC-$layout_number-discrete" * "$(i+2)" * ".out"
     
         # run optimization
         println()
@@ -579,8 +579,8 @@ params_reduced = params_struct(model_set, rotor_points_y, rotor_points_z, turbin
     savefig("../results/opt_plot-$layout_number-4")
     
     # rename output files
-    options["Summary file"] = "summary-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
-    options["Print file"] = "print-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
+    options["Summary file"] = "snopt-output/summary-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
+    options["Print file"] = "snopt-output/print-ieacs4-WEC-$layout_number-discrete" * "$noptimizations" * "-final.out"
     
     # set up for optimization with full wind rose
     @everywhere include("./model_sets/model_set_7_ieacs4.jl")

@@ -10,7 +10,7 @@ using DataFrames
 
 using BenchmarkTools
 
-# addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
+addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm
 
     # set up discrete boundary constraint wrapper function

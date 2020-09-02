@@ -64,8 +64,8 @@ ieacs4_boundary_normals_discrete = [boundary_normals_calculator(ieacs4_boundary_
 nturbines = 81
 rotor_diameter = 198.0
 
-start_layout_number = 2
-end_layout_number = 10
+start_layout_number = 101
+end_layout_number = 120
 
 for layout_number = start_layout_number:end_layout_number
 
@@ -87,10 +87,10 @@ for layout_number = start_layout_number:end_layout_number
     axis("square")
     xlim(0, 11000)
     ylim(-500, 13000)
-    savefig("../initial-layouts/ieacs4_initial_layout-$layout_number.png")
+    savefig("../initial-layouts/ieacs4_initial_layout-"*lpad(layout_number,3,"0")*".png")
 
     # save initial layout to YAML
-    ff.write_turb_loc_YAML("../initial-layouts/ieacs4_initial_layout-$layout_number.yaml", turbine_x, turbine_y; title="IEA Case Study 4 Initial Wind Farm Layout $layout_number", titledescription="81 randomly generated turbine locations", 
+    ff.write_turb_loc_YAML("../initial-layouts/ieacs4_initial_layout-"*lpad(layout_number,3,"0")*".yaml", turbine_x, turbine_y; title="IEA Case Study 4 Initial Wind Farm Layout $layout_number", titledescription="81 randomly generated turbine locations", 
     turbinefile="", locunits="m", wakemodelused="", windresourcefile="", aeptotal=[], 
     aepdirs=[], aepunits="MWh", baseyaml="default_cs4.yaml")
 end

@@ -36,9 +36,6 @@ layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
 println("Initial layout number: ", layout_number)
 
 # read in x locations
-# open("x_history-$layout_number.txt", "a") do io
-#     writedlm(io, [rand(81)*10000 rand(81)*10000])
-# end
 x_history = readdlm("../results/x_history-$layout_number.txt", '\t', Float64, '\n')
 
 # check if there are the correct number of turbine coordinates
@@ -78,7 +75,7 @@ for i = 1:n_iterations
 end
 
 include("write_opt_log_YAML.jl")
-filename = "../results/iea37-byu-log4-$layout_number.yaml"
+filename = "../results/iea37-byu-log4-"*lpad(layout_number,3,"0")*".yaml"
 write_opt_log_YAML(filename, aep_history; baseyaml=string(@__DIR__, "/default_cs4_log.yaml"), title="", titledescription="", 
 gradient_based=true, algorithm_name="", program_language="Julia", total_optimizations=1, total_wall_time=[], 
 units="s", aepunits="MWh")

@@ -158,7 +158,6 @@ end
 layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
 # layout_number = 1
 println("Initial layout number: ", layout_number)
-tol = Base.parse(Float64, Base.ARGS[1])
 
 # import model set with full wind rose
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
@@ -262,7 +261,7 @@ lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
 ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 
 # set up options for SNOPT
-tol = 2.0e-6
+tol = Base.parse(Float64, Base.ARGS[1])
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 1

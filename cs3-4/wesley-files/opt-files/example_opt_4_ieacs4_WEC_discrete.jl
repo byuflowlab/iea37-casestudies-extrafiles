@@ -3,11 +3,11 @@
 # using PyPlot
 # using LazySets
 # import ForwardDiff
-# using Distributed
-# using ClusterManagers
+using Distributed
+using ClusterManagers
 # using CSV
 # using DataFrames
-# using BenchmarkTools
+using BenchmarkTools
 
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
 @everywhere import FlowFarm; const ff = FlowFarm

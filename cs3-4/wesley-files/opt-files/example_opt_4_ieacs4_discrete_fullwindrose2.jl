@@ -30,7 +30,7 @@ function discrete_boundary_wrapper(x, params)
     println(nearest_region)
     display(nearest_region.==1)
     println(nearest_region.==1)
-    
+
     turbine_x_region_1 = turbine_x[nearest_region.==1]
     turbine_y_region_1 = turbine_y[nearest_region.==1]
     turbine_x_region_2 = turbine_x[nearest_region.==2]
@@ -199,7 +199,7 @@ println(wec_values)
 noptimizations = length(wec_values) + 2
 
 # set other globals for iteration history
-nearest_region = readdlm("nearest_region_ieacs4-"*lpad(layout_number,3,"0")*".txt", '\t', Int, '\n')
+nearest_region = readdlm("nearest_region_ieacs4-"*lpad(layout_number,3,"0")*".txt", '\t', Int, '\n')[:,1]
 println("closest regions: ", nearest_region)
 obj_scale = 1E-12
 funcalls_AEP_WEC = zeros(Float64, 50000*8)

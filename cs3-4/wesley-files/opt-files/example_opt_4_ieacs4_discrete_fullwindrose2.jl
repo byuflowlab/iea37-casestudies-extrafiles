@@ -26,11 +26,6 @@ function discrete_boundary_wrapper(x, params)
     turbine_x = x[1:nturbines]
     turbine_y = x[nturbines+1:end]
 
-    display(nearest_region)
-    println(nearest_region)
-    display(nearest_region.==1)
-    println(nearest_region.==1)
-
     turbine_x_region_1 = turbine_x[nearest_region.==1]
     turbine_y_region_1 = turbine_y[nearest_region.==1]
     turbine_x_region_2 = turbine_x[nearest_region.==2]

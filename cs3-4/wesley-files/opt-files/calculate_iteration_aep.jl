@@ -31,12 +31,12 @@ end
 @everywhere include("./model_sets/model_set_7_ieacs4.jl")
 
 # get layout number
-layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
+layout_number = Base.parse(Int, Base.ARGS[1])
 # layout_number = 1
 println("Initial layout number: ", layout_number)
 
 # read in x locations
-x_history = readdlm("../results/x_history-$layout_number.txt", '\t', Float64, '\n')
+x_history = readdlm("../results/x_history-" * lpad(layout_number,3,"0") * ".txt", '\t', Float64, '\n')
 
 # check if there are the correct number of turbine coordinates
 if mod(length(x_history[:,1]),nturbines)!==0

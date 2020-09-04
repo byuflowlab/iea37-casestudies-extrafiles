@@ -339,7 +339,7 @@ turbine_x = copy(xopt[1:nturbines])
 turbine_y = copy(xopt[nturbines+1:end])
 
 # calculate state and directional AEPs
-state_aeps = ff.calculate_state_aeps(turbine_x, turbine_y, turbine_z, rotor_diameter,
+state_aeps = 1e-6*ff.calculate_state_aeps(turbine_x, turbine_y, turbine_z, rotor_diameter,
                 hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set;
                 rotor_sample_points_y=[0.0], rotor_sample_points_z=[0.0], hours_per_year=365.0*24.0)
@@ -357,7 +357,7 @@ ff.write_turb_loc_YAML("../results/iea37-byu-opt4-"*lpad(layout_number,3,"0")*".
     turbinefile="iea37-10mw.yaml",
     locunits="m",
     wakemodelused="iea37-aepcalc.py",
-    windresourcefile="iea37-windrose-cs3.yaml",
+    windresourcefile="iea37-windrose-cs4.yaml",
     aeptotal=final_AEP*1e3,
     aepdirs=dir_aep,
     aepunits="MWh",

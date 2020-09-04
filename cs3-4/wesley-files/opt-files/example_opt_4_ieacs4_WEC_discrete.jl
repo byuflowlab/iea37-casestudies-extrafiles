@@ -1,12 +1,12 @@
-# using Snopt
-# using DelimitedFiles 
-# using PyPlot
-# using LazySets
-# import ForwardDiff
+using Snopt
+using DelimitedFiles 
+using PyPlot
+using LazySets
+import ForwardDiff
 using Distributed
 using ClusterManagers
-# using CSV
-# using DataFrames
+using CSV
+using DataFrames
 using BenchmarkTools
 
 addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
@@ -208,8 +208,9 @@ function wind_farm_opt_discrete(x, layout_number, params)
 end
 
 # get slurm variables
-layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
+# layout_number = Base.parse(Int, ENV["SLURM_ARRAY_TASK_ID"])
 # layout_number = 1
+layout_number = Base.parse(Float64, Base.ARGS[1])
 println("Initial layout number: ", layout_number)
 
 # import model set with full wind rose
@@ -344,7 +345,7 @@ lb = zeros(length(x)) .+ minimum(boundary_vertices_nondiscrete)
 ub = zeros(length(x)) .+ maximum(boundary_vertices_nondiscrete)
 
 # set up options for SNOPT
-tol = Base.parse(Float64, Base.ARGS[1])
+tol = Base.parse(Float64, Base.ARGS[2])
 options = Dict{String, Any}()
 options["Derivative option"] = 1
 options["Verify level"] = 1

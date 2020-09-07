@@ -24,7 +24,7 @@ addprocs(SlurmManager(parse(Int, ENV["SLURM_NTASKS"])-1))
     AEP = ff.calculate_aep(turbine_x, turbine_y, turbine_z, rotor_diameter,
                 hub_height, turbine_yaw, ct_models, generator_efficiency, cut_in_speed,
                 cut_out_speed, rated_speed, rated_power, windresource, power_models, model_set,
-                rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z)
+                rotor_sample_points_y=rotor_points_y,rotor_sample_points_z=rotor_points_z, hours_per_year=365.0*24.0)
 end
 
 # set model
